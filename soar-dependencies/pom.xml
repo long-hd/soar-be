@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.hdl.boot</groupId>
+    <artifactId>soar-dependencies</artifactId>
+    <version>${reversion}</version>
+    <packaging>pom</packaging>
+
+    <name>${project.artifactId}</name>
+    <description>Base BOM file, used to manage dependency versions for the entire project.</description>
+    <url>https://github.com/long-hd/soar-fe.git</url>
+
+    <properties>
+        <reversion>0.0.1-SNAPSHOT</reversion>
+
+        <spring.boot.version>3.5.14</spring.boot.version>
+        <spring.framework.version>6.2.18</spring.framework.version>
+        <spring.security.version>6.5.10</spring.security.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+
+        </dependencies>
+    </dependencyManagement>
+
+</project>
