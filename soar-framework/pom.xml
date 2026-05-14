@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>soar</artifactId>
+        <groupId>com.hdl.boot</groupId>
+        <version>${revision}</version>
+    </parent>
+    <packaging>pom</packaging>
+
+    <artifactId>soar-framework</artifactId>
+    <name>${project.artifactId}</name>
+    <description>
+        This package contains technical components, where each subpackage represents a component.
+        Each component consists of two parts:
+
+        1. The `core` package: the core implementation/wrapper of the component
+        2. The `config` package: the Spring-based configuration for the component
+
+        Technical components are also divided into two categories:
+
+        1. Framework components: extensions of familiar technologies such as Jpa, Redis, etc.
+        2. Business components: encapsulations of business-related features, such as data dictionaries, operation logs, and so on.
+
+        If it is a business component, its Maven name will include `biz`.
+    </description>
+    <url>https://github.com/long-hd/soar-fe.git</url>
+
+    <modules>
+        <module>soar-common</module>
+        <!-- Thêm dần khi tạo:
+        <module>soar-spring-boot-starter-web</module>
+        <module>soar-spring-boot-starter-redis</module>
+        <module>soar-spring-boot-starter-security</module>
+        -->
+    </modules>
+</project>

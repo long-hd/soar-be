@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.hdl.boot</groupId>
     <artifactId>soar-dependencies</artifactId>
-    <version>${reversion}</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
@@ -14,15 +14,81 @@
     <url>https://github.com/long-hd/soar-fe.git</url>
 
     <properties>
-        <reversion>0.0.1-SNAPSHOT</reversion>
-
+        <revision>0.0.1-SNAPSHOT</revision>
         <spring.boot.version>3.5.14</spring.boot.version>
-        <spring.framework.version>6.2.18</spring.framework.version>
-        <spring.security.version>6.5.10</spring.security.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- ==================== External: NOT in Spring Boot BOM ==================== -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+
+            <!-- ==================== Internal Modules ==================== -->
+            <!--
+                Khai báo ở đây để module khác depend mà không cần version.
+                Thêm dần khi tạo module mới.
+            -->
+            <dependency>
+                <groupId>com.hdl.boot</groupId>
+                <artifactId>soar-common</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- Uncomment khi tạo module tương ứng:
+            <dependency>
+                <groupId>com.hdl.boot</groupId>
+                <artifactId>soar-spring-boot-starter-web</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hdl.boot</groupId>
+                <artifactId>soar-spring-boot-starter-redis</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hdl.boot</groupId>
+                <artifactId>soar-spring-boot-starter-security</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hdl.boot</groupId>
+                <artifactId>soar-module-system-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hdl.boot</groupId>
+                <artifactId>soar-module-system-biz</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            -->
 
         </dependencies>
     </dependencyManagement>
