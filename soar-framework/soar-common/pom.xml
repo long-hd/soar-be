@@ -4,16 +4,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!--
-        Shared foundation — no Spring Boot starters, kept lightweight.
-
-        Contains:
-        - BaseEntity (@MappedSuperclass with audit fields)
-        - CommonResult<T> (API response wrapper)
-        - PageParam, PageResult<T> (pagination)
-        - ServiceException, ErrorCode (error handling)
-        - Utility classes
-    -->
     <parent>
         <groupId>com.hdl.boot</groupId>
         <artifactId>soar-framework</artifactId>
@@ -21,38 +11,57 @@
     </parent>
 
     <artifactId>soar-common</artifactId>
+    <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
     <description>Shared base classes, exceptions, and utilities used across all modules.</description>
 
     <dependencies>
-        <!--
-            JPA API — just annotations (@MappedSuperclass, @Column, @Id).
-            NOT Hibernate runtime. Lightweight (no transitive deps).
-            Actual JPA implementation comes via spring-boot-starter-data-jpa
-            in modules that need it (system-biz, server).
-        -->
+        <!-- Spring core -->
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
         </dependency>
 
-        <!-- Validation annotations (@NotBlank, @NotNull, @Size) -->
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
         </dependency>
 
-        <!-- Jackson annotations (@JsonFormat, @JsonIgnore, @JsonInclude) -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
         </dependency>
 
+        <!-- Utility classes -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

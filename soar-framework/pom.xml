@@ -12,6 +12,17 @@
 
     <artifactId>soar-framework</artifactId>
     <name>${project.artifactId}</name>
+    <url>https://github.com/long-hd/soar-fe.git</url>
+
+    <modules>
+        <module>soar-common</module>
+        <!-- Thêm dần khi tạo:
+        <module>soar-spring-boot-starter-web</module>
+        <module>soar-spring-boot-starter-redis</module>
+        <module>soar-spring-boot-starter-security</module>
+        -->
+    </modules>
+
     <description>
         This package contains technical components, where each subpackage represents a component.
         Each component consists of two parts:
@@ -26,14 +37,5 @@
 
         If it is a business component, its Maven name will include `biz`.
     </description>
-    <url>https://github.com/long-hd/soar-fe.git</url>
 
-    <modules>
-        <module>soar-common</module>
-        <!-- Thêm dần khi tạo:
-        <module>soar-spring-boot-starter-web</module>
-        <module>soar-spring-boot-starter-redis</module>
-        <module>soar-spring-boot-starter-security</module>
-        -->
-    </modules>
 </project>
