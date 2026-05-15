@@ -15,11 +15,90 @@
 
     <properties>
         <revision>0.0.1-SNAPSHOT</revision>
+        <flatten-maven-plugin.version>1.7.3</flatten-maven-plugin.version>
+        <!-- Unified dependency management -->
         <spring.boot.version>3.5.14</spring.boot.version>
+        <spring.framework.version>6.2.18</spring.framework.version>
+        <spring.security.version>6.5.10</spring.security.version>
+        <!-- Web-doc-->
+        <knife4j-openapi3.version>4.5.0</knife4j-openapi3.version>
+        <!-- Database -->
+        <redisson.version>4.4.0</redisson.version>
+        <dynamic-datasource.version>4.5.0</dynamic-datasource.version>
+        <!-- Message queue -->
+        <rocketmq-spring.version>2.3.5</rocketmq-spring.version>
+        <!-- Service reliability -->
+        <lock4j.version>2.2.7</lock4j.version>
+        <!-- Monitoring -->
+        <skywalking.version>9.6.0</skywalking.version>
+        <spring-boot-admin.version>4.0.4</spring-boot-admin.version>
+        <opentracing.version>0.33.0</opentracing.version>
+        <!-- Testing -->
+        <podam.version>8.0.2.RELEASE</podam.version>
+        <jedis-mock.version>1.1.12</jedis-mock.version>
+        <!-- Business Process Management (BPM) workflow -->
+        <flowable.version>8.0.0</flowable.version>
+
+        <!--
+            Utility classes
+        -->
+        <!-- Dữ liệu và Code (Core Utilities) -->
+        <anji-plus-captcha.version>1.4.0</anji-plus-captcha.version>
+        <jsoup.version>1.22.2</jsoup.version>
+        <lombok.version>1.18.46</lombok.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <hutool-5.version>5.8.44</hutool-5.version>
+        <fastexcel.version>1.3.0</fastexcel.version>
+        <fastjson2.version>2.0.62</fastjson2.version>
+        <!-- Hệ thống và Hạ tầng (System & Infrastructure) -->
+        <velocity.version>2.4.1</velocity.version>
+        <guava.version>33.6.0-jre</guava.version>
+        <transmittable-thread-local.version>2.14.5</transmittable-thread-local.version>
+        <commons-lang3.version>3.20.0</commons-lang3.version>
+        <bizlog-sdk.version>3.0.6</bizlog-sdk.version>
+        <!-- Kết nối và Giao thức (Network & Communication) -->
+        <commons-net.version>3.13.0</commons-net.version>
+        <jsch.version>2.28.2</jsch.version>
+        <tika-core.version>3.3.0</tika-core.version>
+        <ip2region.version>3.3.7</ip2region.version>
+        <netty.version>4.2.13.Final</netty.version>
+        <mqtt.version>1.2.5</mqtt.version>
+        <vertx.version>5.0.12</vertx.version>
+        <okhttp.version>5.3.2</okhttp.version>
+        <httpclient5.version>5.6.1</httpclient5.version>
+        <httpcore5.version>5.4.2</httpcore5.version>
+        <!-- IoT và Công nghiệp (IoT Specific) -->
+        <californium.version>3.14.0</californium.version>
+        <j2mod.version>3.3.0</j2mod.version>
+
+        <!--
+            Third-party cloud services
+        -->
+        <!-- Lưu trữ và hạ tầng (Cloud Infrastructure) -->
+        <awssdk.version>2.44.0</awssdk.version>
+        <!-- Đăng nhập mạng xã hội (Social Login) -->
+        <justauth.version>1.16.7</justauth.version>
+        <justauth-starter.version>1.4.0</justauth-starter.version>
+        <!-- Báo cáo và phân tích dữ liệu (Reporting & BI) -->
+        <jimureport.version>2.3.2</jimureport.version>
+        <jimubi.version>2.3.2</jimubi.version>
+        <!-- wechat + alipay -->
+        <weixin-java.version>4.8.2-20260513.101153</weixin-java.version>
+        <alipay-sdk-java.version>4.40.783.ALL</alipay-sdk-java.version>
+        <!-- Logging -->
+        <logback.version>1.2.13</logback.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- Centralized dependency management -->
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-bom</artifactId>
+                <version>${netty.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -27,70 +106,465 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
-            <!-- ==================== External: NOT in Spring Boot BOM ==================== -->
             <dependency>
-                <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt-api</artifactId>
-                <version>${jjwt.version}</version>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>${spring.framework.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt-impl</artifactId>
-                <version>${jjwt.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.jsonwebtoken</groupId>
-                <artifactId>jjwt-jackson</artifactId>
-                <version>${jjwt.version}</version>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-bom</artifactId>
+                <version>${spring.security.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
 
+            <!--
+                Business modules
+            -->
+            <dependency>
+                <groupId>io.github.mouzt</groupId>
+                <artifactId>bizlog-sdk</artifactId>
+                <version>${bizlog-sdk.version}</version>
+                <exclusions>
+                    <exclusion> <!-- Exclude Spring Boot dependencies used by the project -->
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-starter</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!-- soar-spring-boot-starter-biz-tenant -->
+            <!-- soar-spring-boot-starter-biz-data-permission -->
+            <!-- soar-spring-boot-starter-biz-ip -->
+
+            <!--
+                Spring core
+            -->
+            <dependency>
+                <!-- Used to generate documentation for custom Spring @ConfigurationProperties classes -->
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-configuration-processor</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+
+            <!--
+                Web
+            -->
+            <!-- soar-spring-boot-starter-web -->
+            <!-- soar-spring-boot-starter-security -->
+            <!-- soar-spring-boot-starter-websocket -->
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
+
+            <!--
+                Database
+            -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-jpa</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.redisson</groupId>
+                <artifactId>redisson-spring-boot-starter</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+            <!-- soar-spring-boot-starter-redis -->
+
+            <!--
+                Scheduled tasks
+            -->
+            <!-- soar-spring-boot-starter-job -->
+
+            <!--
+                Message queue
+            -->
+            <!-- soar-spring-boot-starter-mq -->
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-spring-boot-starter</artifactId>
+                <version>${rocketmq-spring.version}</version>
+            </dependency>
+
+            <!--
+                Service reliability
+            -->
+            <!-- soar-spring-boot-starter-protection -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>lock4j-redisson-spring-boot-starter</artifactId>
+                <version>${lock4j.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>redisson-spring-boot-starter</artifactId>
+                        <groupId>org.redisson</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!--
+                Monitoring
+            -->
+            <!-- soar-spring-boot-starter-monitor -->
+            <dependency>
+                <groupId>org.apache.skywalking</groupId>
+                <artifactId>apm-toolkit-trace</artifactId>
+                <version>${skywalking.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.skywalking</groupId>
+                <artifactId>apm-toolkit-logback-1.x</artifactId>
+                <version>${skywalking.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.skywalking</groupId>
+                <artifactId>apm-toolkit-opentracing</artifactId>
+                <version>${skywalking.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.opentracing</groupId>
+                <artifactId>opentracing-api</artifactId>
+                <version>${opentracing.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.opentracing</groupId>
+                <artifactId>opentracing-util</artifactId>
+                <version>${opentracing.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.opentracing</groupId>
+                <artifactId>opentracing-noop</artifactId>
+                <version>${opentracing.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-starter-server</artifactId>
+                <version>${spring-boot-admin.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>de.codecentric</groupId>
+                        <artifactId>spring-boot-admin-server-cloud</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-starter-client</artifactId>
+                <version>${spring-boot-admin.version}</version>
+            </dependency>
+
+            <!--
+                Testing
+            -->
+            <!-- soar-spring-boot-starter-test -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-test</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <!-- For unit testing, use an embedded Redis database -->
+                <groupId>com.github.fppt</groupId>
+                <artifactId>jedis-mock</artifactId>
+                <version>${jedis-mock.version}</version>
+            </dependency>
+            <dependency>
+                <!-- Unit tests: randomly generate POJO classes -->
+                <groupId>uk.co.jemos.podam</groupId>
+                <artifactId>podam</artifactId>
+                <version>${podam.version}</version>
+            </dependency>
+
+            <!-- Workflow -->
+            <dependency>
+                <groupId>org.flowable</groupId>
+                <artifactId>flowable-spring-boot-starter-process</artifactId>
+                <version>${flowable.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flowable</groupId>
+                <artifactId>flowable-spring-boot-starter-actuator</artifactId>
+                <version>${flowable.version}</version>
+            </dependency>
+
+            <!--
+                Utility classes
+            -->
+            <!-- soar-common -->
+            <!-- soar-spring-boot-starter-excel -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.mapstruct</groupId>
                 <artifactId>mapstruct</artifactId>
                 <version>${mapstruct.version}</version>
             </dependency>
 
-            <!-- ==================== Internal Modules ==================== -->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool-5.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.idev.excel</groupId>
+                <artifactId>fastexcel</artifactId>
+                <version>${fastexcel.version}</version>
+            </dependency>
+
+            <dependency>
+                <!-- File type detection -->
+                <groupId>org.apache.tika</groupId>
+                <artifactId>tika-core</artifactId>
+                <version>${tika-core.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity-engine-core</artifactId>
+                <version>${velocity.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.fastjson2</groupId>
+                <artifactId>fastjson2</artifactId>
+                <version>${fastjson2.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <dependency>
+                <!-- Fix ThreadLocal value propagation between parent and child threads -->
+                <groupId>com.alibaba</groupId>
+                <artifactId>transmittable-thread-local</artifactId>
+                <version>${transmittable-thread-local.version}</version>
+            </dependency>
+
+            <dependency>
+                <!-- FTP connection fix -->
+                <groupId>commons-net</groupId>
+                <artifactId>commons-net</artifactId>
+                <version>${commons-net.version}</version>
+            </dependency>
+            <dependency>
+                <!-- SFTP connection fix -->
+                <groupId>com.github.mwiede</groupId>
+                <artifactId>jsch</artifactId>
+                <version>${jsch.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang3.version}</version>
+            </dependency>
+
+            <dependency>
+                <!-- CAPTCHA, typically used for login -->
+                <groupId>com.anji-plus</groupId>
+                <artifactId>captcha-spring-boot-starter</artifactId>
+                <version>${anji-plus-captcha.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.lionsoul</groupId>
+                <artifactId>ip2region</artifactId>
+                <version>${ip2region.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
+            </dependency>
+
+            <!-- Vert.x -->
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-core</artifactId>
+                <version>${vertx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-web</artifactId>
+                <version>${vertx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-mqtt</artifactId>
+                <version>${vertx.version}</version>
+            </dependency>
+
+            <!-- MQTT -->
+            <dependency>
+                <groupId>org.eclipse.paho</groupId>
+                <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+                <version>${mqtt.version}</version>
+            </dependency>
+
+            <!-- OkHttp -->
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp</artifactId>
+                <version>${okhttp.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>mockwebserver</artifactId>
+                <version>${okhttp.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- CoAP - Eclipse Californium -->
+            <dependency>
+                <groupId>org.eclipse.californium</groupId>
+                <artifactId>californium-core</artifactId>
+                <version>${californium.version}</version>
+            </dependency>
+
+            <!-- Modbus Protocol -->
+            <dependency>
+                <groupId>com.ghgande</groupId>
+                <artifactId>j2mod</artifactId>
+                <version>${j2mod.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents.client5</groupId>
+                <artifactId>httpclient5</artifactId>
+                <version>${httpclient5.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.core5</groupId>
+                <artifactId>httpcore5</artifactId>
+                <version>${httpcore5.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents.core5</groupId>
+                <artifactId>httpcore5-h2</artifactId>
+                <version>${httpcore5.version}</version>
+            </dependency>
+
             <!--
-                Khai báo ở đây để module khác depend mà không cần version.
-                Thêm dần khi tạo module mới.
+                Third-party cloud services
             -->
             <dependency>
-                <groupId>com.hdl.boot</groupId>
-                <artifactId>soar-common</artifactId>
-                <version>${revision}</version>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>s3</artifactId>
+                <version>${awssdk.version}</version>
             </dependency>
 
-            <!-- Uncomment khi tạo module tương ứng:
             <dependency>
-                <groupId>com.hdl.boot</groupId>
-                <artifactId>soar-spring-boot-starter-web</artifactId>
-                <version>${revision}</version>
+                <!-- Social login (e.g., WeChat, WeCom, etc.) -->
+                <groupId>me.zhyd.oauth</groupId>
+                <artifactId>JustAuth</artifactId>
+                <version>${justauth.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.hdl.boot</groupId>
-                <artifactId>soar-spring-boot-starter-redis</artifactId>
-                <version>${revision}</version>
+                <groupId>com.xkcoding.justauth</groupId>
+                <artifactId>justauth-spring-boot-starter</artifactId>
+                <version>${justauth-starter.version}</version>
+                <exclusions>
+                    <!-- Excluded to avoid conflicts with hutool-all dependency -->
+                    <exclusion>
+                        <groupId>cn.hutool</groupId>
+                        <artifactId>hutool-core</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
-            <dependency>
-                <groupId>com.hdl.boot</groupId>
-                <artifactId>soar-spring-boot-starter-security</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.hdl.boot</groupId>
-                <artifactId>soar-module-system-api</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.hdl.boot</groupId>
-                <artifactId>soar-module-system-biz</artifactId>
-                <version>${revision}</version>
-            </dependency>
-            -->
 
+            <!-- Payments and WeChat ecosystem -->
+            <dependency>
+                <groupId>com.alipay.sdk</groupId>
+                <artifactId>alipay-sdk-java</artifactId>
+                <version>${alipay-sdk-java.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.bouncycastle</groupId>
+                        <artifactId>bcprov-jdk15on</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.binarywang</groupId>
+                <artifactId>weixin-java-pay</artifactId>
+                <version>${weixin-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.binarywang</groupId>
+                <artifactId>wx-java-mp-spring-boot-starter</artifactId>
+                <version>${weixin-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.binarywang</groupId>
+                <artifactId>wx-java-miniapp-spring-boot-starter</artifactId>
+                <version>${weixin-java.version}</version>
+            </dependency>
+
+            <!-- Jimu reporting -->
+            <dependency>
+                <groupId>org.jeecgframework.jimureport</groupId>
+                <artifactId>jimureport-spring-boot-starter</artifactId>
+                <version>${jimureport.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jeecgframework.jimureport</groupId>
+                <artifactId>jimubi-spring-boot-starter</artifactId>
+                <version>${jimubi.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.github.jsqlparser</groupId>
+                        <artifactId>jsqlparser</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>cn.hutool</groupId>
+                        <artifactId>hutool-core</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>${flatten-maven-plugin.version}</version>
+                <configuration>
+                    <flattenMode>bom</flattenMode>
+                    <updatePomFile>true</updatePomFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                    </execution>
+                    <execution>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
