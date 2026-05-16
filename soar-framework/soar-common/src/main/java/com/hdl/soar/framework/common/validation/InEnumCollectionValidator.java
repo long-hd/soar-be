@@ -1,0 +1,45 @@
+package com.hdl.soar.framework.common.validation;
+
+import cn.hutool.core.collection.CollUtil;
+import com.hdl.soar.framework.common.core.ArrayValuable;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+public class InEnumCollectionValidator implements ConstraintValidator<InEnum, Collection<?>> {
+
+    private List<?> values;
+
+    @Override
+    public void initialize(InEnum annotation) {
+        ArrayValuable<?>[] values = annotation.value().getEnumConstants();
+        if (values.length == 0) {
+            this.values = Collections.emptyList();
+        } else {
+            this.values = Arrays.asList(values[0].array());
+        }
+    }
+
+    @Override
+    public boolean isValid(Collection<?> list, ConstraintValidatorContext context) {
+       if (list == null || list.isEmpty()) {
+           return true;
+       }
+
+        // Validation passed
+       if(CollUtil.containsAll(values, list)) {
+           return true;
+       }
+
+        // Validation failed, custom error message
+        context.disableDefaultConstraintViolation();
+       context.buildConstraintViolationWithTemplate(context.getDefaultConstraintMessageTemplate()
+                       .replaceAll("\\{value}", CollUtil.join(list, ","))) // Re-add error message
+               .addConstraintViolation();
+       return false;
+    }
+}

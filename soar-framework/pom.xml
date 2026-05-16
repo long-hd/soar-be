@@ -12,12 +12,12 @@
 
     <artifactId>soar-framework</artifactId>
     <name>${project.artifactId}</name>
-    <url>https://github.com/long-hd/soar-fe.git</url>
+    <url>https://github.com/long-hd/soar-be.git</url>
 
     <modules>
         <module>soar-common</module>
-        <!-- Thêm dần khi tạo:
         <module>soar-spring-boot-starter-web</module>
+        <!-- Thêm dần khi tạo:
         <module>soar-spring-boot-starter-redis</module>
         <module>soar-spring-boot-starter-security</module>
         -->

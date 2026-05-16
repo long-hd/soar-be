@@ -11,7 +11,7 @@
 
     <name>${project.artifactId}</name>
     <description>Base BOM file, used to manage dependency versions for the entire project.</description>
-    <url>https://github.com/long-hd/soar-fe.git</url>
+    <url>https://github.com/long-hd/soar-be.git</url>
 
     <properties>
         <revision>0.0.1-SNAPSHOT</revision>
@@ -158,7 +158,7 @@
             <dependency>
                 <groupId>com.github.xiaoymin</groupId>
                 <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>
-                <version>${knife4j.version}</version>
+                <version>${knife4j-openapi3.version}</version>
             </dependency>
 
             <!--
@@ -295,8 +295,14 @@
             <!--
                 Utility classes
             -->
-            <!-- soar-common -->
+            <dependency>
+                <groupId>com.hdl.boot</groupId>
+                <artifactId>soar-common</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
             <!-- soar-spring-boot-starter-excel -->
+
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
@@ -310,7 +316,7 @@
 
             <dependency>
                 <groupId>cn.hutool</groupId>
-                <artifactId>hutool-all</artifactId>
+                <artifactId>hutool-core</artifactId>
                 <version>${hutool-5.version}</version>
             </dependency>
 
