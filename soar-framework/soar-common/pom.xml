@@ -19,6 +19,13 @@
     <dependencies>
         <!-- Spring core -->
         <dependency>
+            <!-- Generates documentation for custom Spring @ConfigurationProperties classes -->
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
         </dependency>

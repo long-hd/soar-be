@@ -29,6 +29,11 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <!-- Required dependencies for Spring Boot configuration -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
 </project>
