@@ -2,6 +2,7 @@ package com.hdl.soar.framework.common.util.servlet;
 
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.servlet.JakartaServletUtil;
 import com.hdl.soar.framework.common.util.json.JsonUtils;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
@@ -88,7 +89,7 @@ public class ServletUtils {
         if (request == null) {
             return null;
         }
-        return ServletUtil.getClientIP(request);
+        return JakartaServletUtil.getClientIP(request);
     }
 
     public static boolean isJsonRequest(ServletRequest request) {
@@ -98,7 +99,7 @@ public class ServletUtils {
     public static String getBody(HttpServletRequest request) {
         // Only read for JSON requests, because only CacheRequestBodyFilter caches the body and supports repeated reading
         if (isJsonRequest(request)) {
-            return ServletUtil.getBody(request);
+            return JakartaServletUtil.getBody(request);
         }
         return null;
     }
@@ -106,20 +107,20 @@ public class ServletUtils {
     public static byte[] getBodyBytes(HttpServletRequest request) {
         // Only read for JSON requests, because only CacheRequestBodyFilter caches the body and supports repeated reading
         if (isJsonRequest(request)) {
-            return ServletUtil.getBodyBytes(request);
+            return JakartaServletUtil.getBodyBytes(request);
         }
         return null;
     }
 
     public static String getClientIP(HttpServletRequest request) {
-        return ServletUtil.getClientIP(request);
+        return JakartaServletUtil.getClientIP(request);
     }
 
     public static Map<String, String> getParamMap(HttpServletRequest request) {
-        return ServletUtil.getParamMap(request);
+        return JakartaServletUtil.getParamMap(request);
     }
 
     public static Map<String, String> getHeaderMap(HttpServletRequest request) {
-        return ServletUtil.getHeaderMap(request);
+        return JakartaServletUtil.getHeaderMap(request);
     }
 }
