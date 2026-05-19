@@ -59,6 +59,7 @@ public class GlobalExceptionHandler {
      */
     public static final Set<String> IGNORE_ERROR_MESSAGES = SetUtils.asSet("Invalid refresh token");
 
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     private final String applicationName;
 
     private final ApiErrorLogCommonApi apiErrorLogApi;

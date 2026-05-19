@@ -15,6 +15,7 @@
     <modules>
         <module>soar-dependencies</module>
         <module>soar-framework</module>
+        <module>soar-module-infra</module>
     </modules>
 
     <properties>
