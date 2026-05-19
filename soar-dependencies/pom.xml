@@ -168,6 +168,17 @@
                 <version>${redisson.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>dynamic-datasource-spring-boot-starter</artifactId> <!-- Multiple Data Sources -->
+                <version>${dynamic-datasource.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.hdl.boot</groupId>
+                <artifactId>soar-spring-boot-starter-jpa</artifactId>
+                <version>${revision}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.hdl.boot</groupId>
                 <artifactId>soar-spring-boot-starter-redis</artifactId>
                 <version>${revision}</version>

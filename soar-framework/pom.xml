@@ -19,6 +19,7 @@
         <module>soar-spring-boot-starter-web</module>
         <module>soar-spring-boot-starter-redis</module>
         <module>soar-spring-boot-starter-security</module>
+        <module>soar-spring-boot-starter-jpa</module>
     </modules>
 
     <description>
