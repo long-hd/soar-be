@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.hdl.boot</groupId>
+        <artifactId>soar-framework</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <packaging>jar</packaging>
+
+    <artifactId>soar-spring-boot-starter-security</artifactId>
+    <name>${project.artifactId}</name>
+    <description>
+        1. security: user authentication and authorization, implementing "who can do what"
+        2. operatelog: operation logs, recording "who did what to what at what time"
+    </description>
+    <url>https://github.com/long-hd/soar-be.git</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.hdl.boot</groupId>
+            <artifactId>soar-common</artifactId>
+        </dependency>
+
+        <!-- Spring -->
+
+        <!-- Web -->
+        <dependency>
+            <groupId>com.hdl.boot</groupId>
+            <artifactId>soar-spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- dependencies required for Spring Boot configuration -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+    </dependencies>
+</project>

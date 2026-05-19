@@ -1,5 +1,6 @@
 package com.hdl.soar.framework.web.core.util;
 
+import cn.hutool.core.util.NumberUtil;
 import com.hdl.soar.framework.common.enums.UserTypeEnum;
 import com.hdl.soar.framework.common.pojo.CommonResult;
 import com.hdl.soar.framework.web.config.WebProperties;
@@ -19,10 +20,25 @@ public class WebFrameworkUtils {
 
     private static final String REQUEST_ATTRIBUTE_COMMON_RESULT = "common_result";
 
+    public static final String HEADER_TENANT_ID = "tenant-id";
+
     private static WebProperties properties;
 
     public WebFrameworkUtils(WebProperties webProperties) {
         WebFrameworkUtils.properties = webProperties;
+    }
+
+
+    /**
+     * Get the tenant ID from the HTTP request header.
+     * This is placed in WebFrameworkUtils because other framework components also need to use the tenant ID.
+     *
+     * @param request the HTTP request
+     * @return the tenant ID
+     */
+    public static Long getTenantId(HttpServletRequest request) {
+        String tenantId = request.getHeader(HEADER_TENANT_ID);
+        return NumberUtil.isNumber(tenantId) ? Long.valueOf(tenantId) : null;
     }
 
     /**
@@ -37,6 +53,10 @@ public class WebFrameworkUtils {
             return null;
         }
         return (Long) request.getAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_ID);
+    }
+
+    public static void setLoginUserId(ServletRequest request, Long userId) {
+        request.setAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_ID, userId);
     }
 
     /**
@@ -63,6 +83,16 @@ public class WebFrameworkUtils {
             return UserTypeEnum.MEMBER.getValue();
         }
         return null;
+    }
+
+    /**
+     * Set the user type.
+     *
+     * @param request the HTTP request
+     * @param userType the user type
+     */
+    public static void setLoginUserType(ServletRequest request, Integer userType) {
+        request.setAttribute(REQUEST_ATTRIBUTE_LOGIN_USER_TYPE, userType);
     }
 
     public static Integer getLoginUserType() {

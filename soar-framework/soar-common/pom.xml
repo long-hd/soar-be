@@ -80,6 +80,11 @@
             <scope>provided</scope> <!-- Set as provided, mainly because it is used by PageParam -->
         </dependency>
 
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>transmittable-thread-local</artifactId>
+        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

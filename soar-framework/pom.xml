@@ -18,9 +18,7 @@
         <module>soar-common</module>
         <module>soar-spring-boot-starter-web</module>
         <module>soar-spring-boot-starter-redis</module>
-        <!-- Thêm dần khi tạo:
         <module>soar-spring-boot-starter-security</module>
-        -->
     </modules>
 
     <description>
