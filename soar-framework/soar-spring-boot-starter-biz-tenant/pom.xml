@@ -3,41 +3,29 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
-        <artifactId>soar</artifactId>
         <groupId>com.hdl.boot</groupId>
+        <artifactId>soar-framework</artifactId>
         <version>${revision}</version>
     </parent>
+
+    <artifactId>soar-spring-boot-starter-biz-tenant</artifactId>
     <packaging>jar</packaging>
 
-    <artifactId>soar-module-system</artifactId>
     <name>${project.artifactId}</name>
+    <description>Multi-tenant</description>
     <url>https://github.com/long-hd/soar-be.git</url>
-
-    <description>
-        Under the `system` module, we place common business functionalities to support the core business logic at the upper layer.
-        For example: users, departments, permissions, data dictionaries, and so on.
-    </description>
 
     <dependencies>
         <dependency>
             <groupId>com.hdl.boot</groupId>
-            <artifactId>soar-module-infra</artifactId>
-            <version>${revision}</version>
+            <artifactId>soar-common</artifactId>
         </dependency>
 
-        <!-- Spring -->
-
-        <!-- Business components -->
         <dependency>
             <groupId>com.hdl.boot</groupId>
-            <artifactId>soar-spring-boot-starter-security</artifactId>
+            <artifactId>soar-spring-boot-starter-jpa</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.hdl.boot</groupId>
-            <artifactId>soar-spring-boot-starter-biz-tenant</artifactId>
-        </dependency>
-
     </dependencies>
+
 </project>
