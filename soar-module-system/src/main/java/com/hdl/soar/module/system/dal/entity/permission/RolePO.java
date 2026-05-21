@@ -4,7 +4,7 @@ import com.hdl.soar.framework.jpa.core.converter.JsonLongSetConverter;
 import com.hdl.soar.module.system.enums.permission.DataScopeEnum;
 import com.hdl.soar.module.system.enums.permission.RoleTypeEnum;
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
-import com.hdl.soar.framework.tenant.core.db.TenantBaseEntity;
+import com.hdl.soar.framework.tenant.core.db.TenantBasePO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,7 +20,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoleEntity extends TenantBaseEntity {
+public class RolePO extends TenantBasePO {
 
     /**
      * Role ID

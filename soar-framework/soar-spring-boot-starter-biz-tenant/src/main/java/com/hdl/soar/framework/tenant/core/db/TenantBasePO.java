@@ -1,6 +1,6 @@
 package com.hdl.soar.framework.tenant.core.db;
 
-import com.hdl.soar.framework.jpa.core.entity.BaseEntity;
+import com.hdl.soar.framework.jpa.core.entity.BasePO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class TenantBaseEntity extends BaseEntity {
+public class TenantBasePO extends BasePO {
 
     /**
      * Tenant ID

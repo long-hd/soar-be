@@ -14,7 +14,7 @@ import java.io.Serializable;
 import java.time.Instant;
 
 /**
- * Base entity with audit fields and soft delete.
+ * Base entity with audit fields and soft delete. PO stand for persistent object
  *
  * <p>All entities should extend this class to inherit:
  * <ul>
@@ -28,7 +28,7 @@ import java.time.Instant;
 @Data
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseEntity implements Serializable {
+public abstract class BasePO implements Serializable {
 
     /**
      * Creator user ID, auto-filled on insert by {@link AuditingEntityListener}.

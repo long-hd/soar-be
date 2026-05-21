@@ -1,6 +1,6 @@
 package com.hdl.soar.module.system.dal.entity.dept;
 
-import com.hdl.soar.framework.tenant.core.db.TenantBaseEntity;
+import com.hdl.soar.framework.tenant.core.db.TenantBasePO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,7 +16,7 @@ import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostEntity extends TenantBaseEntity {
+public class PostPO extends TenantBasePO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

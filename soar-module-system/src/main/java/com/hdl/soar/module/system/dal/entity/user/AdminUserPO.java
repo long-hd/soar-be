@@ -1,7 +1,7 @@
 package com.hdl.soar.module.system.dal.entity.user;
 
 import com.hdl.soar.framework.jpa.core.converter.JsonLongSetConverter;
-import com.hdl.soar.framework.tenant.core.db.TenantBaseEntity;
+import com.hdl.soar.framework.tenant.core.db.TenantBasePO;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,7 +24,7 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdminUserEntity extends TenantBaseEntity {
+public class AdminUserPO extends TenantBasePO {
 
     /**
      * User ID

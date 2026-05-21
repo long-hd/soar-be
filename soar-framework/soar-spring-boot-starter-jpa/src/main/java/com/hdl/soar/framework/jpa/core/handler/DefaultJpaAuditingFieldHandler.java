@@ -1,5 +1,6 @@
 package com.hdl.soar.framework.jpa.core.handler;
 
+import com.hdl.soar.framework.jpa.core.entity.BasePO;
 import com.hdl.soar.framework.security.core.util.SecurityFrameworkUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
@@ -13,7 +14,7 @@ import java.util.Optional;
  *
  * <p>Enables auto-population of {@code @CreatedBy}, {@code @LastModifiedBy},
  * {@code @CreatedDate}, {@code @LastModifiedDate} on entities extending {@link
- * com.hdl.soar.framework.jpa.core.entity.BaseEntity}
+ * BasePO}
  *
  * <p>{@code @CreatedDate} and {@code @LastModifiedDate} are handled automatically
  * by Spring Data JPA (reads from system clock).

@@ -1,10 +1,10 @@
 package com.hdl.soar.module.system.dal.entity.dept;
 
-import com.hdl.soar.framework.tenant.core.db.TenantBaseEntity;
+import com.hdl.soar.framework.tenant.core.db.TenantBasePO;
 import jakarta.persistence.*;
 import lombok.*;
 
-import com.hdl.soar.module.system.dal.entity.user.AdminUserEntity;
+import com.hdl.soar.module.system.dal.entity.user.AdminUserPO;
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 
 /**
@@ -17,7 +17,7 @@ import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeptEntity extends TenantBaseEntity {
+public class DeptPO extends TenantBasePO {
 
     public static final Long PARENT_ID_ROOT = 0L;
 
@@ -50,7 +50,7 @@ public class DeptEntity extends TenantBaseEntity {
     /**
      * Department leader
      * <p>
-     * References {@link AdminUserEntity#getId()}</p>
+     * References {@link AdminUserPO#getId()}</p>
      */
     @Column(name = "leader_user_id")
     private Long leaderUserId;

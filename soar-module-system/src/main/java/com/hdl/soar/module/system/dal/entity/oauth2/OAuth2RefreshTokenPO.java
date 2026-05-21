@@ -3,40 +3,28 @@ package com.hdl.soar.module.system.dal.entity.oauth2;
 import com.hdl.soar.framework.common.enums.UserTypeEnum;
 
 import com.hdl.soar.framework.jpa.core.converter.JsonStringListConverter;
-import com.hdl.soar.framework.jpa.core.converter.JsonStringMapConverter;
-import com.hdl.soar.framework.tenant.core.db.TenantBaseEntity;
+import com.hdl.soar.framework.tenant.core.db.TenantBasePO;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
 /**
- * OAuth2 access token entity.
- * <p>
- *  The following fields are currently not used and are not supported at the moment:
- *  user_name, authentication (user information)
- * </p>
+ * OAuth2 refresh token
  */
 @Entity
-@Table(name = "system_oauth2_access_token")
+@Table(name = "system_oauth2_refresh_token")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OAuth2AccessTokenEntity extends TenantBaseEntity {
+public class OAuth2RefreshTokenPO extends TenantBasePO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    /**
-     * Access token
-     */
-    @Column(name = "access_token", nullable = false)
-    private String accessToken;
 
     /**
      * Refresh token
@@ -59,25 +47,15 @@ public class OAuth2AccessTokenEntity extends TenantBaseEntity {
     private Integer userType;
 
     /**
-     * User information
-     * <p>
-     *     Additional user info stored as JSON object (e.g., {@code {"nickname":"admin","deptId":"1"}}).
-     * </p>
-     */
-    @Convert(converter = JsonStringMapConverter.class)
-    @Column(name = "user_info")
-    private Map<String, String> userInfo;
-
-    /**
      * Client ID
-     *
-     * References {@link OAuth2ClientEntity#getClientId()}
+     * <p>
+     * References {@link OAuth2ClientPO#getClientId()}</p>
      */
     @Column(name = "client_id", nullable = false)
     private String clientId;
 
     /**
-     * Scopes
+     * Authorization scopes
      */
     @Convert(converter = JsonStringListConverter.class)
     @Column(name = "scopes")

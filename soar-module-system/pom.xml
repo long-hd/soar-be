@@ -39,5 +39,15 @@
             <artifactId>soar-spring-boot-starter-biz-tenant</artifactId>
         </dependency>
 
+        <!-- DB -->
+        <dependency>
+            <groupId>com.hdl.boot</groupId>
+            <artifactId>soar-spring-boot-starter-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.hdl.boot</groupId>
+            <artifactId>soar-spring-boot-starter-redis</artifactId>
+        </dependency>
+
     </dependencies>
 </project>

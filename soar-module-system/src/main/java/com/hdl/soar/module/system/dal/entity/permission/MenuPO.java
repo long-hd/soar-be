@@ -1,6 +1,6 @@
 package com.hdl.soar.module.system.dal.entity.permission;
 
-import com.hdl.soar.framework.jpa.core.entity.BaseEntity;
+import com.hdl.soar.framework.jpa.core.entity.BasePO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,7 +17,7 @@ import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MenuEntity extends BaseEntity {
+public class MenuPO extends BasePO {
 
     /**
      * Menu ID - Root node

@@ -4,7 +4,7 @@ import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 import com.hdl.soar.module.system.enums.oauth2.OAuth2GrantTypeEnum;
 
 import com.hdl.soar.framework.jpa.core.converter.JsonStringListConverter;
-import com.hdl.soar.framework.jpa.core.entity.BaseEntity;
+import com.hdl.soar.framework.jpa.core.entity.BasePO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,7 +21,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 // @TenantIgnore
-public class OAuth2ClientEntity extends BaseEntity {
+public class OAuth2ClientPO extends BasePO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
