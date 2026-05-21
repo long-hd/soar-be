@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -28,6 +29,7 @@ import java.time.Instant;
 @Data
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
+@SQLRestriction("deleted = false")
 public abstract class BasePO implements Serializable {
 
     /**
@@ -69,6 +71,6 @@ public abstract class BasePO implements Serializable {
      * or global Hibernate filter in starter-jpa config.
      */
     @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
+    private Boolean deleted = Boolean.FALSE;
 
 }

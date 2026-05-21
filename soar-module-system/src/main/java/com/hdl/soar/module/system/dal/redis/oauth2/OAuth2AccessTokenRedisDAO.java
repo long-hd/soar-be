@@ -2,6 +2,7 @@ package com.hdl.soar.module.system.dal.redis.oauth2;
 
 import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.date.TemporalUtil;
+import com.hdl.soar.framework.common.util.collection.CollectionUtils;
 import com.hdl.soar.framework.common.util.json.JsonUtils;
 import com.hdl.soar.module.system.dal.entity.oauth2.OAuth2AccessTokenPO;
 
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Repository;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static com.hdl.soar.module.system.dal.redis.RedisKeyConstants.OAUTH2_ACCESS_TOKEN;
@@ -43,6 +46,15 @@ public class OAuth2AccessTokenRedisDAO {
         }
     }
 
+    public void delete(String accessToken) {
+        String redisKey = formatKey(accessToken);
+        stringRedisTemplate.delete(redisKey);
+    }
+
+    public void deleteList(Collection<String> accessTokens) {
+        List<String> redisKeys = CollectionUtils.convertList(accessTokens, OAuth2AccessTokenRedisDAO::formatKey);
+        stringRedisTemplate.delete(redisKeys);
+    }
 
     private static String formatKey(String accessToken) {
         return String.format(OAUTH2_ACCESS_TOKEN, accessToken);

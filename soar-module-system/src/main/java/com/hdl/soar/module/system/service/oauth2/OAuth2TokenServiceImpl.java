@@ -1,21 +1,16 @@
 package com.hdl.soar.module.system.service.oauth2;
 
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
-import cn.hutool.core.util.StrUtil;
-import com.hdl.soar.framework.common.enums.UserTypeEnum;
+import com.hdl.soar.framework.common.exception.enums.GlobalErrorCodeConstants;
 import com.hdl.soar.framework.common.pojo.PageResult;
-import com.hdl.soar.framework.security.core.LoginUser;
 import com.hdl.soar.framework.tenant.core.context.TenantContextHolder;
 import com.hdl.soar.module.system.controller.admin.oauth2.dto.token.OAuth2AccessTokenPageReqDTO;
 import com.hdl.soar.module.system.dal.entity.oauth2.OAuth2AccessTokenPO;
 import com.hdl.soar.module.system.dal.entity.oauth2.OAuth2ClientPO;
 import com.hdl.soar.module.system.dal.entity.oauth2.OAuth2RefreshTokenPO;
-import com.hdl.soar.module.system.dal.entity.user.AdminUserPO;
 import com.hdl.soar.module.system.dal.postgres.oauth2.OAuth2AccessTokenRepository;
 import com.hdl.soar.module.system.dal.postgres.oauth2.OAuth2RefreshTokenRepository;
 import com.hdl.soar.module.system.dal.redis.oauth2.OAuth2AccessTokenRedisDAO;
-import com.hdl.soar.module.system.service.user.AdminUserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,9 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static com.hdl.soar.framework.common.exception.util.ServiceExceptionUtil.exception0;
 
 /**
  * Implementation of OAuth2.0 Token Service.
@@ -56,12 +52,34 @@ public class OAuth2TokenServiceImpl implements OAuth2TokenService {
 
     @Override
     public OAuth2AccessTokenPO checkAccessToken(String accessToken) {
-        return null;
+        OAuth2AccessTokenPO accessTokenPO = getAccessToken(accessToken);
+        if (accessTokenPO == null) {
+            throw exception0(GlobalErrorCodeConstants.UNAUTHORIZED.getCode(), "Access token does not exist");
+        }
+        if (Instant.now().isAfter(accessTokenPO.getExpiresTime())) {
+            throw exception0(GlobalErrorCodeConstants.UNAUTHORIZED.getCode(), "Access token has expired");
+        }
+        return accessTokenPO;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public OAuth2AccessTokenPO removeAccessToken(String accessToken) {
-        return null;
+        // Delete access token
+        OAuth2AccessTokenPO accessTokenPO = oAuth2AccessTokenRepository.findByAccessToken(accessToken)
+                .orElse(null);
+        if (accessTokenPO == null) {
+            return null;
+        }
+        oAuth2AccessTokenRepository.deleteById(accessTokenPO.getId());
+        oauth2AccessTokenRedisDAO.delete(accessToken);
+
+        // Delete refresh token
+        oAuth2RefreshTokenRepository.findByRefreshToken(accessTokenPO.getRefreshToken())
+                .ifPresent(oAuth2RefreshTokenRepository::delete);
+        oauth2AccessTokenRedisDAO.delete(accessTokenPO.getRefreshToken());
+
+        return accessTokenPO;
     }
 
     @Override

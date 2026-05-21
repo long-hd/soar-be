@@ -2,7 +2,7 @@ package com.hdl.soar.framework.jpa.core.handler;
 
 import com.hdl.soar.framework.jpa.core.entity.BasePO;
 import com.hdl.soar.framework.security.core.util.SecurityFrameworkUtils;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
@@ -22,7 +22,7 @@ import java.util.Optional;
  * <p>{@code @CreatedBy} and {@code @LastModifiedBy} require this {@link AuditorAware}
  * bean to resolve the current user ID from Spring Security context.
  */
-@Configuration
+@AutoConfiguration
 @EnableJpaAuditing
 public class DefaultJpaAuditingFieldHandler implements AuditorAware<Long> {
 
