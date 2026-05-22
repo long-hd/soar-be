@@ -27,10 +27,9 @@ public interface OAuth2TokenService {
      * @param userType the user type
      * @param clientId the client ID
      * @param scopes the authorization scopes
-     * @param userInfo additional user information
      * @return the access token information
      */
-    OAuth2AccessTokenPO createAccessToken(Long userId, Integer userType, String clientId, List<String> scopes, Map<String, String> userInfo);
+    OAuth2AccessTokenPO createAccessToken(Long userId, Integer userType, String clientId, List<String> scopes);
 
     /**
      * Validates an access token.

@@ -29,6 +29,7 @@ import java.io.IOException;
  */
 @RequiredArgsConstructor
 public class TokenAuthenticationFilter extends OncePerRequestFilter {
+
     private final SecurityProperties securityProperties;
 
     private final GlobalExceptionHandler globalExceptionHandler;
@@ -37,6 +38,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
 
     @Override
+    @SuppressWarnings("NullableProblems")
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         String token = SecurityFrameworkUtils.obtainAuthorization(request,
@@ -97,7 +99,7 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
     /**
      * Mock a login user for daily development and debugging.
      *
-     * Note: This feature must be disabled in production environments!!!
+     * <p>Note: This feature must be disabled in production environments!!!
      *
      * @param request the HTTP request
      * @param token the mock token, format: {@link SecurityProperties#getMockSecret()} + user ID

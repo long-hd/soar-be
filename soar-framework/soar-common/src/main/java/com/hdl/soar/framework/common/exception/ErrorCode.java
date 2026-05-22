@@ -6,10 +6,10 @@ import com.hdl.soar.framework.common.exception.enums.GlobalErrorCodeConstants;
 
 /**
  * Error code object.
- *
+ * <p>
  * Global error codes occupy [0, 999], see {@link GlobalErrorCodeConstants}.
  * Business exception error codes occupy [1,000,000,000, +∞), see {@link ServiceErrorCodeRange}.
- *
+ * <p>
  * TODO: The error code is designed as an object to support future i18n internationalization.
  */
 @Data
