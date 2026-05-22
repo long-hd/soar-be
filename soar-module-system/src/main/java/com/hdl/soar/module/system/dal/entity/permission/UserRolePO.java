@@ -1,6 +1,7 @@
 package com.hdl.soar.module.system.dal.entity.permission;
 
 import com.hdl.soar.framework.jpa.core.entity.BasePO;
+import com.hdl.soar.framework.tenant.core.db.TenantBasePO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,7 +15,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRolePO extends BasePO {
+public class UserRolePO extends TenantBasePO {
 
     /**
      * Auto-increment primary key

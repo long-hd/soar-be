@@ -1,6 +1,6 @@
 package com.hdl.soar.module.system.dal.entity.dept;
 
-import com.hdl.soar.framework.jpa.core.entity.BasePO;
+import com.hdl.soar.framework.tenant.core.db.TenantBasePO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,7 +13,7 @@ import com.hdl.soar.module.system.dal.entity.user.AdminUserPO;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserPostPO extends BasePO {
+public class UserPostPO extends TenantBasePO {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

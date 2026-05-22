@@ -1,0 +1,85 @@
+package com.hdl.soar.module.system.dal.entity.logger;
+
+import com.hdl.soar.framework.tenant.core.db.TenantBasePO;
+import jakarta.persistence.*;
+import lombok.*;
+
+import com.hdl.soar.module.system.enums.logger.LoginResultEnum;
+import com.hdl.soar.module.system.enums.logger.LoginLogTypeEnum;
+import com.hdl.soar.framework.common.enums.UserTypeEnum;
+
+/**
+ * Login Log Table
+ * <p>
+ * Note: Includes both login and logout actions
+ */
+@Entity
+@Table(name = "system_login_log")
+@Data
+@Builder
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+@AllArgsConstructor
+public class LoginLogPO extends TenantBasePO {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    /**
+     * Log type
+     * <p>
+     * Enum {@link LoginLogTypeEnum}
+     */
+    @Column(name = "log_type", nullable = false)
+    private Integer logType;
+
+    /**
+     * Trace ID
+     */
+    @Column(name = "trace_id")
+    private String traceId;
+
+    /**
+     * User ID
+     */
+    @Column(name = "user_id")
+    private Long userId;
+
+    /**
+     * User type
+     * <p>
+     * Enum {@link UserTypeEnum}
+     */
+    @Column(name = "user_type")
+    private Integer userType;
+
+    /**
+     * Username
+     * <p>
+     * Redundant field, because the account may change
+     */
+    @Column(name = "username")
+    private String username;
+
+    /**
+     * Login result
+     * <p>
+     * Enum {@link LoginResultEnum}
+     */
+    @Column(name = "result")
+    private Integer result;
+
+    /**
+     * User IP
+     */
+    @Column(name = "user_ip")
+    private String userIp;
+
+    /**
+     * Browser User-Agent
+     */
+    @Column(name = "user_agent")
+    private String userAgent;
+
+}
