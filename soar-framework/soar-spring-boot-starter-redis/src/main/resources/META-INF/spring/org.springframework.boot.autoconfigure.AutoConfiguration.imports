@@ -1,0 +1,2 @@
+com.hdl.soar.framework.redis.config.SoarCacheAutoConfiguration
+com.hdl.soar.framework.redis.config.SoarRedisAutoConfiguration

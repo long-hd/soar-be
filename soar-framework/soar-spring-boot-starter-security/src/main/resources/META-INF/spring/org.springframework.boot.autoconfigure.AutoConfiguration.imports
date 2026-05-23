@@ -1,0 +1,2 @@
+com.hdl.soar.framework.security.config.SoarSecurityAutoConfiguration
+com.hdl.soar.framework.security.config.SoarWebSecurityConfigurerAdapter

@@ -1,0 +1,2 @@
+com.hdl.soar.framework.jpa.config.SoarJpaAutoConfiguration
+com.hdl.soar.framework.jpa.core.handler.DefaultJpaAuditingFieldHandler

@@ -1,0 +1,2 @@
+com.hdl.soar.framework.tenant.config.SoarTenantAutoConfiguration
+com.hdl.soar.framework.tenant.config.SoarTenantPropertiesAutoConfiguration
