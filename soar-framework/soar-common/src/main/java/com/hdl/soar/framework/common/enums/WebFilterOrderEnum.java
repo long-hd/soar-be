@@ -2,7 +2,7 @@ package com.hdl.soar.framework.common.enums;
 
 /**
  * Enum for Web Filter order, ensuring filters execute in the expected sequence.
- *
+ * <p>
  * Since every starter module may use this utility class,
  * it is placed under the common module's enums package.
  */

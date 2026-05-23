@@ -22,10 +22,10 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 
 /**
  * Spring Security auto-configuration class, mainly used for configuring related components.
- *
+ * <p>
  * Note: it cannot be used together with {@link SoarWebSecurityConfigurerAdapter}
  * because it will cause initialization errors.
- *
+ * <p>
  * See: https://stackoverflow.com/questions/53847050/spring-boot-delegatebuilder-cannot-be-null-on-autowiring-authenticationmanager
  */
 @AutoConfiguration
