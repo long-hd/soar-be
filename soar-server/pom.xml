@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>soar</artifactId>
+        <groupId>com.hdl.boot</groupId>
+        <version>${revision}</version>
+    </parent>
+    <packaging>jar</packaging>
+
+    <artifactId>soar-server</artifactId>
+    <name>${project.artifactId}</name>
+    <url>https://github.com/long-hd/soar-be.git</url>
+
+    <description>
+        The main project of the backend server integrates the required soar-module-xxx dependencies,
+        thereby providing RESTful APIs for frontend projects such as soar-ui-admin and soar-ui-user.
+
+        Essentially, it is just an empty shell (container)!
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.hdl.boot</groupId>
+            <artifactId>soar-module-system</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hdl.boot</groupId>
+            <artifactId>soar-module-infra</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <!-- Set the name of the generated JAR package -->
+        <finalName>${project.artifactId}</finalName>
+
+        <plugins>
+            <!-- Packaging -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.version}</version>
+
+                <executions>
+                    <execution>
+                        <goals>
+                            <!-- Package all imported JARs into the final JAR -->
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

@@ -26,10 +26,10 @@ public interface AdminAuthService {
     /**
      * Username-password login
      *
-     * @param reqVO login request
+     * @param reqDTO login request
      * @return login result
      */
-    AuthLoginRespDTO login(@Valid AuthLoginReqDTO reqVO);
+    AuthLoginRespDTO login(@Valid AuthLoginReqDTO reqDTO);
 
     /**
      * Logout based on token
@@ -50,16 +50,16 @@ public interface AdminAuthService {
     /**
      * User registration
      *
-     * @param createReqVO registration request
+     * @param createReqDTO registration request
      * @return registration result
      */
-    AuthLoginRespDTO register(AuthRegisterReqDTO createReqVO);
+    AuthLoginRespDTO register(AuthRegisterReqDTO createReqDTO);
 
     /**
      * Reset password
      *
-     * @param reqVO verification code info
+     * @param reqDTO verification code info
      */
-    void resetPassword(AuthResetPasswordReqDTO reqVO);
+    void resetPassword(AuthResetPasswordReqDTO reqDTO);
 
 }

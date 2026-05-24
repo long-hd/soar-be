@@ -22,10 +22,10 @@ public interface LoginLogService {
     /**
      * Get paginated login logs
      *
-     * @param pageReqVO pagination conditions
+     * @param pageReqDTO pagination conditions
      * @return paginated login logs
      */
-    PageResult<LoginLogPO> getLoginLogPage(LoginLogPageReqDTO pageReqVO);
+    PageResult<LoginLogPO> getLoginLogPage(LoginLogPageReqDTO pageReqDTO);
 
     /**
      * Create a login log

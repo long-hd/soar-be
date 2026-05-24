@@ -17,6 +17,7 @@
         <module>soar-framework</module>
         <module>soar-module-infra</module>
         <module>soar-module-system</module>
+        <module>soar-server</module>
     </modules>
 
     <properties>

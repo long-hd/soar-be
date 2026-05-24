@@ -96,6 +96,7 @@ public class OAuth2ClientPO extends BasePO {
     /**
      * Scopes
      */
+    @Convert(converter = JsonStringListConverter.class)
     @Column(name = "scopes")
     private List<String> scopes;
 

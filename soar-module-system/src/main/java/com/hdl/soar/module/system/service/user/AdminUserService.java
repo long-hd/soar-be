@@ -8,6 +8,14 @@ import com.hdl.soar.module.system.dal.entity.user.AdminUserPO;
 public interface AdminUserService {
 
     /**
+     * Update the user's last login information
+     *
+     * @param id user ID
+     * @param loginIp login IP address
+     */
+    void updateUserLogin(Long id, String loginIp);
+
+    /**
      * Retrieve user by username
      *
      * @param username the username

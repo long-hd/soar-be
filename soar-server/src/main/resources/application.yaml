@@ -1,0 +1,84 @@
+spring:
+  application:
+    name: soar-server
+
+  profiles:
+    active: local
+
+  # Servlet
+  servlet:
+    multipart:
+      max-file-size: 16MB
+      max-request-size: 32MB
+
+  # Jackson — ISO-8601 for Instant/LocalDate (e.g. "2024-01-15T10:30:00Z")
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+      fail-on-empty-beans: false
+    deserialization:
+      fail-on-unknown-properties: false
+
+  # Cache
+  cache:
+    type: REDIS
+    redis:
+      time-to-live: 1h
+
+  # JPA / Hibernate
+  jpa:
+    open-in-view: false # EntityManager created at @Transactional boundary, not request start
+    hibernate:
+      ddl-auto: validate # Flyway manages schema; Hibernate only validates entity ↔ table mapping
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+  # Flyway
+  flyway:
+    locations: classpath:db/migration
+    clean-disabled: true
+    table: sys_flyway_histories
+
+  # Disable Spring Data Redis repositories (not used, using RedisTemplate directly)
+  data:
+    redis:
+      repositories:
+        enabled: false
+
+# Server
+server:
+  servlet:
+    encoding:
+      enabled: true
+      charset: UTF-8
+      force: true
+
+# SpringDoc / Knife4j
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui
+  default-flat-param-object: true
+
+knife4j:
+  enable: true
+  setting:
+    language: en
+
+--- # Soar custom properties
+
+soar:
+  web:
+    admin-ui:
+      url: http://localhost:5173
+  security:
+    mock-enable: false
+  tenant:
+    enable: true
+  captcha:
+    enable: true

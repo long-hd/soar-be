@@ -94,7 +94,7 @@ public class SoarWebSecurityConfigurerAdapter {
 
     /**
      * URL security configuration.
-     *
+     * <p>
      * anyRequest          | matches all request paths
      * access              | allows access when the Spring EL expression evaluates to true
      * anonymous           | allows access for anonymous users

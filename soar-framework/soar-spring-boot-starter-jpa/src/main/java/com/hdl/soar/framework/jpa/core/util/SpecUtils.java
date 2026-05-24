@@ -1,5 +1,6 @@
 package com.hdl.soar.framework.jpa.core.util;
 
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
@@ -33,6 +34,14 @@ public class SpecUtils {
                                                                CriteriaBuilder cb, Root<T> root,
                                                                SingularAttribute<? super T, V> field, V value) {
         predicates.add(cb.greaterThan(root.get(field), value));
+    }
+
+    public static <T, V extends Comparable<? super V>> void betweenIfPresent(List<Predicate> predicates,
+                                               CriteriaBuilder cb, Root<T> root,
+                                               SingularAttribute<? super T, V> field, V[] value) {
+        if(ArrayUtil.isNotEmpty(value) && value.length > 1) {
+            predicates.add(cb.between(root.get(field), value[0], value[1]));
+        }
     }
 
 }

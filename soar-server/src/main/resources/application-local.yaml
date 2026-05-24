@@ -1,0 +1,33 @@
+server:
+  port: 48080
+
+--- # Database — PostgreSQL with HikariCP
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/soar
+    username: postgres
+    password: 123456789
+    driver-class-name: org.postgresql.Driver
+
+  # Redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+
+--- # Logging
+
+logging:
+  level:
+    com.hdl.soar: debug
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace # Show SQL parameter values (Hibernate 6)
+    org.flywaydb: info
+
+--- # Dev overrides
+
+soar:
+  security:
+    mock-enable: true

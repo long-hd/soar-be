@@ -1,19 +1,21 @@
 package com.hdl.soar.module.system.service.auth;
 
+import com.anji.captcha.model.vo.CaptchaVO;
+import com.google.common.annotations.VisibleForTesting;
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 import com.hdl.soar.framework.common.enums.UserTypeEnum;
 import com.hdl.soar.framework.common.util.monitor.TracerUtils;
 import com.hdl.soar.framework.common.util.servlet.ServletUtils;
+import com.hdl.soar.framework.common.util.validation.ValidationUtils;
 import com.hdl.soar.module.system.api.logger.dto.LoginLogCreateReqDTO;
-import com.hdl.soar.module.system.controller.admin.auth.dto.AuthLoginReqDTO;
-import com.hdl.soar.module.system.controller.admin.auth.dto.AuthLoginRespDTO;
-import com.hdl.soar.module.system.controller.admin.auth.dto.AuthRegisterReqDTO;
-import com.hdl.soar.module.system.controller.admin.auth.dto.AuthResetPasswordReqDTO;
+import com.hdl.soar.module.system.controller.admin.auth.dto.*;
 import com.hdl.soar.module.system.dal.entity.user.AdminUserPO;
 import com.hdl.soar.module.system.enums.logger.LoginLogTypeEnum;
 import com.hdl.soar.module.system.enums.logger.LoginResultEnum;
 import com.hdl.soar.module.system.service.logger.LoginLogService;
 import com.hdl.soar.module.system.service.user.AdminUserService;
+import com.anji.captcha.model.common.ResponseModel;
+import jakarta.validation.Validator;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -46,6 +48,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 
     AdminUserService userService;
     LoginLogService loginLogService;
+    Validator validator;
 
     @Override
     public AdminUserPO authenticate(String username, String password) {
@@ -69,8 +72,29 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     }
 
     @Override
-    public AuthLoginRespDTO login(AuthLoginReqDTO reqVO) {
-        return null;
+    // @DataPermission(enable = false)
+    public AuthLoginRespDTO login(AuthLoginReqDTO reqDTO) {
+        // Validate captcha
+        validateCaptcha(reqDTO);
+
+        // Use username and password to log in
+        AdminUserPO user = authenticate(reqDTO.getUsername(), reqDTO.getPassword());
+
+        // If socialType is not null, it means a social user needs to be bound
+        if (reqDTO.getSocialType() != null) {
+            socialUserService.bindSocialUser(new SocialUserBindReqDTO(
+                    user.getId(),
+                    getUserType().getValue(),
+                    reqDTO.getSocialType(),
+                    reqDTO.getSocialCode(),
+                    reqDTO.getSocialState()));
+        }
+
+        // Create token and record login log
+        return createTokenAfterLoginSuccess(
+                user.getId(),
+                reqDTO.getUsername(),
+                LoginLogTypeEnum.LOGIN_USERNAME);
     }
 
     @Override
@@ -84,13 +108,41 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     }
 
     @Override
-    public AuthLoginRespDTO register(AuthRegisterReqDTO createReqVO) {
+    public AuthLoginRespDTO register(AuthRegisterReqDTO createReqDTO) {
         return null;
     }
 
     @Override
-    public void resetPassword(AuthResetPasswordReqDTO reqVO) {
+    public void resetPassword(AuthResetPasswordReqDTO reqDTO) {
 
+    }
+
+    @VisibleForTesting
+    void validateCaptcha(AuthLoginReqDTO reqDTO) {
+        ResponseModel response = doValidateCaptcha(reqDTO);
+
+        // Validate captcha
+        if (!response.isSuccess()) {
+            // Create login failure log (incorrect captcha)
+            createLoginLog(
+                    null,
+                    reqDTO.getUsername(),
+                    LoginLogTypeEnum.LOGIN_USERNAME,
+                    LoginResultEnum.CAPTCHA_CODE_ERROR);
+
+            throw exception(AUTH_LOGIN_CAPTCHA_CODE_ERROR, response.getRepMsg());
+        }
+    }
+
+    private ResponseModel doValidateCaptcha(CaptchaVerificationReqDTO reqDTO) {
+        // If captcha is disabled, skip validation
+        if (!captchaEnable) {
+            return ResponseModel.success();
+        }
+        ValidationUtils.validate(validator, reqDTO, CaptchaVerificationReqDTO.CodeEnableGroup.class);
+        CaptchaVO captchaVO = new CaptchaVO();
+        captchaVO.setCaptchaVerification(reqDTO.getCaptchaVerification());
+        return captchaService.verification(captchaVO);
     }
 
     private void createLoginLog(Long userId, String username,

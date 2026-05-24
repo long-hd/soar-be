@@ -13,6 +13,7 @@ import jakarta.annotation.Resource;
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,6 +31,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
  */
 @AutoConfiguration
 @AutoConfigureOrder(-1)
+@EnableConfigurationProperties(SecurityProperties.class)
 public class SoarSecurityAutoConfiguration {
 
     @Resource

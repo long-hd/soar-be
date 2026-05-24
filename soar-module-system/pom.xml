@@ -54,5 +54,11 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Third-party cloud service related -->
+        <dependency>
+            <groupId>com.anji-plus</groupId>
+            <artifactId>captcha-spring-boot-starter</artifactId> <!-- Captcha, generally used for login -->
+        </dependency>
+
     </dependencies>
 </project>
