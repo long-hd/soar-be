@@ -34,5 +34,5 @@ public interface OAuth2AccessTokenRepository extends JpaRepository<OAuth2AccessT
             LIMIT :deleteLimit
         )
         """, nativeQuery = true)
-    int deleteByExpiresTimeLt(@Param("expireTime") Instant expiresTime, Integer deleteLimit);
+    int deleteByExpiresTimeLt(@Param("expiresTime") Instant expiresTime, @Param("deleteLimit") Integer deleteLimit);
 }

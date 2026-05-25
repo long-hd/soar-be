@@ -11,6 +11,6 @@ import org.springframework.stereotype.Service;
 public class ApiErrorLogApiImpl implements ApiErrorLogCommonApi {
     @Override
     public void createApiErrorLog(ApiErrorLogCreateReqDTO createDTO) {
-        throw new UnsupportedOperationException("Not implements yet.");
+
     }
 }

@@ -70,7 +70,7 @@ knife4j:
   setting:
     language: en
 
---- # Soar custom properties
+# Soar custom properties
 
 soar:
   web:
@@ -78,7 +78,17 @@ soar:
       url: http://localhost:5173
   security:
     mock-enable: false
+    permit-all-urls:
+      - /admin-api/system/auth/login
+      - /admin-api/system/auth/logout
+      - /admin-api/system/auth/refresh-token
+      - /swagger-ui/**
+      - /swagger-ui.html
+      - /v3/api-docs/**
+      - /doc.html
+      - /webjars/**
+      - /error
   tenant:
     enable: true
   captcha:
-    enable: true
+    enable: false

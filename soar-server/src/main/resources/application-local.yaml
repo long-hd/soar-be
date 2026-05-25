@@ -1,7 +1,7 @@
 server:
   port: 48080
 
---- # Database — PostgreSQL with HikariCP
+# Database — PostgreSQL with HikariCP
 
 spring:
   datasource:
@@ -17,7 +17,7 @@ spring:
       port: 6379
       database: 0
 
---- # Logging
+# Logging
 
 logging:
   level:
@@ -26,7 +26,7 @@ logging:
     org.hibernate.orm.jdbc.bind: trace # Show SQL parameter values (Hibernate 6)
     org.flywaydb: info
 
---- # Dev overrides
+# Dev overrides
 
 soar:
   security:

@@ -24,7 +24,7 @@ import java.util.Map;
  * @author hdl
  */
 public class SoarTenantIdentifierResolver
-        implements CurrentTenantIdentifierResolver<String>, HibernatePropertiesCustomizer {
+        implements CurrentTenantIdentifierResolver<Long>, HibernatePropertiesCustomizer {
 
     /**
      * Fallback tenant ID used during bootstrap (EntityManagerFactory creation),
@@ -34,12 +34,12 @@ public class SoarTenantIdentifierResolver
      * this value is never actually used for filtering — Hibernate skips
      * the tenant predicate entirely.
      */
-    private static final String DEFAULT_TENANT_ID = "0";
+    private static final Long DEFAULT_TENANT_ID = 0L;
 
     @Override
-    public String resolveCurrentTenantIdentifier() {
+    public Long resolveCurrentTenantIdentifier() {
         Long tenantId = TenantContextHolder.getTenantId();
-        return tenantId != null ? tenantId.toString() : DEFAULT_TENANT_ID;
+        return tenantId != null ? tenantId : DEFAULT_TENANT_ID;
     }
 
     /**
@@ -68,7 +68,7 @@ public class SoarTenantIdentifierResolver
      * predicate — the query returns data across all tenants.
      */
     @Override
-    public boolean isRoot(String tenantId) {
+    public boolean isRoot(Long tenantId) {
         return TenantContextHolder.isIgnore();
     }
 

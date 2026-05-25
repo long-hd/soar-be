@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.hdl.soar.framework.common.util.json.JsonUtils;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -78,6 +79,6 @@ public abstract class AbstractJsonConverter<T> implements AttributeConverter<T, 
 
     @Override
     public T convertToEntityAttribute(String dbData) {
-        return dbData == null ? null : JsonUtils.parseObject(dbData, typeReference);
+        return dbData == null || dbData.isEmpty() ? null : JsonUtils.parseObject(dbData, typeReference);
     }
 }

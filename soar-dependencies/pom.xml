@@ -19,7 +19,7 @@
         <!-- spring dependency management -->
         <spring.boot.version>3.5.14</spring.boot.version>
         <!-- Web-doc-->
-        <knife4j-openapi3.version>4.5.0</knife4j-openapi3.version>
+        <knife4j-openapi3-jakarta.version>4.5.0</knife4j-openapi3-jakarta.version>
         <!-- Database -->
         <redisson.version>4.4.0</redisson.version>
         <dynamic-datasource.version>4.5.0</dynamic-datasource.version>
@@ -155,8 +155,8 @@
             <!-- soar-spring-boot-starter-websocket -->
             <dependency>
                 <groupId>com.github.xiaoymin</groupId>
-                <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>
-                <version>${knife4j-openapi3.version}</version>
+                <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+                <version>${knife4j-openapi3-jakarta.version}</version>
             </dependency>
 
             <!--

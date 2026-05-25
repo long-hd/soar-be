@@ -8,6 +8,7 @@ import com.hdl.soar.framework.web.config.WebProperties;
 import jakarta.annotation.Resource;
 import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.DispatcherType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.context.ApplicationContext;
@@ -31,10 +32,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.util.pattern.PathPattern;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.hdl.soar.framework.common.util.collection.CollectionUtils.convertList;
 
@@ -75,8 +73,8 @@ public class SoarWebSecurityConfigurerAdapter {
      *
      * @see #filterChain(HttpSecurity)
      */
-    @Resource
-    private List<AuthorizeRequestsCustomizer> authorizeRequestsCustomizers;
+    @Autowired(required = false)
+    private List<AuthorizeRequestsCustomizer> authorizeRequestsCustomizers = Collections.emptyList();
 
     @Resource
     private ApplicationContext applicationContext;
