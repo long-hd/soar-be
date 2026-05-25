@@ -16,6 +16,6 @@ public interface PermissionApi extends PermissionCommonApi {
      * @param roleIds collection of role IDs
      * @return collection of user IDs
      */
-    Set<Long> getUserRoleIdListByRoleIds(Collection<Long> roleIds);
+    Set<Long> getUserIdsByRoleIds(Collection<Long> roleIds);
 
 }

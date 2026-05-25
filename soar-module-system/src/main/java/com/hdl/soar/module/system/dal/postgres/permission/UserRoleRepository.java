@@ -4,6 +4,13 @@ import com.hdl.soar.module.system.dal.entity.permission.UserRolePO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
 @Repository
 public interface UserRoleRepository extends JpaRepository<UserRolePO, Long> {
+    Set<Long> findAllByUserId(Long userId);
+
+    List<UserRolePO> findAllByRoleIdIn(Collection<Long> roleIds);
 }

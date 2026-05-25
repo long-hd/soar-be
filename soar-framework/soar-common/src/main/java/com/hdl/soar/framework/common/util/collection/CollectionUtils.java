@@ -88,4 +88,12 @@ public class CollectionUtils {
 
     // =============================== Map Util
 
+    // =============================== Collection Util
+    public static <T> void addIfNotNull(Collection<T> coll, T item) {
+        if (item == null) {
+            return;
+        }
+        coll.add(item);
+    }
+
 }

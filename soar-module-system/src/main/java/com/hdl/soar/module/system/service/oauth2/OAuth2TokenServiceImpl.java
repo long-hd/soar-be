@@ -251,8 +251,7 @@ public class OAuth2TokenServiceImpl implements OAuth2TokenService {
                 .refreshToken(refreshTokenPO.getRefreshToken())
                 .expiresTime(Instant.now().plusSeconds(clientPO.getAccessTokenValiditySeconds()))
                 .build();
-        // Prefer to obtain tenant ID from refreshToken first, to avoid tenantId being null
-        // when ThreadLocal is polluted
+        // Prefer to obtain tenant ID from refreshToken first, to avoid tenantId being null when ThreadLocal is polluted
         // Related issue: https://t.zsxq.com/JIi5G
         Long tenantId = refreshTokenPO.getTenantId();
         if (tenantId == null) {

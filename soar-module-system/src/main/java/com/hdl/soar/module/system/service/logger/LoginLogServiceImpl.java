@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import com.hdl.soar.module.system.dal.entity.logger.LoginLogPO_;
 
 import java.util.ArrayList;
 import java.util.List;

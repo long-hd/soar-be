@@ -1,18 +1,26 @@
 package com.hdl.soar.module.system.service.auth;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.anji.captcha.model.vo.CaptchaVO;
+import com.anji.captcha.service.CaptchaService;
 import com.google.common.annotations.VisibleForTesting;
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 import com.hdl.soar.framework.common.enums.UserTypeEnum;
 import com.hdl.soar.framework.common.util.monitor.TracerUtils;
+import com.hdl.soar.framework.common.util.object.BeanUtils;
 import com.hdl.soar.framework.common.util.servlet.ServletUtils;
 import com.hdl.soar.framework.common.util.validation.ValidationUtils;
 import com.hdl.soar.module.system.api.logger.dto.LoginLogCreateReqDTO;
+import com.hdl.soar.module.system.api.social.dto.SocialUserBindReqDTO;
 import com.hdl.soar.module.system.controller.admin.auth.dto.*;
+import com.hdl.soar.module.system.dal.entity.oauth2.OAuth2AccessTokenPO;
 import com.hdl.soar.module.system.dal.entity.user.AdminUserPO;
 import com.hdl.soar.module.system.enums.logger.LoginLogTypeEnum;
 import com.hdl.soar.module.system.enums.logger.LoginResultEnum;
+import com.hdl.soar.module.system.enums.oauth2.OAuth2ClientConstants;
 import com.hdl.soar.module.system.service.logger.LoginLogService;
+import com.hdl.soar.module.system.service.oauth2.OAuth2TokenService;
+import com.hdl.soar.module.system.service.social.SocialUserService;
 import com.hdl.soar.module.system.service.user.AdminUserService;
 import com.anji.captcha.model.common.ResponseModel;
 import jakarta.validation.Validator;
@@ -48,6 +56,9 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 
     AdminUserService userService;
     LoginLogService loginLogService;
+    SocialUserService socialUserService;
+    OAuth2TokenService oauth2TokenService;
+//    CaptchaService captchaService;
     Validator validator;
 
     @Override
@@ -99,12 +110,45 @@ public class AdminAuthServiceImpl implements AdminAuthService {
 
     @Override
     public void logout(String token, Integer logType) {
+        // Remove access token
+        OAuth2AccessTokenPO accessTokenPO = oauth2TokenService.removeAccessToken(token);
+        if (accessTokenPO == null) {
+            return;
+        }
 
+        // If removal is successful, record logout log
+        createLogoutLog(accessTokenPO.getUserId(), accessTokenPO.getUserType(), logType);
+    }
+
+    private void createLogoutLog(Long userId, Integer userType, Integer logType) {
+        LoginLogCreateReqDTO reqDTO = new LoginLogCreateReqDTO();
+        reqDTO.setLogType(logType);
+        reqDTO.setTraceId(TracerUtils.getTraceId());
+        reqDTO.setUserId(userId);
+        reqDTO.setUserType(userType);
+        if (ObjectUtil.equal(getUserType().getValue(), userType)) {
+            reqDTO.setUsername(getUsername(userId));
+        } else {
+            reqDTO.setUsername("Member");
+        }
+        reqDTO.setUserAgent(ServletUtils.getUserAgent());
+        reqDTO.setUserIp(ServletUtils.getClientIP());
+        reqDTO.setResult(LoginResultEnum.SUCCESS.getResult());
+        loginLogService.createLoginLog(reqDTO);
+    }
+
+    private String getUsername(Long userId) {
+        if (userId == null) {
+            return null;
+        }
+        AdminUserPO user = userService.getUser(userId);
+        return user != null ? user.getUsername() : null;
     }
 
     @Override
     public AuthLoginRespDTO refreshToken(String refreshToken) {
-        return null;
+        OAuth2AccessTokenPO accessTokenDO = oauth2TokenService.refreshAccessToken(refreshToken, OAuth2ClientConstants.CLIENT_ID_DEFAULT);
+        return BeanUtils.toBean(accessTokenDO, AuthLoginRespDTO.class);
     }
 
     @Override
@@ -142,7 +186,24 @@ public class AdminAuthServiceImpl implements AdminAuthService {
         ValidationUtils.validate(validator, reqDTO, CaptchaVerificationReqDTO.CodeEnableGroup.class);
         CaptchaVO captchaVO = new CaptchaVO();
         captchaVO.setCaptchaVerification(reqDTO.getCaptchaVerification());
-        return captchaService.verification(captchaVO);
+//        return captchaService.verification(captchaVO);
+        return null;
+    }
+
+    private AuthLoginRespDTO createTokenAfterLoginSuccess(Long userId, String username, LoginLogTypeEnum logType) {
+        // Insert login log
+        createLoginLog(userId, username, logType, LoginResultEnum.SUCCESS);
+
+        // Create access token
+        OAuth2AccessTokenPO accessTokenDO = oauth2TokenService.createAccessToken(
+                userId,
+                getUserType().getValue(),
+                OAuth2ClientConstants.CLIENT_ID_DEFAULT,
+                null
+        );
+
+        // Build response result
+        return BeanUtils.toBean(accessTokenDO, AuthLoginRespDTO.class);
     }
 
     private void createLoginLog(Long userId, String username,

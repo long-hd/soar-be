@@ -9,6 +9,7 @@ import com.hdl.soar.module.system.controller.admin.auth.dto.AuthLoginRespDTO;
 import com.hdl.soar.module.system.enums.logger.LoginLogTypeEnum;
 import com.hdl.soar.module.system.service.auth.AdminAuthService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,10 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.hdl.soar.framework.common.pojo.CommonResult.success;
 
@@ -55,6 +53,14 @@ public class AuthController {
             authService.logout(token, LoginLogTypeEnum.LOGOUT_SELF.getType());
         }
         return success(true);
+    }
+
+    @PostMapping("/refresh-token")
+    @PermitAll
+    @Operation(summary = "Refresh token")
+    @Parameter(name = "refreshToken", description = "Refresh token", required = true)
+    public CommonResult<AuthLoginRespDTO> refreshToken(@RequestParam("refreshToken") String refreshToken) {
+        return success(authService.refreshToken(refreshToken));
     }
 
 }
