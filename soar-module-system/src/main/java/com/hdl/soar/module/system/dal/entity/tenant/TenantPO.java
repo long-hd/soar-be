@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import com.hdl.soar.module.system.dal.entity.user.AdminUserPO;
+import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
 @Table(name = "system_tenant")
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class TenantPO extends BasePO {

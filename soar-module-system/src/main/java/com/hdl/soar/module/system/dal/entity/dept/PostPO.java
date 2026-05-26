@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
+import lombok.experimental.SuperBuilder;
 
 /**
  * Position entity
@@ -13,7 +14,7 @@ import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 @Table(name = "system_post")
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostPO extends TenantBasePO {

@@ -1,9 +1,9 @@
 package com.hdl.soar.module.system.dal.entity.permission;
 
-import com.hdl.soar.framework.jpa.core.entity.BasePO;
 import com.hdl.soar.framework.tenant.core.db.TenantBasePO;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 /**
  * User-Role association
@@ -12,7 +12,7 @@ import lombok.*;
 @Table(name = "system_user_role")
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRolePO extends TenantBasePO {

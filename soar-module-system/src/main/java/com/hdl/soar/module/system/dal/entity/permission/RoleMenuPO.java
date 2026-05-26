@@ -3,6 +3,7 @@ package com.hdl.soar.module.system.dal.entity.permission;
 import com.hdl.soar.framework.tenant.core.db.TenantBasePO;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 /**
  * Role-Menu association
@@ -11,7 +12,7 @@ import lombok.*;
 @Table(name = "system_role_menu")
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoleMenuPO extends TenantBasePO {

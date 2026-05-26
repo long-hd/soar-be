@@ -4,6 +4,7 @@ import com.hdl.soar.framework.jpa.core.converter.JsonLongSetConverter;
 import com.hdl.soar.framework.tenant.core.db.TenantBasePO;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 import com.hdl.soar.module.system.enums.common.SexEnum;
@@ -21,7 +22,7 @@ import java.util.Set;
 @Table(name = "system_users")
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdminUserPO extends TenantBasePO {
@@ -102,8 +103,8 @@ public class AdminUserPO extends TenantBasePO {
 
     /**
      * Account status
-     * <p></p>
-     * See {@link CommonStatusEnum}
+     *
+     * <p>See {@link CommonStatusEnum}
      */
     @Column(name = "status", nullable = false)
     private Integer status;

@@ -7,6 +7,7 @@ import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 import com.hdl.soar.framework.tenant.core.db.TenantBasePO;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
@@ -17,7 +18,7 @@ import java.util.Set;
 @Table(name = "system_role")
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class RolePO extends TenantBasePO {

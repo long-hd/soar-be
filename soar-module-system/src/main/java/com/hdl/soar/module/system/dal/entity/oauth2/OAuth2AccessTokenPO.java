@@ -7,6 +7,7 @@ import com.hdl.soar.framework.jpa.core.converter.JsonStringMapConverter;
 import com.hdl.soar.framework.tenant.core.db.TenantBasePO;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 import java.util.List;
@@ -23,7 +24,7 @@ import java.util.Map;
 @Table(name = "system_oauth2_access_token")
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class OAuth2AccessTokenPO extends TenantBasePO {
@@ -60,9 +61,8 @@ public class OAuth2AccessTokenPO extends TenantBasePO {
 
     /**
      * User information
-     * <p>
-     *     Additional user info stored as JSON object (e.g., {@code {"nickname":"admin","deptId":"1"}}).
-     * </p>
+     *
+     * <p>Additional user info stored as JSON object (e.g., {@code {"nickname":"admin","deptId":"1"}}).
      */
     @Convert(converter = JsonStringMapConverter.class)
     @Column(name = "user_info")

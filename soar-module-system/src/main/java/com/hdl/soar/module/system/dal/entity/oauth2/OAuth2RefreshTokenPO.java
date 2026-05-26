@@ -6,6 +6,7 @@ import com.hdl.soar.framework.jpa.core.converter.JsonStringListConverter;
 import com.hdl.soar.framework.tenant.core.db.TenantBasePO;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
 import java.util.List;
@@ -17,7 +18,7 @@ import java.util.List;
 @Table(name = "system_oauth2_refresh_token")
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class OAuth2RefreshTokenPO extends TenantBasePO {

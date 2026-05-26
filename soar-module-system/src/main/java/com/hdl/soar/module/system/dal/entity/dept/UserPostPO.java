@@ -5,12 +5,13 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import com.hdl.soar.module.system.dal.entity.user.AdminUserPO;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "system_user_post")
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserPostPO extends TenantBasePO {

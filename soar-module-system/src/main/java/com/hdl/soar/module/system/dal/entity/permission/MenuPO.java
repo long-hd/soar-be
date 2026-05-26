@@ -6,6 +6,7 @@ import lombok.*;
 
 import com.hdl.soar.module.system.enums.permission.MenuTypeEnum;
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
+import lombok.experimental.SuperBuilder;
 
 /**
  * Menu Entity
@@ -14,7 +15,7 @@ import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 @Table(name = "system_menu")
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class MenuPO extends BasePO {

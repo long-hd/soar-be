@@ -7,6 +7,7 @@ import lombok.*;
 import com.hdl.soar.module.system.enums.logger.LoginResultEnum;
 import com.hdl.soar.module.system.enums.logger.LoginLogTypeEnum;
 import com.hdl.soar.framework.common.enums.UserTypeEnum;
+import lombok.experimental.SuperBuilder;
 
 /**
  * Login Log Table
@@ -16,7 +17,7 @@ import com.hdl.soar.framework.common.enums.UserTypeEnum;
 @Entity
 @Table(name = "system_login_log")
 @Data
-@Builder
+@SuperBuilder(toBuilder = true)
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor

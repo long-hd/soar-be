@@ -5,6 +5,7 @@ import com.hdl.soar.framework.jpa.core.converter.JsonLongSetConverter;
 import com.hdl.soar.framework.jpa.core.entity.BasePO;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Set;
 
@@ -15,7 +16,7 @@ import java.util.Set;
 @Table(name = "system_tenant_package")
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class TenantPackagePO extends BasePO {

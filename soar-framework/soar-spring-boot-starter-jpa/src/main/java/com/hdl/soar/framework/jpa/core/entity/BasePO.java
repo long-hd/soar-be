@@ -1,9 +1,11 @@
 package com.hdl.soar.framework.jpa.core.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -27,7 +29,9 @@ import java.time.Instant;
  * (IDENTITY for most entities, SEQUENCE for specific cases).
  */
 @Data
+@SuperBuilder
 @MappedSuperclass
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @SQLRestriction("deleted = false")
 public abstract class BasePO implements Serializable {
@@ -71,6 +75,15 @@ public abstract class BasePO implements Serializable {
      * or global Hibernate filter in starter-jpa config.
      */
     @Column(name = "deleted", nullable = false)
+    @Builder.Default
     private Boolean deleted = Boolean.FALSE;
+
+    @PrePersist
+    @PreUpdate
+    public void ensureDeletedDefault() {
+        if (deleted == null) {
+            deleted = Boolean.FALSE;
+        }
+    }
 
 }

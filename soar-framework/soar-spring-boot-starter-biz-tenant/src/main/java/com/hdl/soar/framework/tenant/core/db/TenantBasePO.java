@@ -3,8 +3,11 @@ package com.hdl.soar.framework.tenant.core.db;
 import com.hdl.soar.framework.jpa.core.entity.BasePO;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.TenantId;
 
 /**
@@ -23,7 +26,9 @@ import org.hibernate.annotations.TenantId;
  * @see org.hibernate.annotations.TenantId
  */
 @Data
+@SuperBuilder
 @MappedSuperclass
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(callSuper = true)
 public abstract class TenantBasePO extends BasePO {
 

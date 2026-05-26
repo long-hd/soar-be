@@ -6,6 +6,7 @@ import lombok.*;
 
 import com.hdl.soar.module.system.dal.entity.user.AdminUserPO;
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
+import lombok.experimental.SuperBuilder;
 
 /**
  * Department entity
@@ -14,7 +15,7 @@ import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 @Table(name = "system_dept")
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeptPO extends TenantBasePO {
