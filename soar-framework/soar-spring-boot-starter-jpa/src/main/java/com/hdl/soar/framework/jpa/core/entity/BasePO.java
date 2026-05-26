@@ -1,10 +1,7 @@
 package com.hdl.soar.framework.jpa.core.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedBy;
@@ -29,9 +26,10 @@ import java.time.Instant;
  * (IDENTITY for most entities, SEQUENCE for specific cases).
  */
 @Data
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @MappedSuperclass
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @SQLRestriction("deleted = false")
 public abstract class BasePO implements Serializable {

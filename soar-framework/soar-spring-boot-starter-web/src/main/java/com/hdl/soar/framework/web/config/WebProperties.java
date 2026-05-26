@@ -32,11 +32,11 @@ public class WebProperties {
         /**
          * API prefix, serving as a unified prefix for all RESTFul APIs provided by controllers.
          *
-         * Purpose: Using this prefix helps prevent Swagger or Actuator endpoints from being
+         * <p>Purpose: Using this prefix helps prevent Swagger or Actuator endpoints from being
          * unintentionally exposed externally via Nginx, which could cause security issues.
          * With this setup, Nginx only needs to forward requests to /api/* endpoints.
          *
-         * @see YudaoWebAutoConfiguration#configurePathMatch(PathMatchConfigurer)
+         * @see SoarWebAutoConfiguration#configurePathMatch(PathMatchConfigurer)
          */
         @NotEmpty(message = "API prefix cannot be empty")
         private String prefix;
@@ -44,7 +44,7 @@ public class WebProperties {
         /**
          * The Ant-style path pattern of the package containing the controller.
          *
-         * Main purpose: to assign the specified {@link #prefix} to the controllers in this package.
+         * <p>Main purpose: to assign the specified {@link #prefix} to the controllers in this package.
          */
         @NotEmpty(message = "Controller package cannot be empty")
         private String controller;

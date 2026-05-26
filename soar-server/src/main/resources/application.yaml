@@ -55,7 +55,7 @@ server:
       charset: UTF-8
       force: true
 
-# SpringDoc / Knife4j
+# SpringDoc
 springdoc:
   api-docs:
     enabled: true
@@ -65,11 +65,6 @@ springdoc:
     path: /swagger-ui
   default-flat-param-object: true
 
-knife4j:
-  enable: true
-  setting:
-    language: en
-
 # Soar custom properties
 
 soar:
@@ -78,16 +73,6 @@ soar:
       url: http://localhost:5173
   security:
     mock-enable: false
-    permit-all-urls:
-      - /admin-api/system/auth/login
-      - /admin-api/system/auth/logout
-      - /admin-api/system/auth/refresh-token
-      - /swagger-ui/**
-      - /swagger-ui.html
-      - /v3/api-docs/**
-      - /doc.html
-      - /webjars/**
-      - /error
   tenant:
     enable: true
   captcha:

@@ -40,6 +40,7 @@ public class SoarWebAutoConfiguration {
     @Value("${spring.application.name}")
     private String applicationName;
 
+    @Bean
     public WebMvcRegistrations webMvcRegistrations(WebProperties webProperties) {
         return new WebMvcRegistrations() {
 
@@ -69,7 +70,7 @@ public class SoarWebAutoConfiguration {
                 if (api == null || StrUtil.isEmpty(api.getPrefix())) {
                     return;
                 }
-                pathPrefixes.put(api.getPrefix(), // api 前缀
+                pathPrefixes.put(api.getPrefix(), // API prefix
                         clazz -> clazz.isAnnotationPresent(RestController.class)
                                 && matcher.match(api.getController(), clazz.getPackage().getName()));
             }
@@ -144,7 +145,7 @@ public class SoarWebAutoConfiguration {
      *
      * <p>The {@link RestClient.Builder} is auto-configured by Spring Boot,
      * pre-loaded with {@link org.springframework.http.converter.HttpMessageConverter}s
-     * and {@link org.springframework.boot.web.client.ClientHttpRequestFactorySettings}.
+     * and {@link org.springframework.boot.http.client.ClientHttpRequestFactorySettings}.
      *
      * <p>Note: IDE may report "No beans of 'RestClient.Builder' type found" in library modules.
      * This is a false positive — the builder is provided at runtime by
