@@ -3,7 +3,9 @@ package com.hdl.soar.module.system.service.permission;
 import com.hdl.soar.framework.common.biz.system.permission.dto.DeptDataPermissionRespDTO;
 import com.hdl.soar.module.system.dal.entity.permission.RolePO;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Permission Service Interface
@@ -36,5 +38,15 @@ public interface PermissionService {
      * @return Department data permission
      */
     DeptDataPermissionRespDTO getDeptDataPermission(Long userId);
+
+    // ================== Role Menu
+
+    /**
+     * Get the set of menu IDs owned by roles
+     *
+     * @param roleIds role ID collection
+     * @return set of menu IDs
+     */
+    Set<Long> getMenuIdsByRoleIds(Collection<Long> roleIds);
 
 }

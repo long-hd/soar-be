@@ -8,6 +8,7 @@ import com.google.common.collect.Sets;
 import com.hdl.soar.framework.common.biz.system.permission.dto.DeptDataPermissionRespDTO;
 import com.hdl.soar.framework.common.util.collection.CollectionUtils;
 import com.hdl.soar.framework.common.util.json.JsonUtils;
+import com.hdl.soar.module.system.dal.entity.permission.MenuPO;
 import com.hdl.soar.module.system.dal.entity.permission.RoleMenuPO;
 import com.hdl.soar.module.system.dal.entity.permission.RolePO;
 import com.hdl.soar.module.system.dal.postgres.permission.RoleMenuRepository;
@@ -22,9 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 
 import static com.hdl.soar.framework.common.util.collection.CollectionUtils.*;
@@ -157,6 +156,23 @@ public class PermissionServiceImpl implements PermissionService {
         }
 
         return result;
+    }
+
+    // =================== Role Menu
+
+    @Override
+    public Set<Long> getMenuIdsByRoleIds(Collection<Long> roleIds) {
+        if (CollUtil.isEmpty(roleIds)) {
+            return Collections.emptySet();
+        }
+
+        // If the user is a super admin, return all menu IDs
+        if(roleService.hasAnySuperAdmin(roleIds)){
+            return convertSet(menuService.getMenuList(), MenuPO::getId);
+        }
+
+        // Otherwise, return menu IDs associated with the given roles
+        return roleMenuRepository.findAllByRoleIdIn(roleIds);
     }
 
     // =================== Utilities method

@@ -56,6 +56,11 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    public List<RolePO> getRolesByIdIn(Collection<Long> roleIds) {
+        return roleRepository.findAllByIdIn(roleIds);
+    }
+
+    @Override
     public List<RolePO> getRolesFromCache(Collection<Long> roleIds) {
         if(CollectionUtil.isEmpty(roleIds)) {
             return Collections.emptyList();

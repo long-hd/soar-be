@@ -44,6 +44,14 @@ public interface RoleService {
     RolePO getRoleFromCache(Long id);
 
     /**
+     * Get role list by ID in given IDs
+     *
+     * @param roleIds role ID collection
+     * @return role list
+     */
+    List<RolePO> getRolesByIdIn(Collection<Long> roleIds);
+
+    /**
      * Get the list of roles from the cache
      *
      * @param roleIds Role ID collection
