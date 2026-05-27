@@ -19,7 +19,7 @@
         <!-- spring dependency management -->
         <spring.boot.version>3.5.14</spring.boot.version>
         <!-- Web-doc-->
-        <swagger-annotations.version>2.2.49</swagger-annotations.version> <!-- must match springdoc -->
+        <swagger-annotations.version>2.2.47</swagger-annotations.version> <!-- must match springdoc -->
         <springdoc-openapi.version>2.8.17</springdoc-openapi.version>
         <!-- Database -->
         <redisson.version>4.4.0</redisson.version>

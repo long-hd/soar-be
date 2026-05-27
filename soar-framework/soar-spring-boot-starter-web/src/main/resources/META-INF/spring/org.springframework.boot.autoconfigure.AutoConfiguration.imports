@@ -1,1 +1,2 @@
 com.hdl.soar.framework.web.config.SoarWebAutoConfiguration
+com.hdl.soar.framework.swagger.config.SoarSwaggerAutoConfiguration

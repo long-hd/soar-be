@@ -1,17 +1,16 @@
 package com.hdl.soar.module.system.controller.admin.auth.dto;
 
 import cn.hutool.core.util.StrUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hdl.soar.framework.common.validation.InEnum;
 import com.hdl.soar.module.system.enums.SocialTypeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "Admin Backend - Username and Password Login Request DTO. " +
@@ -41,13 +40,15 @@ public class AuthLoginReqDTO extends CaptchaVerificationReqDTO {
     @Schema(description = "State", requiredMode = Schema.RequiredMode.REQUIRED, example = "9b2ffbc1-7425-4155-9894-9d5c08541d62")
     private String socialState;
 
+    @JsonIgnore
     @AssertTrue(message = "Authorization code cannot be empty")
     public boolean isSocialCodeValid() {
         return socialType == null || StrUtil.isNotEmpty(socialCode);
     }
 
+    @JsonIgnore
     @AssertTrue(message = "Authorization state cannot be empty")
-    public boolean isSocialState() {
+    public boolean isSocialStateValid() {
         return socialType == null || StrUtil.isNotEmpty(socialState);
     }
 
