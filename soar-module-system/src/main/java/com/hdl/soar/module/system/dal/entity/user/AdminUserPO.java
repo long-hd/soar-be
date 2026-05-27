@@ -107,7 +107,7 @@ public class AdminUserPO extends TenantBasePO {
      * <p>See {@link CommonStatusEnum}
      */
     @Column(name = "status", nullable = false)
-    private Integer status;
+    private CommonStatusEnum status;
 
     /**
      * Last login IP

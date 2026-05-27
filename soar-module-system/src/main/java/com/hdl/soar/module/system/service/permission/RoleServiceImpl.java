@@ -40,7 +40,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Set<Long> getRoleIdsByUserId(Long userId) {
-        return userRoleRepository.findAllByUserId(userId);
+        return userRoleRepository.findRoleIdsByUserId(userId);
     }
 
     @Override

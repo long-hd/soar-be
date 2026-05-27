@@ -63,7 +63,7 @@ public class OAuth2ClientPO extends BasePO {
      * Enum {@link CommonStatusEnum}</p>
      */
     @Column(name = "status", nullable = false)
-    private Integer status;
+    private CommonStatusEnum status;
 
     /**
      * Access token validity period (seconds)

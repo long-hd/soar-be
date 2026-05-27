@@ -107,7 +107,7 @@ public class MenuPO extends BasePO {
      */
     @Column(name = "status", nullable = false)
     @Builder.Default
-    private Integer status = 0;
+    private CommonStatusEnum status = CommonStatusEnum.ENABLE;
 
     /**
      * Whether visible

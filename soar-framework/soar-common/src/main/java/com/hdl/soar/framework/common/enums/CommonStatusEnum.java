@@ -2,10 +2,13 @@ package com.hdl.soar.framework.common.enums;
 
 import cn.hutool.core.util.ObjUtil;
 import com.hdl.soar.framework.common.core.ArrayValuable;
+import com.hdl.soar.framework.common.enums.converter.IntEnumConverter;
+import jakarta.persistence.Converter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.function.Function;
 
 /**
  * Common status enum.
@@ -17,6 +20,13 @@ public enum CommonStatusEnum implements ArrayValuable<Integer> {
     DISABLE(1, "DISABLED");
 
     public static final Integer[] ARRAYS = Arrays.stream(values()).map(CommonStatusEnum::getStatus).toArray(Integer[]::new);
+
+    @Converter(autoApply = true)
+    public static class JpaConverter extends IntEnumConverter<CommonStatusEnum> {
+        protected JpaConverter() {
+            super(CommonStatusEnum.class, CommonStatusEnum::getStatus);
+        }
+    }
 
     /**
      * Status value
@@ -30,11 +40,11 @@ public enum CommonStatusEnum implements ArrayValuable<Integer> {
     @Override
     public Integer[] array() { return ARRAYS; }
 
-    public static boolean isEnable(Integer status) {
-        return ObjUtil.equal(ENABLE.status, status);
+    public static boolean isEnable(CommonStatusEnum status) {
+        return ENABLE.equals(status);
     }
 
-    public static boolean isDisable(Integer status) {
-        return ObjUtil.equal(DISABLE.status, status);
+    public static boolean isDisable(CommonStatusEnum status) {
+        return DISABLE.equals(status);
     }
 }
