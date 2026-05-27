@@ -8,12 +8,14 @@ import com.hdl.soar.framework.web.core.filter.CacheRequestBodyFilter;
 import com.hdl.soar.framework.web.core.filter.DemoFilter;
 import com.hdl.soar.framework.web.core.handler.GlobalExceptionHandler;
 import com.hdl.soar.framework.web.core.handler.GlobalResponseBodyHandler;
+import com.hdl.soar.framework.web.core.jackson.StringTrimDeserializer;
 import com.hdl.soar.framework.web.core.util.WebFrameworkUtils;
 import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -92,6 +94,11 @@ public class SoarWebAutoConfiguration {
     public WebFrameworkUtils webFrameworkUtils(WebProperties webProperties) {
         // Since WebFrameworkUtils needs to use the webProperties attribute, register it as a Bean
         return new WebFrameworkUtils(webProperties);
+    }
+
+    @Bean
+    public Jackson2ObjectMapperBuilderCustomizer stringTrimCustomizer() {
+        return builder -> builder.deserializerByType(String.class, new StringTrimDeserializer());
     }
 
     // ========== Filter ==========

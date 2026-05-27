@@ -40,6 +40,16 @@ public enum CommonStatusEnum implements ArrayValuable<Integer> {
     @Override
     public Integer[] array() { return ARRAYS; }
 
+    public static CommonStatusEnum of(Integer status) {
+        if(status == null) return null;
+        for(CommonStatusEnum e : CommonStatusEnum.values()) {
+            if(e.getStatus().equals(status)) {
+                return e;
+            }
+        }
+        return null;
+    }
+
     public static boolean isEnable(CommonStatusEnum status) {
         return ENABLE.equals(status);
     }
