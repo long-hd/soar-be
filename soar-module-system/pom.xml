@@ -38,6 +38,10 @@
             <groupId>com.hdl.boot</groupId>
             <artifactId>soar-spring-boot-starter-biz-tenant</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.hdl.boot</groupId>
+            <artifactId>soar-spring-boot-starter-excel</artifactId>
+        </dependency>
 
         <!-- DB -->
         <dependency>

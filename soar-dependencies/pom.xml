@@ -323,6 +323,11 @@
             </dependency>
 
             <!-- soar-spring-boot-starter-excel -->
+            <dependency>
+                <groupId>com.hdl.boot</groupId>
+                <artifactId>soar-spring-boot-starter-excel</artifactId>
+                <version>${revision}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.projectlombok</groupId>

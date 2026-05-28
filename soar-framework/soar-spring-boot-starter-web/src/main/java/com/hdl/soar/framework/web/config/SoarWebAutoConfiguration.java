@@ -1,6 +1,7 @@
 package com.hdl.soar.framework.web.config;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.spring.SpringUtil;
 import com.google.common.collect.Maps;
 import com.hdl.soar.framework.common.biz.infra.logger.ApiErrorLogCommonApi;
 import com.hdl.soar.framework.common.enums.WebFilterOrderEnum;
@@ -94,6 +95,17 @@ public class SoarWebAutoConfiguration {
     public WebFrameworkUtils webFrameworkUtils(WebProperties webProperties) {
         // Since WebFrameworkUtils needs to use the webProperties attribute, register it as a Bean
         return new WebFrameworkUtils(webProperties);
+    }
+
+    /**
+     * Register hutool's {@link SpringUtil} as a bean so that
+     * {@code SpringUtil.getApplicationContext()} is available throughout the framework
+     * (e.g. in {@code SelectSheetWriteHandler} for Excel dropdown function lookup).
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public SpringUtil springUtil() {
+        return new SpringUtil();
     }
 
     @Bean

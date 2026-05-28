@@ -16,11 +16,11 @@ public class DictTypePageReqDTO extends PageParam {
     @Schema(description = "Dictionary type name, fuzzy match", example = "example")
     private String name;
 
-    @Schema(description = "Dictionary type, fuzzy match", example = "sys_common_sex")
+    @Schema(description = "Dictionary type, fuzzy match", example = "common_status")
     @Size(max = 100, message = "Dictionary type length cannot exceed 100 characters")
     private String type;
 
-    @Schema(description = "Display status, see CommonStatusEnum enum", example = "1")
+    @Schema(description = "Display status, see CommonStatusEnum enum", example = "0")
     private Integer status;
 
     @Schema(description = "Create time range start")

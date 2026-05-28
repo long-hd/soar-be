@@ -1,4 +1,4 @@
-package com.hdl.soar.module.system.enums;
+package com.hdl.soar.module.system.enums.social;
 
 import cn.hutool.core.util.ArrayUtil;
 import com.hdl.soar.framework.common.core.ArrayValuable;

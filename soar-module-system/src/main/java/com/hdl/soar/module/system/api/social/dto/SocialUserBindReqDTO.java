@@ -2,7 +2,7 @@ package com.hdl.soar.module.system.api.social.dto;
 
 import com.hdl.soar.framework.common.enums.UserTypeEnum;
 import com.hdl.soar.framework.common.validation.InEnum;
-import com.hdl.soar.module.system.enums.SocialTypeEnum;
+import com.hdl.soar.module.system.enums.social.SocialTypeEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

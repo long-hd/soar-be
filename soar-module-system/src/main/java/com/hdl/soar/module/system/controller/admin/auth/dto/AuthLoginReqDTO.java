@@ -3,7 +3,7 @@ package com.hdl.soar.module.system.controller.admin.auth.dto;
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hdl.soar.framework.common.validation.InEnum;
-import com.hdl.soar.module.system.enums.SocialTypeEnum;
+import com.hdl.soar.module.system.enums.social.SocialTypeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;

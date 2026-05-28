@@ -1,7 +1,9 @@
 package com.hdl.soar.module.system.controller.admin.dict;
 
 import com.hdl.soar.framework.common.pojo.CommonResult;
+import com.hdl.soar.framework.common.pojo.PageParam;
 import com.hdl.soar.framework.common.pojo.PageResult;
+import com.hdl.soar.framework.excel.core.util.ExcelUtils;
 import com.hdl.soar.module.system.controller.admin.dict.dto.type.DictTypePageReqDTO;
 import com.hdl.soar.module.system.controller.admin.dict.dto.type.DictTypeRespDTO;
 import com.hdl.soar.module.system.controller.admin.dict.dto.type.DictTypeSaveReqDTO;
@@ -11,7 +13,10 @@ import com.hdl.soar.module.system.mapper.dict.DictTypeMapper;
 import com.hdl.soar.module.system.service.dict.DictTypeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +26,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 import static com.hdl.soar.framework.common.pojo.CommonResult.success;
@@ -98,6 +104,18 @@ public class DictTypeController {
     public CommonResult<List<DictTypeSimpleRespDTO>> getSimpleDictTypeList() {
         List<DictTypePO> list = dictTypeService.getDictTypeList();
         return success(DictTypeMapper.INSTANCE.toSimpleDTOList(list));
+    }
+
+    @GetMapping("/export-excel")
+    @Operation(summary = "Export Dictionary Types")
+    @ApiResponse(content = @Content(mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+    @PreAuthorize("@ss.hasPermission('system:dict:query')")
+    public void export(HttpServletResponse response,
+                       @Valid DictTypePageReqDTO exportReqDTO) throws IOException {
+        exportReqDTO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        List<DictTypePO> list = dictTypeService.getDictTypePage(exportReqDTO).getList();
+        ExcelUtils.write(response, "dictionary-types.xlsx", "Dictionary Types", DictTypeRespDTO.class,
+                DictTypeMapper.INSTANCE.toDTOList(list));
     }
 
 }

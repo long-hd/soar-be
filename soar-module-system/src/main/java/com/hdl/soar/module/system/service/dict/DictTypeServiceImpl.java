@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 import com.hdl.soar.framework.common.pojo.PageResult;
+import com.hdl.soar.framework.jpa.core.util.PageUtils;
 import com.hdl.soar.framework.jpa.core.util.SpecUtils;
 import com.hdl.soar.module.system.controller.admin.dict.dto.type.DictTypePageReqDTO;
 import com.hdl.soar.module.system.controller.admin.dict.dto.type.DictTypeSaveReqDTO;
@@ -21,7 +22,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 import java.time.Instant;
 import com.hdl.soar.module.system.dal.entity.dict.DictTypePO_;
 
@@ -32,7 +32,6 @@ import static com.hdl.soar.framework.common.exception.util.ServiceExceptionUtil.
 import static com.hdl.soar.module.system.enums.ErrorCodeConstants.*;
 
 @Service
-@Validated
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DictTypeServiceImpl implements DictTypeService {
@@ -109,11 +108,7 @@ public class DictTypeServiceImpl implements DictTypeService {
         };
 
         // 2. Build Pageable (pageNo is 1-based, Spring is 0-based)
-        Pageable pageable = PageRequest.of(
-                pageReqDTO.getPageNo() - 1,
-                pageReqDTO.getPageSize(),
-                Sort.by(Sort.Direction.DESC, DictTypePO_.CREATE_TIME)
-        );
+        Pageable pageable = PageUtils.toPageable(pageReqDTO, Sort.by(Sort.Direction.DESC, DictTypePO_.CREATE_TIME));
 
         // 3. Query
         Page<DictTypePO> page = dictTypeRepository.findAll(spec, pageable);

@@ -49,7 +49,7 @@ public interface DictTypeService {
      * @param pageReqDTO Page request
      * @return Paginated list of dictionary types
      */
-    PageResult<DictTypePO> getDictTypePage(@Valid DictTypePageReqDTO pageReqDTO);
+    PageResult<DictTypePO> getDictTypePage(DictTypePageReqDTO pageReqDTO);
 
     /**
      * Get dictionary type details

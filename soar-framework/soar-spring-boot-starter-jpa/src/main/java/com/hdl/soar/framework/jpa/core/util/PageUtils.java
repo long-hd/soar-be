@@ -47,6 +47,9 @@ public class PageUtils {
      * Convert {@link PageParam} to Spring Data {@link Pageable} with explicit sort.
      */
     public static Pageable toPageable(PageParam pageParam, Sort sort) {
+        if(pageParam.getPageSize().equals(PageParam.PAGE_SIZE_NONE)) {
+            return Pageable.unpaged();
+        }
         return PageRequest.of(pageParam.getPageNo() - 1, pageParam.getPageSize(), sort);
     }
 
