@@ -17,4 +17,6 @@ public interface DictDataRepository extends JpaRepository<DictDataPO, Long>, Jpa
     List<DictDataPO> findByDictTypeAndStatus(String dictType, CommonStatusEnum status, Sort sort);
 
     List<DictDataPO> findByDictTypeAndValueIn(String dictType, Collection<String> values);
+
+    DictDataPO findByDictTypeAndValue(String dictType, String value);
 }

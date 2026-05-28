@@ -32,6 +32,9 @@ public class PageUtils {
      * while {@link Pageable} is 0-based, so we subtract 1.
      */
     public static Pageable toPageable(PageParam pageParam) {
+        if(PageParam.PAGE_SIZE_NONE.equals(pageParam.getPageSize())) {
+            return Pageable.unpaged();
+        }
         return PageRequest.of(pageParam.getPageNo() - 1, pageParam.getPageSize());
     }
 
@@ -40,15 +43,15 @@ public class PageUtils {
      */
     public static Pageable toPageable(SortablePageParam pageParam) {
         Sort sort = toSort(pageParam.getSortingFields());
-        return PageRequest.of(pageParam.getPageNo() - 1, pageParam.getPageSize(), sort);
+        return toPageable(pageParam, sort);
     }
 
     /**
      * Convert {@link PageParam} to Spring Data {@link Pageable} with explicit sort.
      */
     public static Pageable toPageable(PageParam pageParam, Sort sort) {
-        if(pageParam.getPageSize().equals(PageParam.PAGE_SIZE_NONE)) {
-            return Pageable.unpaged();
+        if(PageParam.PAGE_SIZE_NONE.equals(pageParam.getPageSize())) {
+            return Pageable.unpaged(sort);
         }
         return PageRequest.of(pageParam.getPageNo() - 1, pageParam.getPageSize(), sort);
     }

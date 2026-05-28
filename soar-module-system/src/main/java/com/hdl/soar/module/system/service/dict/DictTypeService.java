@@ -60,6 +60,14 @@ public interface DictTypeService {
     DictTypePO getDictType(Long id);
 
     /**
+     * Get dictionary type details
+     *
+     * @param type Dictionary type
+     * @return Dictionary type details
+     */
+    DictTypePO getDictType(String type);
+
+    /**
      * Get all dictionary type list
      *
      * @return List of dictionary types

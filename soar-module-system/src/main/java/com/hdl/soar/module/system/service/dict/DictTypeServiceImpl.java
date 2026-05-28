@@ -121,6 +121,11 @@ public class DictTypeServiceImpl implements DictTypeService {
     }
 
     @Override
+    public DictTypePO getDictType(String type) {
+        return dictTypeRepository.findFirstByType(type).orElse(null);
+    }
+
+    @Override
     public List<DictTypePO> getDictTypeList() {
         return dictTypeRepository.findAll();
     }
