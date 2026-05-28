@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DictDataRepository extends JpaRepository<DictDataPO, Long>, JpaSpecificationExecutor<DictDataPO> {
+    long countByDictType(String dictType);
 }
