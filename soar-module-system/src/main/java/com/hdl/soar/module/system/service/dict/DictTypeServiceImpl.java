@@ -108,7 +108,7 @@ public class DictTypeServiceImpl implements DictTypeService {
         };
 
         // 2. Build Pageable (pageNo is 1-based, Spring is 0-based)
-        Pageable pageable = PageUtils.toPageable(pageReqDTO, Sort.by(Sort.Direction.DESC, DictTypePO_.CREATE_TIME));
+        Pageable pageable = PageUtils.toPageable(pageReqDTO, Sort.by(Sort.Order.desc(DictTypePO_.CREATE_TIME)));
 
         // 3. Query
         Page<DictTypePO> page = dictTypeRepository.findAll(spec, pageable);

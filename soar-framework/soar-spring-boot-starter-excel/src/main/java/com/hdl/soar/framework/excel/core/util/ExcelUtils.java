@@ -5,6 +5,8 @@ import cn.idev.excel.converters.longconverter.LongStringConverter;
 import com.hdl.soar.framework.excel.core.handler.ColumnWidthMatchStyleStrategy;
 import com.hdl.soar.framework.excel.core.handler.SelectSheetWriteHandler;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -41,18 +43,22 @@ public class ExcelUtils {
      */
     public static <T> void write(HttpServletResponse response, String filename, String sheetName,
                                  Class<T> head, List<T> data) throws IOException {
-        // Write Excel to response output stream
+        // Set headers BEFORE writing body
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        String encodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8)
+                .replace("+", "%20");
+        response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"" + filename + "\"; filename*=UTF-8''" + encodedFilename);
+
+        // Then write Excel to response output stream
         FastExcelFactory.write(response.getOutputStream(), head)
-                .autoCloseStream(false) // Let Servlet manage stream lifecycle
+                .autoCloseStream(false)
                 .registerWriteHandler(new ColumnWidthMatchStyleStrategy())
                 .registerWriteHandler(new SelectSheetWriteHandler(head))
-                .registerConverter(new LongStringConverter()) // Prevent Long precision loss in Excel
+                .registerConverter(new LongStringConverter())
                 .sheet(sheetName)
                 .doWrite(data);
-        // Set headers AFTER writing — if writing fails, response won't have wrong content-type
-        response.addHeader("Content-Disposition",
-                "attachment;filename=" + URLEncoder.encode(filename, StandardCharsets.UTF_8));
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8");
     }
 
     /**

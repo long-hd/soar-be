@@ -3,6 +3,7 @@ package com.hdl.soar.module.system.controller.admin.dict.dto.type;
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
 import com.hdl.soar.framework.excel.core.annotations.DictFormat;
+import com.hdl.soar.framework.excel.core.annotations.ExcelColumnSelect;
 import com.hdl.soar.framework.excel.core.convert.DictConvert;
 import com.hdl.soar.module.system.enums.DictTypeConstants;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,6 +31,7 @@ public class DictTypeRespDTO {
     @Schema(description = "Status, see CommonStatusEnum", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     @ExcelProperty(value = "Status", converter = DictConvert.class)
     @DictFormat(DictTypeConstants.COMMON_STATUS)
+    @ExcelColumnSelect(dictType = DictTypeConstants.COMMON_STATUS)
     private Integer status;
 
     @Schema(description = "Remark", example = "Nice remark")

@@ -29,4 +29,5 @@ public interface DictTypeMapper {
     // Simple list: PO -> SimpleDTO
     DictTypeSimpleRespDTO toSimpleDTO(DictTypePO po);
     List<DictTypeSimpleRespDTO> toSimpleDTOList(List<DictTypePO> list);
+
 }

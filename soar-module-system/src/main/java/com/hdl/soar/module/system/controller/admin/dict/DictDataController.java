@@ -2,7 +2,9 @@ package com.hdl.soar.module.system.controller.admin.dict;
 
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 import com.hdl.soar.framework.common.pojo.CommonResult;
+import com.hdl.soar.framework.common.pojo.PageParam;
 import com.hdl.soar.framework.common.pojo.PageResult;
+import com.hdl.soar.framework.excel.core.util.ExcelUtils;
 import com.hdl.soar.module.system.controller.admin.dict.dto.data.DictDataPageReqDTO;
 import com.hdl.soar.module.system.controller.admin.dict.dto.data.DictDataRespDTO;
 import com.hdl.soar.module.system.controller.admin.dict.dto.data.DictDataSaveReqDTO;
@@ -13,6 +15,7 @@ import com.hdl.soar.module.system.service.dict.DictDataService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 import static com.hdl.soar.framework.common.pojo.CommonResult.success;
@@ -94,6 +98,19 @@ public class DictDataController {
     public CommonResult<DictDataRespDTO> getDictData(@RequestParam("id") Long id) {
         DictDataPO dictData = dictDataService.getDictData(id);
         return success(DictDataMapper.INSTANCE.toDTO(dictData));
+    }
+
+    @GetMapping("/export-excel")
+    @Operation(summary = "Export dictionary data")
+    @PreAuthorize("@ss.hasPermission('system:dict:export')")
+    // @ApiAccessLog(operateType = EXPORT)
+    public void export(HttpServletResponse response, @Valid DictDataPageReqDTO exportReqDTO) throws IOException {
+        exportReqDTO.setPageSize(PageParam.PAGE_SIZE_NONE);
+        List<DictDataPO> list = dictDataService.getDictDataPage(exportReqDTO).getList();
+
+        // Output
+        ExcelUtils.write(response, "Dictionary Data.xlsx", "Data", DictDataRespDTO.class,
+                DictDataMapper.INSTANCE.toDTOList(list));
     }
 
 }

@@ -110,6 +110,7 @@ public class DictTypeController {
     @Operation(summary = "Export Dictionary Types")
     @ApiResponse(content = @Content(mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
     @PreAuthorize("@ss.hasPermission('system:dict:query')")
+    // @ApiAccessLog(operateType = EXPORT)
     public void export(HttpServletResponse response,
                        @Valid DictTypePageReqDTO exportReqDTO) throws IOException {
         exportReqDTO.setPageSize(PageParam.PAGE_SIZE_NONE);

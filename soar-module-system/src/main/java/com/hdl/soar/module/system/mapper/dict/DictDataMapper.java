@@ -1,10 +1,10 @@
 package com.hdl.soar.module.system.mapper.dict;
 
 import com.hdl.soar.framework.common.mapper.EnumMapper;
-import com.hdl.soar.module.system.controller.admin.dict.dto.data.DictDataPageReqDTO;
 import com.hdl.soar.module.system.controller.admin.dict.dto.data.DictDataRespDTO;
 import com.hdl.soar.module.system.controller.admin.dict.dto.data.DictDataSaveReqDTO;
 import com.hdl.soar.module.system.controller.admin.dict.dto.data.DictDataSimpleRespDTO;
+import com.hdl.soar.module.system.controller.app.dict.dto.AppDictDataRespDTO;
 import com.hdl.soar.module.system.dal.entity.dict.DictDataPO;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
@@ -29,4 +29,10 @@ public interface DictDataMapper {
     // Simple list: PO -> SimpleDTO
     DictDataSimpleRespDTO toSimpleDTO(DictDataPO po);
     List<DictDataSimpleRespDTO> toSimpleDTOList(List<DictDataPO> list);
+
+    // =================== APP API
+
+    AppDictDataRespDTO toAppDTO(DictDataPO po);
+    List<AppDictDataRespDTO> toAppDTOList(List<DictDataPO> po);
+
 }

@@ -39,7 +39,8 @@ public class SpecUtils {
     public static <T, V extends Comparable<? super V>> void betweenIfPresent(List<Predicate> predicates,
                                                CriteriaBuilder cb, Root<T> root,
                                                SingularAttribute<? super T, V> field, V[] value) {
-        if(ArrayUtil.isNotEmpty(value) && value.length > 1) {
+        if(ArrayUtil.isNotEmpty(value) && value.length > 1
+                && value[0] != null && value[1] != null) {
             predicates.add(cb.between(root.get(field), value[0], value[1]));
         }
     }

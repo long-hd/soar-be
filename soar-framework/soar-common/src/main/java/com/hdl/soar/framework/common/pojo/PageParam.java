@@ -17,7 +17,7 @@ public class PageParam implements Serializable {
 
     /**
      * Number of items per page - no pagination
-     *
+     * <p></p>
      * For example, for export APIs, you can set {@link #pageSize} to -1
      * to disable pagination and query all data.
      */
