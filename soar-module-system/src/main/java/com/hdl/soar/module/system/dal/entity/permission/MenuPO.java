@@ -58,7 +58,7 @@ public class MenuPO extends BasePO {
      * Enum {@link MenuTypeEnum}
      */
     @Column(name = "type", nullable = false)
-    private Integer type;
+    private MenuTypeEnum type;
 
     /**
      * Display order

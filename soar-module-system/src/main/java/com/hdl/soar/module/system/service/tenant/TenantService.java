@@ -3,6 +3,7 @@ package com.hdl.soar.module.system.service.tenant;
 import com.hdl.soar.module.system.dal.entity.tenant.TenantPO;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Tenant service interface.
@@ -30,5 +31,12 @@ public interface TenantService {
      * @param id tenant ID
      */
     void validTenant(Long id);
+
+    /**
+     * Get menu IDs allowed for the current tenant's package.
+     *
+     * @return menu IDs, or null if no filtering needed (system tenant or tenant disabled)
+     */
+    Set<Long> getTenantMenuIds();
 
 }

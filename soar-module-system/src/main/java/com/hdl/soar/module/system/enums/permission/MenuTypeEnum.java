@@ -19,4 +19,12 @@ public enum MenuTypeEnum {
      */
     private final Integer type;
 
+    public static MenuTypeEnum of(Integer type) {
+        if (type == null) {return null;}
+        for (MenuTypeEnum e : MenuTypeEnum.values()) {
+            if (e.type.equals(type)) {return e;}
+        }
+        return null;
+    }
+
 }
