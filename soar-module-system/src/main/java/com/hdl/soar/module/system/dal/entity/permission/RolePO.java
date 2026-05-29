@@ -56,7 +56,7 @@ public class RolePO extends TenantBasePO {
      * <p>Enum {@link CommonStatusEnum}
      */
     @Column(name = "status", nullable = false)
-    private Integer status;
+    private CommonStatusEnum status;
 
     /**
      * Role type
@@ -64,8 +64,7 @@ public class RolePO extends TenantBasePO {
      * <p>Enum {@link RoleTypeEnum}
      */
     @Column(name = "type", nullable = false)
-    @Builder.Default
-    private Integer type = 1;
+    private RoleTypeEnum type;
 
     /**
      * Remark
@@ -79,7 +78,8 @@ public class RolePO extends TenantBasePO {
      * <p>Enum {@link DataScopeEnum}
      */
     @Column(name = "data_scope")
-    private Integer dataScope;
+    @Builder.Default
+    private DataScopeEnum dataScope = DataScopeEnum.ALL;
 
     /**
      * Data scope (specific department IDs)

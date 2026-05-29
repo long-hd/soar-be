@@ -14,6 +14,9 @@ import org.mapstruct.Mapper;
  */
 @Mapper
 public interface EnumMapper {
+
+    // =============== CommonStatusEnum
+
     default CommonStatusEnum toStatusEnum(Integer val) {
         return CommonStatusEnum.of(val);
     }
@@ -21,4 +24,5 @@ public interface EnumMapper {
     default Integer toStatusInt(CommonStatusEnum e) {
         return e == null ? null : e.getStatus();
     }
+
 }

@@ -1,6 +1,8 @@
 package com.hdl.soar.module.system.enums.permission;
 
 import com.hdl.soar.framework.common.core.ArrayValuable;
+import com.hdl.soar.framework.common.enums.converter.IntEnumConverter;
+import jakarta.persistence.Converter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -28,6 +30,14 @@ public enum DataScopeEnum implements ArrayValuable<Integer> {
      */
     private final Integer scope;
 
+    public static DataScopeEnum of(Integer val) {
+        if (val == null) {return null;}
+        for (DataScopeEnum e : DataScopeEnum.values()) {
+            if (e.getScope().equals(val)) {return e;}
+        }
+        return null;
+    }
+
     public static final Integer[] ARRAYS =
             Arrays.stream(values())
                     .map(DataScopeEnum::getScope)
@@ -36,6 +46,11 @@ public enum DataScopeEnum implements ArrayValuable<Integer> {
     @Override
     public Integer[] array() {
         return ARRAYS;
+    }
+
+    @Converter(autoApply = true)
+    public static class JpaConverter extends IntEnumConverter<DataScopeEnum> {
+        protected JpaConverter() {super(DataScopeEnum.class, DataScopeEnum::getScope);}
     }
 
 }
