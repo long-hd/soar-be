@@ -69,7 +69,7 @@ public class AdminUserPO extends TenantBasePO {
 
     /**
      * Post/role IDs stored as JSON array in DB (e.g., {@code [1, 2, 3]}).
-     * Converted by {@link com.hdl.soar.framework.jpa.core.converter.JsonLongSetConverter}.
+     * Converted by {@link JsonLongSetConverter}.
      */
     @Convert(converter = JsonLongSetConverter.class)
     @Column(name = "post_ids")
@@ -93,7 +93,7 @@ public class AdminUserPO extends TenantBasePO {
      * See {@link SexEnum}
      */
     @Column(name = "sex")
-    private Integer sex;
+    private SexEnum sex;
 
     /**
      * Avatar URL

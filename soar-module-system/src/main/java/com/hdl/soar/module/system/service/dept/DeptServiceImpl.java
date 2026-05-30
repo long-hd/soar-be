@@ -110,6 +110,11 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
+    public List<DeptPO> getDeptList(Collection<Long> ids) {
+        return deptRepository.findAllById(ids);
+    }
+
+    @Override
     public List<DeptPO> getDeptList(DeptListReqDTO reqDTO) {
         Specification<DeptPO> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();

@@ -1,15 +1,14 @@
 package com.hdl.soar.module.system.service.dept;
 
+import cn.hutool.core.collection.CollUtil;
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 import com.hdl.soar.module.system.controller.admin.dept.dto.dept.DeptListReqDTO;
 import com.hdl.soar.module.system.controller.admin.dept.dto.dept.DeptSaveReqDTO;
 import com.hdl.soar.module.system.dal.entity.dept.DeptPO;
 import jakarta.validation.Valid;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Department Service interface
@@ -54,12 +53,34 @@ public interface DeptService {
     DeptPO getDept(Long id);
 
     /**
+     * Get department information list
+     *
+     * @param ids department ID list
+     * @return department information list
+     */
+    List<DeptPO> getDeptList(Collection<Long> ids);
+
+    /**
      * Retrieves a list of departments based on filtering conditions.
      *
      * @param reqDTO the request object containing filter conditions
      * @return the list of departments
      */
     List<DeptPO> getDeptList(DeptListReqDTO reqDTO);
+
+    /**
+     * Get department map by given IDs
+     *
+     * @param ids department ID list
+     * @return department map
+     */
+    default Map<Long, DeptPO> getDeptMap(Collection<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return Collections.emptyMap();
+        }
+        List<DeptPO> list = getDeptList(ids);
+        return list.stream().collect(Collectors.toMap(DeptPO::getId, d -> d));
+    }
 
 
     /**

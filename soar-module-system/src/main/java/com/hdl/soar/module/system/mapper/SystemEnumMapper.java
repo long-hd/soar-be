@@ -1,5 +1,6 @@
 package com.hdl.soar.module.system.mapper;
 
+import com.hdl.soar.module.system.enums.common.SexEnum;
 import com.hdl.soar.module.system.enums.permission.DataScopeEnum;
 import com.hdl.soar.module.system.enums.permission.MenuTypeEnum;
 import com.hdl.soar.module.system.enums.permission.RoleTypeEnum;
@@ -39,5 +40,11 @@ public interface SystemEnumMapper {
     default Integer toIntDataScopeEnum(DataScopeEnum val) {
         return val.getScope();
     }
+
+    // =============== SexEnum
+
+    default SexEnum toSexEnum(Integer val) { return SexEnum.of(val); }
+
+    default Integer toIntSexEnum(SexEnum val) { return  val.getSex(); }
 
 }

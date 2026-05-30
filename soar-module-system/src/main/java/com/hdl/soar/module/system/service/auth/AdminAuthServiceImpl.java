@@ -2,7 +2,6 @@ package com.hdl.soar.module.system.service.auth;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.anji.captcha.model.vo.CaptchaVO;
-import com.anji.captcha.service.CaptchaService;
 import com.google.common.annotations.VisibleForTesting;
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 import com.hdl.soar.framework.common.enums.UserTypeEnum;
@@ -221,7 +220,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
         loginLogService.createLoginLog(reqDTO);
         // Update last login time
         if (userId != null && Objects.equals(LoginResultEnum.SUCCESS.getResult(), loginResult.getResult())) {
-            userService.updateUserLogin(userId, ServletUtils.getClientIP());
+            userService.updateUserLoginIp(userId, ServletUtils.getClientIP());
         }
     }
 

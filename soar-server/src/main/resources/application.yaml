@@ -77,3 +77,5 @@ soar:
     enable: true
   captcha:
     enable: false
+  user:
+    init-password: "123456"
