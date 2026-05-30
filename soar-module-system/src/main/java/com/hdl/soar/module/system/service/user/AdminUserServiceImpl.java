@@ -5,8 +5,11 @@ import cn.hutool.core.util.StrUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 import com.hdl.soar.framework.common.exception.ServiceException;
+import com.hdl.soar.framework.common.exception.util.ServiceExceptionUtil;
 import com.hdl.soar.framework.common.pojo.PageResult;
 import com.hdl.soar.framework.jpa.core.util.PageUtils;
+import com.hdl.soar.module.system.controller.admin.user.dto.profile.UserProfileUpdatePasswordReqDTO;
+import com.hdl.soar.module.system.controller.admin.user.dto.profile.UserProfileUpdateReqDTO;
 import com.hdl.soar.module.system.controller.admin.user.dto.user.UserImportExcelDTO;
 import com.hdl.soar.module.system.controller.admin.user.dto.user.UserImportRespDTO;
 import com.hdl.soar.module.system.controller.admin.user.dto.user.UserPageReqDTO;
@@ -287,6 +290,37 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Override
     public boolean isPasswordMatch(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
+
+    @Override
+    public void updateUserProfile(Long userId, UserProfileUpdateReqDTO reqDTO) {
+        // 1. Validate exists
+        AdminUserPO user = adminUserRepository.findById(userId)
+                .orElseThrow(() -> exception(USER_NOT_EXISTS));
+
+        // 2. Validate uniqueness (only for changed fields)
+        validateMobileUnique(userId, reqDTO.getMobile());
+        validateEmailUnique(userId, reqDTO.getEmail());
+
+        // 3. MapStruct partial update (null fields skipped)
+        AdminUserMapper.INSTANCE.updateProfilePO(reqDTO, user);
+        adminUserRepository.save(user);
+    }
+
+    @Override
+    public void updateUserProfilePassword(Long userId, UserProfileUpdatePasswordReqDTO reqDTO) {
+        // 1. Validate exists
+        AdminUserPO user = adminUserRepository.findById(userId)
+                .orElseThrow(() -> exception(USER_NOT_EXISTS));
+
+        // 2. Verify old password
+        if (!isPasswordMatch(reqDTO.getOldPassword(), user.getPassword())) {
+            throw exception(USER_PASSWORD_FAILED);
+        }
+
+        // 3. Update to new password
+        user.setPassword(encodePassword(reqDTO.getNewPassword()));
+        adminUserRepository.save(user);
     }
 
     // =========== Utilities method

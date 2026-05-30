@@ -1,5 +1,6 @@
 package com.hdl.soar.module.system.service.dept;
 
+import cn.hutool.core.collection.CollUtil;
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 import com.hdl.soar.framework.common.pojo.PageResult;
 import com.hdl.soar.framework.jpa.core.util.PageUtils;
@@ -18,9 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.hdl.soar.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.hdl.soar.module.system.enums.ErrorCodeConstants.*;
@@ -76,6 +75,14 @@ public class PostServiceImpl implements PostService {
     public PostPO getPost(Long id) {
         return postRepository.findById(id)
                 .orElseThrow(() -> exception(POST_NOT_FOUND));
+    }
+
+    @Override
+    public List<PostPO> getPostList(Collection<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return Collections.emptyList();
+        }
+        return postRepository.findAllById(ids);
     }
 
     @Override

@@ -1,14 +1,14 @@
 package com.hdl.soar.module.system.mapper.user;
 
 import com.hdl.soar.framework.common.mapper.EnumMapper;
+import com.hdl.soar.module.system.controller.admin.user.dto.profile.UserProfileRespDTO;
+import com.hdl.soar.module.system.controller.admin.user.dto.profile.UserProfileUpdateReqDTO;
 import com.hdl.soar.module.system.controller.admin.user.dto.user.UserRespDTO;
 import com.hdl.soar.module.system.controller.admin.user.dto.user.UserSaveReqDTO;
 import com.hdl.soar.module.system.controller.admin.user.dto.user.UserSimpleRespDTO;
 import com.hdl.soar.module.system.dal.entity.user.AdminUserPO;
 import com.hdl.soar.module.system.mapper.SystemEnumMapper;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
@@ -31,5 +31,12 @@ public interface AdminUserMapper {
     @Mapping(target = "deptName", ignore = true)
     UserSimpleRespDTO toSimpleDTO(AdminUserPO po);
     List<UserSimpleRespDTO> toSimpleDTOList(List<AdminUserPO> list);
+
+    // Profile get: PO -> ProfileRespDTO (roles/dept/posts populated in controller)
+    UserProfileRespDTO toProfileDTO(AdminUserPO po);
+
+    // Profile update: partial update, skip null fields
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateProfilePO(UserProfileUpdateReqDTO dto, @MappingTarget AdminUserPO po);
 
 }

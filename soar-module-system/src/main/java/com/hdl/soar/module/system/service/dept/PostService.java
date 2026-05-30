@@ -7,6 +7,7 @@ import com.hdl.soar.module.system.controller.admin.dept.dto.post.PostSaveReqDTO;
 import com.hdl.soar.module.system.dal.entity.dept.PostPO;
 import jakarta.validation.Valid;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -50,6 +51,14 @@ public interface PostService {
      * @return position information
      */
     PostPO getPost(Long id);
+
+    /**
+     * Get post list by IDs
+     *
+     * @param ids post IDs
+     * @return post list
+     */
+    List<PostPO> getPostList(Collection<Long> ids);
 
     /**
      * Get position paginated list

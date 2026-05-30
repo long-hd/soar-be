@@ -2,6 +2,8 @@ package com.hdl.soar.module.system.service.user;
 
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 import com.hdl.soar.framework.common.pojo.PageResult;
+import com.hdl.soar.module.system.controller.admin.user.dto.profile.UserProfileUpdatePasswordReqDTO;
+import com.hdl.soar.module.system.controller.admin.user.dto.profile.UserProfileUpdateReqDTO;
 import com.hdl.soar.module.system.controller.admin.user.dto.user.UserImportExcelDTO;
 import com.hdl.soar.module.system.controller.admin.user.dto.user.UserImportRespDTO;
 import com.hdl.soar.module.system.controller.admin.user.dto.user.UserPageReqDTO;
@@ -120,5 +122,22 @@ public interface AdminUserService {
      * @return whether the passwords match
      */
     boolean isPasswordMatch(String rawPassword, String encodedPassword);
+
+
+    /**
+     * User self-updates their own profile (nickname, email, mobile, sex, avatar).
+     *
+     * @param userId user ID (from token)
+     * @param reqDTO profile update data
+     */
+    void updateUserProfile(Long userId, UserProfileUpdateReqDTO reqDTO);
+
+    /**
+     * User self-changes their own password (requires old password verification).
+     *
+     * @param userId user ID (from token)
+     * @param reqDTO old + new password
+     */
+    void updateUserProfilePassword(Long userId, UserProfileUpdatePasswordReqDTO reqDTO);
 
 }
