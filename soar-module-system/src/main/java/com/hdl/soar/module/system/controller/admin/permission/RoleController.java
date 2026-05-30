@@ -9,7 +9,7 @@ import com.hdl.soar.module.system.controller.admin.permission.dto.role.RolePageR
 import com.hdl.soar.module.system.controller.admin.permission.dto.role.RoleRespDTO;
 import com.hdl.soar.module.system.controller.admin.permission.dto.role.RoleSaveReqDTO;
 import com.hdl.soar.module.system.dal.entity.permission.RolePO;
-import com.hdl.soar.module.system.mapper.RoleMapper;
+import com.hdl.soar.module.system.mapper.permission.RoleMapper;
 import com.hdl.soar.module.system.service.permission.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

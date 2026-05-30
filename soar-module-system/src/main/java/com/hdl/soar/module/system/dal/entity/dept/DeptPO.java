@@ -74,6 +74,6 @@ public class DeptPO extends TenantBasePO {
      * Enum {@link CommonStatusEnum}</p>
      */
     @Column(name = "status", nullable = false)
-    private Integer status;
+    private CommonStatusEnum status;
 
 }

@@ -18,7 +18,7 @@ import com.hdl.soar.module.system.dal.redis.RedisKeyConstants;
 import com.hdl.soar.module.system.enums.permission.DataScopeEnum;
 import com.hdl.soar.module.system.enums.permission.RoleCodeEnum;
 import com.hdl.soar.module.system.enums.permission.RoleTypeEnum;
-import com.hdl.soar.module.system.mapper.RoleMapper;
+import com.hdl.soar.module.system.mapper.permission.RoleMapper;
 import com.hdl.soar.module.system.dal.entity.permission.RolePO_;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AccessLevel;
