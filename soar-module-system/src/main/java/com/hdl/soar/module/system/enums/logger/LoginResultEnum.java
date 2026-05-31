@@ -1,5 +1,8 @@
 package com.hdl.soar.module.system.enums.logger;
 
+import cn.hutool.core.util.ArrayUtil;
+import com.hdl.soar.framework.common.enums.converter.IntEnumConverter;
+import jakarta.persistence.Converter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -20,5 +23,14 @@ public enum LoginResultEnum {
      * Result code
      */
     private final Integer result;
+
+    public static LoginResultEnum of(Integer val) {
+        return ArrayUtil.firstMatch(e -> e.getResult().equals(val) , LoginResultEnum.values());
+    }
+
+    @Converter(autoApply = true)
+    public static class JpaConverter extends IntEnumConverter<LoginResultEnum> {
+        public JpaConverter() {super(LoginResultEnum.class, LoginResultEnum::getResult);}
+    }
 
 }

@@ -1,13 +1,13 @@
 package com.hdl.soar.module.system.service.logger;
 
 import com.hdl.soar.framework.common.pojo.PageResult;
-import com.hdl.soar.framework.common.util.object.BeanUtils;
 import com.hdl.soar.framework.jpa.core.util.PageUtils;
 import com.hdl.soar.module.system.api.logger.dto.LoginLogCreateReqDTO;
 import com.hdl.soar.module.system.controller.admin.logger.dto.loginlog.LoginLogPageReqDTO;
 import com.hdl.soar.module.system.dal.entity.logger.LoginLogPO;
 import com.hdl.soar.module.system.dal.postgres.logger.LoginLogRepository;
 import com.hdl.soar.module.system.enums.logger.LoginResultEnum;
+import com.hdl.soar.module.system.mapper.logger.LoginLogMapper;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -48,9 +48,9 @@ public class LoginLogServiceImpl implements LoginLogService{
             likeIfPresent(predicates, cb, root, LoginLogPO_.username, pageReqDTO.getUsername());
             betweenIfPresent(predicates, cb, root, LoginLogPO_.createTime, pageReqDTO.getCreateTime());
             if(Boolean.TRUE.equals(pageReqDTO.getStatus())) {
-                predicates.add(cb.equal(root.get(LoginLogPO_.result), LoginResultEnum.SUCCESS.getResult()));
+                predicates.add(cb.equal(root.get(LoginLogPO_.result), LoginResultEnum.SUCCESS));
             } else if (Boolean.FALSE.equals(pageReqDTO.getStatus())) {
-                predicates.add(cb.greaterThan(root.get(LoginLogPO_.result), LoginResultEnum.SUCCESS.getResult()));
+                predicates.add(cb.notEqual(root.get(LoginLogPO_.result), LoginResultEnum.SUCCESS));
             }
             return cb.and(predicates.toArray(new Predicate[0]));
         };
@@ -61,7 +61,7 @@ public class LoginLogServiceImpl implements LoginLogService{
 
     @Override
     public void createLoginLog(LoginLogCreateReqDTO reqDTO) {
-        LoginLogPO loginLog = BeanUtils.toBean(reqDTO, LoginLogPO.class);
+        LoginLogPO loginLog = LoginLogMapper.INSTANCE.toPO(reqDTO);
         loginLogRepository.save(loginLog);
     }
 }

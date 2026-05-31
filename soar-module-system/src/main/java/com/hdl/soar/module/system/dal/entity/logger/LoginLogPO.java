@@ -33,7 +33,7 @@ public class LoginLogPO extends TenantBasePO {
      * Enum {@link LoginLogTypeEnum}
      */
     @Column(name = "log_type", nullable = false)
-    private Integer logType;
+    private LoginLogTypeEnum logType;
 
     /**
      * Trace ID
@@ -53,7 +53,7 @@ public class LoginLogPO extends TenantBasePO {
      * Enum {@link UserTypeEnum}
      */
     @Column(name = "user_type")
-    private Integer userType;
+    private UserTypeEnum userType;
 
     /**
      * Username
@@ -69,7 +69,7 @@ public class LoginLogPO extends TenantBasePO {
      * Enum {@link LoginResultEnum}
      */
     @Column(name = "result")
-    private Integer result;
+    private LoginResultEnum result;
 
     /**
      * User IP

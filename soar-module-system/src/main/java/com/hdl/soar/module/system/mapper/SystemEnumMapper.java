@@ -1,6 +1,9 @@
 package com.hdl.soar.module.system.mapper;
 
+import com.hdl.soar.framework.common.enums.UserTypeEnum;
 import com.hdl.soar.module.system.enums.common.SexEnum;
+import com.hdl.soar.module.system.enums.logger.LoginLogTypeEnum;
+import com.hdl.soar.module.system.enums.logger.LoginResultEnum;
 import com.hdl.soar.module.system.enums.permission.DataScopeEnum;
 import com.hdl.soar.module.system.enums.permission.MenuTypeEnum;
 import com.hdl.soar.module.system.enums.permission.RoleTypeEnum;
@@ -46,5 +49,35 @@ public interface SystemEnumMapper {
     default SexEnum toSexEnum(Integer val) { return SexEnum.of(val); }
 
     default Integer toIntSexEnum(SexEnum val) { return  val.getSex(); }
+
+    // =============== LoginLogTypeEnum
+
+    default LoginLogTypeEnum toLoginLogTypeEnum(Integer val) {
+        return LoginLogTypeEnum.of(val);
+    }
+
+    default Integer toIntLoginLogTypeEnum(LoginLogTypeEnum val) {
+        return val.getType();
+    }
+
+    // =============== UserTypeEnum
+
+    default UserTypeEnum toUserTypeEnum(Integer val) {
+        return UserTypeEnum.of(val);
+    }
+
+    default Integer toIntUserTypeEnum(UserTypeEnum val) {
+        return val.getValue();
+    }
+
+    // =============== LoginResultEnum
+
+    default LoginResultEnum toLoginResultEnum(Integer val) {
+        return LoginResultEnum.of(val);
+    }
+
+    default  Integer toIntLoginResultEnum(LoginResultEnum val) {
+        return val.getResult();
+    }
 
 }

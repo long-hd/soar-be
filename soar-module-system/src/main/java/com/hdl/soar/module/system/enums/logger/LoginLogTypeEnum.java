@@ -1,5 +1,7 @@
 package com.hdl.soar.module.system.enums.logger;
 
+import com.hdl.soar.framework.common.enums.converter.IntEnumConverter;
+import jakarta.persistence.Converter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -22,5 +24,22 @@ public enum LoginLogTypeEnum {
      * Log type
      */
     private final Integer type;
+
+    public static LoginLogTypeEnum of(Integer val) {
+        if(val == null) {return null;}
+        for (LoginLogTypeEnum logType : LoginLogTypeEnum.values()) {
+            if(logType.getType().equals(val)) {
+                return logType;
+            }
+        }
+        return null;
+    }
+
+    @Converter(autoApply = true)
+    public static class JpaConverter extends IntEnumConverter<LoginLogTypeEnum> {
+        protected JpaConverter() {
+            super(LoginLogTypeEnum.class, LoginLogTypeEnum::getType);
+        }
+    }
 
 }

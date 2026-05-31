@@ -34,7 +34,7 @@ public class LoginLogCreateReqDTO {
     /**
      * Username
      *
-     * No longer required, because for Member social login, username may not be available (mobile used instead)
+     * <p>No longer required, because for Member social login, username may not be available (mobile used instead)
      */
     private String username;
 
@@ -53,7 +53,7 @@ public class LoginLogCreateReqDTO {
     /**
      * Browser User-Agent
      *
-     * Optional, because during Job-based forced logout, User-Agent cannot be provided
+     * <p>Optional, because during Job-based forced logout, User-Agent cannot be provided
      */
     private String userAgent;
 }
