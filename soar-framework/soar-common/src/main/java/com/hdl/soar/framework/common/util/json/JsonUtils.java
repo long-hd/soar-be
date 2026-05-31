@@ -216,11 +216,17 @@ public class JsonUtils {
         }
     }
 
+    /**
+     * Parse JSON string to Jackson tree model.
+     *
+     * @param text JSON string
+     * @return JsonNode tree, or null if text is blank
+     */
     public static JsonNode parseTree(String text) {
         try {
             return objectMapper.readTree(text);
         } catch (IOException e) {
-            log.error("json parse err,json:{}", text, e);
+            log.error("[parseTree][text({}) parse error]", text, e);
             throw new RuntimeException(e);
         }
     }

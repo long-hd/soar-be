@@ -36,6 +36,14 @@ public class SpecUtils {
         predicates.add(cb.greaterThan(root.get(field), value));
     }
 
+    public static <T, V extends Comparable<? super V>> void gteIfPresent(List<Predicate> predicates,
+                                                                         CriteriaBuilder cb, Root<T> root,
+                                                                         SingularAttribute<? super T, V> field, V value) {
+        if (value != null) {
+            predicates.add(cb.greaterThanOrEqualTo(root.get(field), value));
+        }
+    }
+
     public static <T, V extends Comparable<? super V>> void betweenIfPresent(List<Predicate> predicates,
                                                CriteriaBuilder cb, Root<T> root,
                                                SingularAttribute<? super T, V> field, V[] value) {

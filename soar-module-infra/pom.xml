@@ -41,6 +41,11 @@
             <artifactId>soar-spring-boot-starter-redis</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.hdl.boot</groupId>
+            <artifactId>soar-spring-boot-starter-excel</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-jpamodelgen</artifactId>
             <scope>provided</scope>

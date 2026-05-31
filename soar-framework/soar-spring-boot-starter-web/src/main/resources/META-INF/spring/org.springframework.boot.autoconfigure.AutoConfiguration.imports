@@ -1,3 +1,5 @@
 com.hdl.soar.framework.web.config.SoarWebAutoConfiguration
 com.hdl.soar.framework.swagger.config.SoarSwaggerAutoConfiguration
 com.hdl.soar.framework.dict.config.SoarDictAutoConfiguration
+com.hdl.soar.framework.apilog.config.SoarApiLogAutoConfiguration
+com.hdl.soar.framework.web.config.SoarAsyncAutoConfiguration

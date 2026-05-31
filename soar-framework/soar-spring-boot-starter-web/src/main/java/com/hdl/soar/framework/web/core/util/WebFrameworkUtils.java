@@ -109,6 +109,13 @@ public class WebFrameworkUtils {
         request.setAttribute(REQUEST_ATTRIBUTE_COMMON_RESULT, result);
     }
 
+    public static CommonResult<?> getCommonResult(HttpServletRequest request) {
+        if (request == null) {
+            return null;
+        }
+        return (CommonResult<?>) request.getAttribute(REQUEST_ATTRIBUTE_COMMON_RESULT);
+    }
+
     public static HttpServletRequest getRequest() {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         if (!(requestAttributes instanceof ServletRequestAttributes servletRequestAttributes)) {

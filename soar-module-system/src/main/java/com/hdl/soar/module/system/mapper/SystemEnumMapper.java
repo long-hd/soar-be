@@ -60,16 +60,6 @@ public interface SystemEnumMapper {
         return val.getType();
     }
 
-    // =============== UserTypeEnum
-
-    default UserTypeEnum toUserTypeEnum(Integer val) {
-        return UserTypeEnum.of(val);
-    }
-
-    default Integer toIntUserTypeEnum(UserTypeEnum val) {
-        return val.getValue();
-    }
-
     // =============== LoginResultEnum
 
     default LoginResultEnum toLoginResultEnum(Integer val) {
