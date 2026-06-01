@@ -3,6 +3,7 @@ package com.hdl.soar.module.system.service.user;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.google.common.annotations.VisibleForTesting;
+import com.hdl.soar.framework.common.biz.infra.config.ConfigCommonApi;
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 import com.hdl.soar.framework.common.exception.ServiceException;
 import com.hdl.soar.framework.common.pojo.PageResult;
@@ -60,9 +61,10 @@ import static com.hdl.soar.module.system.enums.OperateLogConstants.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminUserServiceImpl implements AdminUserService {
 
-    @NonFinal
-    @Value("${soar.user.init-password:123456}") // TODO: Switch to ConfigApi when infra config module is ready
-    String initPassword;
+    static final String USER_INIT_PASSWORD_KEY = "system.user.init-password";
+    static final String USER_REGISTER_ENABLED_KEY = "system.user.register-enabled";
+
+    ConfigCommonApi configApi;
 
     AdminUserRepository adminUserRepository;
     UserPostRepository userPostRepository;
@@ -90,8 +92,6 @@ public class AdminUserServiceImpl implements AdminUserService {
         // 3. Sync user-post join table
         createUserPosts(user.getId(), createReqDTO.getPostIds());
 
-        // TODO: 4. Record operation log context
-
         return user.getId();
     }
 
@@ -113,8 +113,6 @@ public class AdminUserServiceImpl implements AdminUserService {
 
         // 4. Sync user-post join table (diff-based)
         updateUserPosts(updateReqDTO.getId(), updateReqDTO.getPostIds());
-
-        // TODO: 5. Record operation log context
     }
 
     @Override
@@ -200,6 +198,8 @@ public class AdminUserServiceImpl implements AdminUserService {
         if (CollUtil.isEmpty(importUsers)) {
             throw exception(USER_IMPORT_LIST_IS_EMPTY);
         }
+
+        String initPassword = configApi.getConfigValueByKey(USER_INIT_PASSWORD_KEY);
         if (StrUtil.isBlank(initPassword)) {
             throw exception(USER_IMPORT_INIT_PASSWORD);
         }
