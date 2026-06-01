@@ -46,10 +46,11 @@ public class MenuPO extends BasePO {
      * </p>
      * <p>
      * When this MenuDO is assigned to a role, it grants access to this resource:
-     * - Backend: works with @PreAuthorize to secure API endpoints.
+     * - Backend: works with @PreAuthorize to secure API endpoints. <br>
      * - Frontend: used to control button visibility so users without permission cannot see or use certain actions.
      * </p>
      */
+    @Column(name = "permission")
     private String permission;
 
     /**

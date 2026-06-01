@@ -2,11 +2,13 @@
 -- Soar V1.0.1 — System module tables
 -- Database: PostgreSQL
 --
--- Differences from yudao reference:
---   creator/updater  : int8     (user ID, not varchar username)
+-- Conventions:
+--   creator/updater  : int8         (user ID, not varchar username)
 --   create_time/...  : timestamptz  (Instant, not timestamp)
---   deleted          : boolean  (not int4)
---   id               : bigserial (GenerationType.IDENTITY)
+--   deleted          : boolean      (not int4)
+--   id               : bigserial    (GenerationType.IDENTITY)
+--   optional fields  : nullable, NO DEFAULT
+--   required fields  : NOT NULL, NO DEFAULT (code must set value)
 -- =====================================================================
 
 -- =====================================================================
@@ -17,8 +19,8 @@ CREATE TABLE system_tenant_package (
     id              bigserial       PRIMARY KEY,
     name            varchar(30)     NOT NULL,
     status          int4            NOT NULL DEFAULT 0,
-    remark          varchar(256)    DEFAULT '',
-    menu_ids        varchar(4096)   NOT NULL DEFAULT '[]',
+    remark          varchar(256),
+    menu_ids        varchar(4096),
     creator         int8,
     create_time     timestamptz     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updater         int8,
@@ -33,7 +35,7 @@ CREATE TABLE system_tenant (
     contact_name    varchar(30),
     contact_mobile  varchar(500),
     status          int4            NOT NULL DEFAULT 0,
-    websites        varchar(1024)   DEFAULT '[]',
+    websites        varchar(1024),
     package_id      int8            NOT NULL,
     expire_time     timestamptz,
     account_count   int4,
@@ -87,7 +89,7 @@ CREATE TABLE system_post (
 CREATE TABLE system_users (
     id              bigserial       PRIMARY KEY,
     username        varchar(30)     NOT NULL,
-    password        varchar(100)    NOT NULL DEFAULT '',
+    password        varchar(100)    NOT NULL,
     nickname        varchar(30)     NOT NULL,
     remark          varchar(500),
     dept_id         int8,
@@ -137,7 +139,7 @@ CREATE TABLE system_role (
     type            int4            NOT NULL DEFAULT 1,
     remark          varchar(500),
     data_scope      int4            DEFAULT 1,
-    data_scope_dept_ids varchar(500) DEFAULT '[]',
+    data_scope_dept_ids varchar(500),
     creator         int8,
     create_time     timestamptz     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updater         int8,
@@ -149,11 +151,11 @@ CREATE TABLE system_role (
 CREATE TABLE system_menu (
     id              bigserial       PRIMARY KEY,
     name            varchar(50)     NOT NULL,
-    permission      varchar(100)    NOT NULL DEFAULT '',
+    permission      varchar(100),
     type            int4            NOT NULL,
     sort            int4            NOT NULL DEFAULT 0,
     parent_id       int8            NOT NULL DEFAULT 0,
-    path            varchar(200)    DEFAULT '',
+    path            varchar(200),
     icon            varchar(100),
     component       varchar(255),
     component_name  varchar(255),

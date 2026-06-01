@@ -25,7 +25,7 @@ public class OperateLogPO extends TenantBasePO {
     /**
      * Trace ID for correlating with access/error logs.
      */
-    @Column(name = "trace_id", nullable = false)
+    @Column(name = "trace_id")
     private String traceId;
 
     /**
@@ -65,13 +65,13 @@ public class OperateLogPO extends TenantBasePO {
      * <p>
      * Example: "Created user [Long]"
      */
-    @Column(name = "content", nullable = false)
+    @Column(name = "content")
     private String content;
 
     /**
      * Extra fields in JSON format.
      */
-    @Column(name = "extra", nullable = false)
+    @Column(name = "extra")
     private String extra;
 
     @Column(name = "request_method")

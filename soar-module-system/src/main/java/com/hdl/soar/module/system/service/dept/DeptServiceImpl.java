@@ -11,6 +11,9 @@ import com.hdl.soar.module.system.dal.postgres.dept.DeptRepository;
 import com.hdl.soar.module.system.dal.redis.RedisKeyConstants;
 import com.hdl.soar.module.system.mapper.dept.DeptMapper;
 import jakarta.persistence.criteria.Predicate;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -32,6 +35,8 @@ import static com.hdl.soar.framework.jpa.core.util.SpecUtils.*;
 @Slf4j
 @Service
 @Validated
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DeptServiceImpl implements DeptService {
 
     DeptRepository deptRepository;

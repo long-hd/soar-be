@@ -2,11 +2,16 @@ package com.hdl.soar.module.system.api.logger;
 
 import com.hdl.soar.framework.common.biz.system.logger.dto.OperateLogCreateReqDTO;
 import com.hdl.soar.module.system.service.logger.OperateLogService;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 @Service
 @Validated
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OperateLogApiImpl implements OperateLogApi {
 
     OperateLogService operateLogService;

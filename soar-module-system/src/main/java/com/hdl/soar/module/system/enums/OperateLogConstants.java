@@ -11,8 +11,8 @@ public interface OperateLogConstants {
     // ========== User ==========
     String USER_MODULE = "System User";
 
-    String USER_CREATE_CONTENT = "'Created user [' + #reqDTO.nickname + ']'";
-    String USER_UPDATE_CONTENT = "'Updated user [' + #reqDTO.nickname + ']'";
+    String USER_CREATE_CONTENT = "'Created user [' + #createReqDTO.nickname + ']'";
+    String USER_UPDATE_CONTENT = "'Updated user [' + #updateReqDTO.nickname + ']'";
     String USER_DELETE_CONTENT = "'Deleted user ID [' + #id + ']'";
     String USER_RESET_PWD_CONTENT = "'Reset password for user ID [' + #id + ']'";
 
