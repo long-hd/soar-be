@@ -1,4 +1,4 @@
-package com.hdl.soar.module.infra.controller.admin.logger.dto;
+package com.hdl.soar.module.infra.controller.admin.logger.dto.apiaccesslog;
 
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;

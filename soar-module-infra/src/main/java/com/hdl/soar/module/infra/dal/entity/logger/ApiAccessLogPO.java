@@ -51,7 +51,7 @@ public class ApiAccessLogPO extends TenantBasePO {
     /**
      * Type of the user.
      *
-     * Defined by the {@link UserTypeEnum} enumeration.
+     * <p>Defined by the {@link UserTypeEnum} enumeration.
      */
     @Column(name = "user_type")
     private UserTypeEnum userType;

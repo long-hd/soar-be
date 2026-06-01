@@ -1,2 +1,3 @@
 com.hdl.soar.framework.security.config.SoarSecurityAutoConfiguration
 com.hdl.soar.framework.security.config.SoarWebSecurityConfigurerAdapter
+com.hdl.soar.framework.operatelog.config.SoarOperateLogAutoConfiguration

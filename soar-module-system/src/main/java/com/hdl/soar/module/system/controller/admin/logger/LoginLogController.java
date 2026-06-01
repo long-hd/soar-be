@@ -1,5 +1,7 @@
 package com.hdl.soar.module.system.controller.admin.logger;
 
+import com.hdl.soar.framework.apilog.core.annotation.ApiAccessLog;
+import com.hdl.soar.framework.common.enums.OperateTypeEnum;
 import com.hdl.soar.framework.common.pojo.CommonResult;
 import com.hdl.soar.framework.common.pojo.PageParam;
 import com.hdl.soar.framework.common.pojo.PageResult;
@@ -68,7 +70,7 @@ public class LoginLogController {
     @Operation(summary = "Export login logs")
     @ApiResponse(content = @Content(mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
     @PreAuthorize("@ss.hasPermission('system:login-log:export')")
-    // TODO @ApiAccessLog(operateType = EXPORT)
+    @ApiAccessLog(operateType = OperateTypeEnum.EXPORT)
     public void exportLoginLog(HttpServletResponse response,
                                @Valid LoginLogPageReqDTO exportReqDTO) throws IOException {
         exportReqDTO.setPageSize(PageParam.PAGE_SIZE_NONE);

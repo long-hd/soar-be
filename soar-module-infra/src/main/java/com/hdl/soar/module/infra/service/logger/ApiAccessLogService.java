@@ -2,7 +2,7 @@ package com.hdl.soar.module.infra.service.logger;
 
 import com.hdl.soar.framework.common.biz.infra.logger.dto.ApiAccessLogCreateReqDTO;
 import com.hdl.soar.framework.common.pojo.PageResult;
-import com.hdl.soar.module.infra.controller.admin.logger.dto.ApiAccessLogPageReqDTO;
+import com.hdl.soar.module.infra.controller.admin.logger.dto.apiaccesslog.ApiAccessLogPageReqDTO;
 import com.hdl.soar.module.infra.dal.entity.logger.ApiAccessLogPO;
 
 /**

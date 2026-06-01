@@ -28,7 +28,7 @@ public class LoginUser {
     /**
      * User type
      *
-     * Related to {@link UserTypeEnum}
+     * <p>Related to {@link UserTypeEnum}
      */
     private Integer userType;
 
@@ -57,7 +57,7 @@ public class LoginUser {
     /**
      * Context fields, not persisted.
      *
-     * 1. Used for temporary caching based on the LoginUser dimension.
+     * <p> Used for temporary caching based on the LoginUser dimension.
      */
     @JsonIgnore
     private Map<String, Object> context;

@@ -5,9 +5,9 @@ import cn.hutool.core.util.StrUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 import com.hdl.soar.framework.common.exception.ServiceException;
-import com.hdl.soar.framework.common.exception.util.ServiceExceptionUtil;
 import com.hdl.soar.framework.common.pojo.PageResult;
 import com.hdl.soar.framework.jpa.core.util.PageUtils;
+import com.hdl.soar.framework.operatelog.core.annotation.OperateLog;
 import com.hdl.soar.module.system.controller.admin.user.dto.profile.UserProfileUpdatePasswordReqDTO;
 import com.hdl.soar.module.system.controller.admin.user.dto.profile.UserProfileUpdateReqDTO;
 import com.hdl.soar.module.system.controller.admin.user.dto.user.UserImportExcelDTO;
@@ -46,10 +46,10 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static com.hdl.soar.framework.common.util.collection.CollectionUtils.*;
 import static com.hdl.soar.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.hdl.soar.module.system.enums.ErrorCodeConstants.*;
 import static com.hdl.soar.framework.jpa.core.util.SpecUtils.*;
+import static com.hdl.soar.module.system.enums.OperateLogConstants.*;
 
 /**
  * Backend User Service Implementation Class
@@ -75,7 +75,8 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    // TODO: @LogRecord(type = SYSTEM_USER_TYPE, subType = SYSTEM_USER_CREATE_SUB_TYPE, bizNo = "{{#user.id}}", success = SYSTEM_USER_CREATE_SUCCESS)
+    @OperateLog(module = USER_MODULE, name = "Create User",
+            bizId = "#result", content = USER_CREATE_CONTENT)
     public Long createUser(UserSaveReqDTO createReqDTO) {
         // 1. Validate
         validateUserForCreateOrUpdate(null, createReqDTO);
@@ -96,7 +97,8 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    // TODO: @LogRecord(type = SYSTEM_USER_TYPE, subType = SYSTEM_USER_UPDATE_SUB_TYPE, bizNo = "{{#updateReqVO.id}}", success = SYSTEM_USER_UPDATE_SUCCESS)
+    @OperateLog(module = USER_MODULE, name = "Update User",
+            bizId = "#reqDTO.id", content = USER_UPDATE_CONTENT)
     public void updateUser(UserSaveReqDTO updateReqDTO) {
         // 1. Validate exists
         AdminUserPO existing = adminUserRepository.findById(updateReqDTO.getId())
@@ -117,6 +119,8 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @OperateLog(module = USER_MODULE, name = "Delete User",
+            bizId = "#id", content = USER_DELETE_CONTENT)
     public void deleteUser(Long id) {
         // 1. Validate exists
         adminUserRepository.findById(id)
@@ -146,6 +150,8 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     @Override
+    @OperateLog(module = USER_MODULE, name = "Reset Password",
+            bizId = "#id", content = USER_RESET_PWD_CONTENT)
     public void updateUserPassword(Long id, String password) {
         AdminUserPO user = adminUserRepository.findById(id)
                 .orElseThrow(() -> exception(USER_NOT_EXISTS));

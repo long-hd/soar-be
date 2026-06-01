@@ -1,4 +1,4 @@
-package com.hdl.soar.module.infra.controller.admin.logger;
+package com.hdl.soar.module.system.controller.admin.logger;
 
 import com.hdl.soar.framework.apilog.core.annotation.ApiAccessLog;
 import com.hdl.soar.framework.common.enums.OperateTypeEnum;
@@ -6,11 +6,11 @@ import com.hdl.soar.framework.common.pojo.CommonResult;
 import com.hdl.soar.framework.common.pojo.PageParam;
 import com.hdl.soar.framework.common.pojo.PageResult;
 import com.hdl.soar.framework.excel.core.util.ExcelUtils;
-import com.hdl.soar.module.infra.controller.admin.logger.dto.apiaccesslog.ApiAccessLogPageReqDTO;
-import com.hdl.soar.module.infra.controller.admin.logger.dto.apiaccesslog.ApiAccessLogRespDTO;
-import com.hdl.soar.module.infra.dal.entity.logger.ApiAccessLogPO;
-import com.hdl.soar.module.infra.mapper.logger.ApiAccessLogMapper;
-import com.hdl.soar.module.infra.service.logger.ApiAccessLogService;
+import com.hdl.soar.module.system.controller.admin.logger.dto.operatelog.OperateLogPageReqDTO;
+import com.hdl.soar.module.system.controller.admin.logger.dto.operatelog.OperateLogRespDTO;
+import com.hdl.soar.module.system.dal.entity.logger.OperateLogPO;
+import com.hdl.soar.module.system.mapper.logger.OperateLogMapper;
+import com.hdl.soar.module.system.service.logger.OperateLogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -34,53 +34,52 @@ import java.util.List;
 
 import static com.hdl.soar.framework.common.pojo.CommonResult.success;
 
-@Tag(name = "Admin Backend - API Access Log")
+@Tag(name = "Admin Backend - Operate Log")
 @Slf4j
 @Validated
 @RestController
-@RequestMapping("/infra/api-access-log")
+@RequestMapping("/system/operate-log")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ApiAccessLogController {
+public class OperateLogController {
 
-    ApiAccessLogService apiAccessLogService;
+    OperateLogService operateLogService;
 
     @GetMapping("/get")
-    @Operation(summary = "Get API access log detail")
+    @Operation(summary = "Get operate log detail")
     @Parameter(name = "id", description = "Log ID", required = true, example = "1024")
-    @PreAuthorize("@ss.hasPermission('infra:api-access-log:query')")
-    public CommonResult<ApiAccessLogRespDTO> getApiAccessLog(@RequestParam("id") Long id) {
-        ApiAccessLogPO po = apiAccessLogService.getApiAccessLog(id);
-        return success(ApiAccessLogMapper.INSTANCE.toDTO(po));
+    @PreAuthorize("@ss.hasPermission('system:operate-log:query')")
+    public CommonResult<OperateLogRespDTO> getOperateLog(@RequestParam("id") Long id) {
+        OperateLogPO po = operateLogService.getOperateLog(id);
+        return success(OperateLogMapper.INSTANCE.toDTO(po));
     }
 
     @GetMapping("/page")
-    @Operation(summary = "Get API access log page")
-    @PreAuthorize("@ss.hasPermission('infra:api-access-log:query')")
-    public CommonResult<PageResult<ApiAccessLogRespDTO>> getApiAccessLogPage(
-            @Valid ApiAccessLogPageReqDTO pageReqDTO) {
-        PageResult<ApiAccessLogPO> pageResult = apiAccessLogService.getApiAccessLogPage(pageReqDTO);
+    @Operation(summary = "Get operate log page")
+    @PreAuthorize("@ss.hasPermission('system:operate-log:query')")
+    public CommonResult<PageResult<OperateLogRespDTO>> getOperateLogPage(
+            @Valid OperateLogPageReqDTO pageReqDTO) {
+        PageResult<OperateLogPO> pageResult = operateLogService.getOperateLogPage(pageReqDTO);
         return success(new PageResult<>(
-                ApiAccessLogMapper.INSTANCE.toDTOList(pageResult.getList()),
+                OperateLogMapper.INSTANCE.toDTOList(pageResult.getList()),
                 pageResult.getTotal()
         ));
     }
 
     @GetMapping("/export-excel")
-    @Operation(summary = "Export API access logs")
+    @Operation(summary = "Export operate logs")
     @ApiResponse(content = @Content(mediaType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-    @PreAuthorize("@ss.hasPermission('infra:api-access-log:export')")
+    @PreAuthorize("@ss.hasPermission('system:operate-log:export')")
     @ApiAccessLog(operateType = OperateTypeEnum.EXPORT)
-    public void exportApiAccessLog(HttpServletResponse response,
-                                   @Valid ApiAccessLogPageReqDTO exportReqDTO) throws IOException {
+    public void exportOperateLog(HttpServletResponse response,
+                                 @Valid OperateLogPageReqDTO exportReqDTO) throws IOException {
         exportReqDTO.setPageSize(PageParam.PAGE_SIZE_NONE);
-        List<ApiAccessLogPO> list = apiAccessLogService.getApiAccessLogPage(exportReqDTO).getList();
+        List<OperateLogPO> list = operateLogService.getOperateLogPage(exportReqDTO).getList();
         ExcelUtils.write(response,
-                "api-access-logs.xlsx",
-                "API Access Logs",
-                ApiAccessLogRespDTO.class,
-                ApiAccessLogMapper.INSTANCE.toDTOList(list));
+                "operate-logs.xlsx",
+                "Operate Logs",
+                OperateLogRespDTO.class,
+                OperateLogMapper.INSTANCE.toDTOList(list));
     }
-
 
 }

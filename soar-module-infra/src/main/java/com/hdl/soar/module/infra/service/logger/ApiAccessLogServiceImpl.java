@@ -5,7 +5,7 @@ import com.hdl.soar.framework.common.enums.UserTypeEnum;
 import com.hdl.soar.framework.common.pojo.PageResult;
 import com.hdl.soar.framework.common.util.string.StrUtils;
 import com.hdl.soar.framework.jpa.core.util.PageUtils;
-import com.hdl.soar.module.infra.controller.admin.logger.dto.ApiAccessLogPageReqDTO;
+import com.hdl.soar.module.infra.controller.admin.logger.dto.apiaccesslog.ApiAccessLogPageReqDTO;
 import com.hdl.soar.module.infra.dal.entity.logger.ApiAccessLogPO;
 import com.hdl.soar.module.infra.dal.entity.logger.ApiAccessLogPO_;
 import com.hdl.soar.module.infra.dal.postgres.logger.ApiAccessLogRepository;
