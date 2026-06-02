@@ -1,5 +1,6 @@
 package com.hdl.soar.framework.common.util.cache;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -53,6 +54,31 @@ public class CacheUtils {
         return CacheBuilder.newBuilder()
                 .maximumSize(CACHE_MAX_SIZE)
                 // Only blocks the current loading thread; other threads return stale value
+                .refreshAfterWrite(duration)
+                .build(loader);
+    }
+
+    // ========== Caffeine
+
+    /**
+     * Build an asynchronously-refreshed Caffeine {@link com.github.benmanes.caffeine.cache.LoadingCache}.
+     *
+     * <p>Caffeine's {@code refreshAfterWrite} is asynchronous by default: when an entry is older than
+     * {@code duration}, the next access returns the stale value and triggers a background reload.
+     * No explicit executor or async wrapper is required (unlike the Guava variant above).
+     *
+     * <p>Use for global/system data (not user- or ThreadLocal-bound), e.g. the file client cache.
+     *
+     * @param duration refresh-after-write interval
+     * @param loader   value loader
+     * @param <K>      key type
+     * @param <V>      value type
+     * @return a Caffeine LoadingCache
+     */
+    public static <K, V> com.github.benmanes.caffeine.cache.LoadingCache<K, V> buildAsyncReloadingCaffeine(
+            Duration duration, com.github.benmanes.caffeine.cache.CacheLoader<K, V> loader) {
+        return Caffeine.newBuilder()
+                .maximumSize(CACHE_MAX_SIZE)
                 .refreshAfterWrite(duration)
                 .build(loader);
     }

@@ -33,6 +33,7 @@ public interface ErrorCodeConstants {
     ErrorCode FILE_PATH_EXISTS = new ErrorCode(1_001_003_000, "File path already exists");
     ErrorCode FILE_NOT_EXISTS = new ErrorCode(1_001_003_001, "File does not exist");
     ErrorCode FILE_IS_EMPTY = new ErrorCode(1_001_003_002, "File is empty");
+    ErrorCode FILE_PRESIGN_NOT_SUPPORTED = new ErrorCode(1_001_003_003, "Presigned upload is not supported by the current storage (only S3)");
 
     // ========== Code Generator 1-001-004-000 ==========
     ErrorCode CODEGEN_TABLE_EXISTS = new ErrorCode(1_001_004_002, "Table definition already exists");

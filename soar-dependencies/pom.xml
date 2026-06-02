@@ -73,7 +73,8 @@
             Third-party cloud services
         -->
         <!-- Lưu trữ và hạ tầng (Cloud Infrastructure) -->
-        <awssdk.version>2.44.0</awssdk.version>
+        <awssdk.version>2.45.1</awssdk.version>
+        <caffeine.version>3.2.4</caffeine.version>
         <!-- Đăng nhập mạng xã hội (Social Login) -->
         <justauth.version>1.16.7</justauth.version>
         <justauth-starter.version>1.4.0</justauth-starter.version>
@@ -481,10 +482,18 @@
             <!--
                 Third-party cloud services
             -->
+            <!-- AWS SDK v2 BOM: manages all software.amazon.awssdk artifacts (s3, s3-presigner, ...) -->
             <dependency>
                 <groupId>software.amazon.awssdk</groupId>
-                <artifactId>s3</artifactId>
+                <artifactId>bom</artifactId>
                 <version>${awssdk.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>${caffeine.version}</version>
             </dependency>
 
             <dependency>

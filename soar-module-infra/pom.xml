@@ -31,6 +31,24 @@
             <artifactId>soar-spring-boot-starter-biz-tenant</artifactId>
         </dependency>
 
+        <!-- AWS S3 client + presigner (S3-compatible storage: SeaweedFS, AWS S3) -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+        </dependency>
+
+        <!-- In-memory cache for the file client factory (refresh-after-write) -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+
+        <!-- MIME type detection for uploaded files -->
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+        </dependency>
+
         <!-- DB -->
         <dependency>
             <groupId>com.hdl.boot</groupId>
