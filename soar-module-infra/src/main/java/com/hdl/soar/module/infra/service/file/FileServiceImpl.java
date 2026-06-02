@@ -2,9 +2,11 @@ package com.hdl.soar.module.infra.service.file;
 
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.LocalDateTimeUtil;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.digest.DigestUtil;
 import com.hdl.soar.framework.common.pojo.PageResult;
 import com.hdl.soar.framework.jpa.core.util.PageUtils;
 import com.hdl.soar.module.infra.controller.admin.file.dto.file.FileCreateReqDTO;
@@ -49,10 +51,8 @@ public class FileServiceImpl implements FileService {
         }
         // Resolve type + name + path.
         String type = detectType(content);
-        if (StrUtil.isEmpty(name)) {
-            name = IdUtil.fastSimpleUUID();
-        }
-        String path = generateUploadPath(name, directory);
+        // Path uses content hash (collision-safe + natural dedup); original name kept on FilePO.name.
+        String path = generateUploadPath(name, directory, content);
         // Upload via master client.
         FileClient client = fileConfigService.getMasterFileClient();
         if (client == null) {
@@ -83,7 +83,7 @@ public class FileServiceImpl implements FileService {
         if (client == null) {
             throw exception(FILE_CONFIG_NOT_EXISTS);
         }
-        String path = generateUploadPath(StrUtil.isEmpty(name) ? IdUtil.fastSimpleUUID() : name, directory);
+        String path = generateUploadPathByUuid(name, directory);
         try {
             String uploadUrl = client.presignPutUrl(path); // unsupported for DB/LOCAL
             String url = client.presignGetUrl(path, null);
@@ -160,11 +160,34 @@ public class FileServiceImpl implements FileService {
     }
 
     /**
-     * Build the storage path: {@code [directory/]yyyyMMdd/<name>}.
+     * Build the storage path for Mode 1: {@code [directory/]yyyyMMdd/<sha256>.<ext>}.
+     * File name is the SHA-256 of the content (collision-safe + natural dedup); original name
+     * is preserved on {@code FilePO.name}. Hashing a &le;16MB upload costs ~10ms — negligible vs upload/IO.
      */
-    private String generateUploadPath(String name, String directory) {
+    private String generateUploadPath(String name, String directory, byte[] content) {
+        String ext = FileUtil.getSuffix(name); // extension from original name; empty if none
+        String hashName = DigestUtil.sha256Hex(content);
+        String fileName = StrUtil.isNotEmpty(ext) ? hashName + "." + ext : hashName;
+        return buildDatedPath(fileName, directory);
+    }
+
+    /**
+     * Build the storage path for Mode 2 (presigned): {@code [directory/]yyyyMMdd/<uuid>.<ext>}.
+     * Mode 2 has no content at the backend (client uploads directly), so the path can't be hash-based;
+     * a UUID guarantees uniqueness instead.
+     */
+    private String generateUploadPathByUuid(String name, String directory) {
+        String ext = FileUtil.getSuffix(name);
+        String fileName = IdUtil.fastSimpleUUID() + (StrUtil.isNotEmpty(ext) ? "." + ext : "");
+        return buildDatedPath(fileName, directory);
+    }
+
+    /**
+     * Prefix the file name with {@code yyyyMMdd/} and an optional directory.
+     */
+    private String buildDatedPath(String fileName, String directory) {
         String datePrefix = LocalDateTimeUtil.format(LocalDateTime.now(), DatePattern.PURE_DATE_PATTERN); // yyyyMMdd
-        String path = datePrefix + "/" + name;
+        String path = datePrefix + "/" + fileName;
         if (StrUtil.isNotEmpty(directory)) {
             path = directory + "/" + path;
         }

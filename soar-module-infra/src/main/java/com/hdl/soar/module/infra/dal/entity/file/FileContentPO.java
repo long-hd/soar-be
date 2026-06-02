@@ -41,7 +41,6 @@ public class FileContentPO extends BasePO {
     /**
      * File bytes (PostgreSQL {@code bytea}).
      */
-    @Lob
     @Column(name = "content", nullable = false)
     private byte[] content;
 

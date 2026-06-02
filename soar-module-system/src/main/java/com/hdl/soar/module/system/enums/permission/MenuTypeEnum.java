@@ -1,5 +1,7 @@
 package com.hdl.soar.module.system.enums.permission;
 
+import com.hdl.soar.framework.common.enums.converter.IntEnumConverter;
+import jakarta.persistence.Converter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -25,6 +27,11 @@ public enum MenuTypeEnum {
             if (e.type.equals(type)) {return e;}
         }
         return null;
+    }
+
+    @Converter(autoApply = true)
+    public static class JpaConverter extends IntEnumConverter<MenuTypeEnum> {
+        public JpaConverter() {super(MenuTypeEnum.class, MenuTypeEnum::getType);}
     }
 
 }

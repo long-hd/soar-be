@@ -12,6 +12,9 @@ import com.hdl.soar.module.infra.service.file.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.SchemaProperty;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +31,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -47,14 +51,23 @@ public class FileController {
 
     FileService fileService;
 
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Upload a file", description = "Mode 1: backend upload (works for all storage types)")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @Content(
+                    mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                    schemaProperties = {
+                            @SchemaProperty(name = "file",
+                                    schema = @Schema(type = "string", format = "binary", description = "File")),
+                    }))
     @PreAuthorize("@ss.hasPermission('infra:file:create')")
-    public CommonResult<String> uploadFile(@Valid FileUploadReqDTO uploadReqDTO) throws Exception {
-        var file = uploadReqDTO.getFile();
+    public CommonResult<String> uploadFile(
+            @RequestPart("file") MultipartFile file,
+            @RequestParam(value = "directory", required = false) String directory) throws Exception {
         byte[] content = IoUtil.readBytes(file.getInputStream());
-        return success(fileService.createFile(file.getOriginalFilename(), uploadReqDTO.getDirectory(), content));
+        return success(fileService.createFile(file.getOriginalFilename(), directory, content));
     }
+
 
     @GetMapping("/presigned-url")
     @Operation(summary = "Get a presigned upload URL",
