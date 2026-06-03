@@ -17,7 +17,7 @@
 INSERT INTO infra_file_config (name, storage, master, config, remark,
                                creator, create_time, updater, update_time, deleted)
 VALUES ('Local Dev Storage', 10, true,
-        '{"basePath":"/tmp/soar-files","domain":"http://127.0.0.1:8080"}',
+        '{"basePath":"/tmp/soar-files","domain":"http://127.0.0.1:48080"}',
         'Default local storage for development',
         1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP, false);
 

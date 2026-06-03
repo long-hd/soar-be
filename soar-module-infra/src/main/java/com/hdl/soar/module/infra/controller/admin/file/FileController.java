@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.URLUtil;
 import com.hdl.soar.framework.common.pojo.CommonResult;
 import com.hdl.soar.framework.common.pojo.PageResult;
+import com.hdl.soar.framework.tenant.core.aop.TenantIgnore;
 import com.hdl.soar.module.infra.controller.admin.file.dto.file.*;
 import com.hdl.soar.module.infra.dal.entity.file.FilePO;
 import com.hdl.soar.module.infra.mapper.file.FileMapper;
@@ -114,6 +115,7 @@ public class FileController {
     @Operation(summary = "Download a file (public)")
     @Parameter(name = "configId", description = "Storage config ID", required = true)
     @PermitAll
+    @TenantIgnore
     public void getFileContent(HttpServletRequest request,
                                HttpServletResponse response,
                                @PathVariable("configId") Long configId) throws Exception {

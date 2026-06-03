@@ -1,48 +1,45 @@
 # Skill: Add Permission to Existing Entity
 
+> Synced with code 2026-06-02.
+
 ## When to Use
-When adding a new action/button permission to an entity that already has CRUD set up.
-Example: adding "export" or "reset-password" action to User entity.
+Adding a new action/button permission to an entity that already has CRUD (e.g. `export`, `reset-password`).
 
 ## Input Needed
-- Module (e.g., `system`)
-- Entity (e.g., `user`)
-- Action name (e.g., `export`, `reset-password`)
-- Description (e.g., "Export users to Excel")
+Module, entity, action name, display name.
 
 ## Steps
 
-### 1. Add Menu Seed Data (BUTTON record)
+### 1. Menu seed (BUTTON, type=3)
+Add to the appropriate migration (DB not in prod → in-place edit). path/icon/component = NULL.
 ```sql
-INSERT INTO system_menu (name, parent_id, type, permission, sort, status, deleted, tenant_id)
-VALUES ('{Action Display Name}', {parent_menu_id}, 3, '{module}:{entity}:{action}', {sort}, 0, 0, 0);
+INSERT INTO system_menu (id, name, permission, type, sort, parent_id, path, icon, component, component_name,
+                         status, visible, keep_alive, always_show, creator, create_time, updater, update_time, deleted)
+VALUES ({newId}, '{Action}', '{module}:{entity}:{action}', 3, {sort}, {parentMenuId}, NULL, NULL, NULL, NULL,
+        0, true, true, true, 1, CURRENT_TIMESTAMP, 1, CURRENT_TIMESTAMP, false);
+SELECT setval('system_menu_id_seq', (SELECT COALESCE(MAX(id),1) FROM system_menu));
 ```
 
-### 2. Add Controller Method
+### 2. Controller method
 ```java
-@PostMapping("/{id}/reset-password")  // or appropriate HTTP method + path
-@PreAuthorize("@perm.has('{module}:{entity}:{action}')")
-public CommonResult<Boolean> resetPassword(@PathVariable Long id, @RequestBody ...) {
-    // delegate to service
-    return CommonResult.success(true);
+@PostMapping("/{action}")     // or appropriate verb/path, yudao action-style
+@Operation(summary = "...")
+@PreAuthorize("@ss.hasPermission('{module}:{entity}:{action}')")
+public CommonResult<Boolean> {action}(@RequestParam("id") Long id) {
+    {entity}Service.{action}(id);
+    return success(true);
 }
 ```
 
-### 3. Add Service Method
-Add to service interface + implementation.
+### 3. Service method
+Add to interface + impl.
 
-### 4. Assign to Roles
-If this permission should be given to existing roles, add role_menu records:
-```sql
-INSERT INTO system_role_menu (role_id, menu_id) VALUES ({role_id}, {new_menu_id});
-```
+### 4. Assign to roles (optional)
+Super-admin already has everything (granted in code). For other roles, bind `system_role_menu(role_id, menu_id)`.
 
-### 5. Invalidate Permission Cache
-After changing role_menu assignments, invalidate Redis cache:
-`perm:user:{userId}` for affected users.
+### 5. Cache
+Role/menu changes go through the service which evicts the permission cache; no manual Redis key manipulation needed.
 
 ## Verify
-- [ ] Permission code follows `{module}:{entity}:{action}` format
-- [ ] Controller method has `@PreAuthorize`
-- [ ] Menu seed data has type=3 (BUTTON)
-- [ ] Menu parent_id points to correct MENU record
+- [ ] Permission code `{module}:{entity}:{action}`
+- [ ] `@PreAuthorize` present; BUTTON seed type=3 with correct parent_id; NULL (not '') for unused columns
