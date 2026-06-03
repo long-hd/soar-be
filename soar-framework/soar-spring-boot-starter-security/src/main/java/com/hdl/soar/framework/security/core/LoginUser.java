@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -68,4 +69,18 @@ public class LoginUser {
     private Long visitTenantId;
 
     public <T> T getContext(String key, Class<T> type) { return MapUtil.get(context, key, type); }
+
+    /**
+     * Set a context value, lazily initializing the context map.
+     *
+     * <p>Used to memoize per-request data (e.g. the computed dept data-permission
+     * result) on the LoginUser dimension, avoiding repeated lookups within a request.
+     */
+    public void setContext(String key, Object value) {
+        if (context == null) {
+            context = new HashMap<>();
+        }
+        context.put(key, value);
+    }
+
 }
