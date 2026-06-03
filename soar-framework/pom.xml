@@ -22,6 +22,7 @@
         <module>soar-spring-boot-starter-jpa</module>
         <module>soar-spring-boot-starter-biz-tenant</module>
         <module>soar-spring-boot-starter-excel</module>
+        <module>soar-spring-boot-starter-biz-data-permission</module>
     </modules>
 
     <description>

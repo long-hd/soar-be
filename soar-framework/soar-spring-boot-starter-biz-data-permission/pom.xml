@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.hdl.boot</groupId>
+        <artifactId>soar-framework</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>soar-spring-boot-starter-biz-data-permission</artifactId>
+    <packaging>jar</packaging>
+
+    <name>${project.artifactId}</name>
+    <description>Data permission — row-level filtering via Hibernate StatementInspector + JSqlParser</description>
+    <url>https://github.com/long-hd/soar-be.git</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.hdl.boot</groupId>
+            <artifactId>soar-common</artifactId>
+        </dependency>
+
+        <!-- DB integration: brings Hibernate (StatementInspector, HibernatePropertiesCustomizer)
+             and Spring Data JPA. -->
+        <dependency>
+            <groupId>com.hdl.boot</groupId>
+            <artifactId>soar-spring-boot-starter-jpa</artifactId>
+        </dependency>
+
+        <!-- SQL parsing for building/injecting the data-scope WHERE expression. -->
+        <dependency>
+            <groupId>com.github.jsqlparser</groupId>
+            <artifactId>jsqlparser</artifactId>
+        </dependency>
+
+        <!-- Optional: required only when using DeptDataPermissionRule
+             (needs LoginUser / SecurityFrameworkUtils). -->
+        <dependency>
+            <groupId>com.hdl.boot</groupId>
+            <artifactId>soar-spring-boot-starter-security</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+</project>

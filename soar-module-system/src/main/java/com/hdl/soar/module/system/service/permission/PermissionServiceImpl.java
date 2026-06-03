@@ -111,13 +111,13 @@ public class PermissionServiceImpl implements PermissionService {
             }
 
             // Case 1: ALL
-            if (Objects.equals(role.getDataScope(), DataScopeEnum.ALL.getScope())) {
+            if (DataScopeEnum.ALL.equals(role.getDataScope())) {
                 result.setAll(true);
                 continue;
             }
 
             // Case 2: DEPT_CUSTOM
-            if (Objects.equals(role.getDataScope(), DataScopeEnum.DEPT_CUSTOM.getScope())) {
+            if (DataScopeEnum.DEPT_CUSTOM.equals(role.getDataScope())) {
                 CollUtil.addAll(result.getDeptIds(), role.getDataScopeDeptIds());
                 // Ensure the user's own department is included to avoid potential issues
                 // For example, login queries based on t_user.username may be filtered out by dept_id
@@ -126,13 +126,13 @@ public class PermissionServiceImpl implements PermissionService {
             }
 
             // Case 3: DEPT_ONLY
-            if (Objects.equals(role.getDataScope(), DataScopeEnum.DEPT_ONLY.getScope())) {
+            if (DataScopeEnum.DEPT_ONLY.equals(role.getDataScope())) {
                 CollectionUtils.addIfNotNull(result.getDeptIds(), userDeptId.get());
                 continue;
             }
 
             // Case 4: DEPT_AND_CHILD
-            if (Objects.equals(role.getDataScope(), DataScopeEnum.DEPT_AND_CHILD.getScope())) {
+            if (DataScopeEnum.DEPT_AND_CHILD.equals(role.getDataScope())) {
                 Long deptId = userDeptId.get();
                 // If user has no department, skip to avoid null key issues in cache method
                 if (deptId == null) {
@@ -145,7 +145,7 @@ public class PermissionServiceImpl implements PermissionService {
             }
 
             // Case 5: SELF
-            if (Objects.equals(role.getDataScope(), DataScopeEnum.SELF.getScope())) {
+            if (DataScopeEnum.SELF.equals(role.getDataScope())) {
                 result.setSelf(true);
                 continue;
             }
@@ -175,7 +175,7 @@ public class PermissionServiceImpl implements PermissionService {
         return roleMenuRepository.findAllByRoleIdIn(roleIds);
     }
 
-    // =================== Utilities method
+    // =================== Helper
 
     /**
      * Get the self proxy object to ensure AOP takes effect

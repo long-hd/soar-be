@@ -24,6 +24,10 @@
         <!-- Database -->
         <redisson.version>4.4.0</redisson.version>
         <dynamic-datasource.version>4.5.0</dynamic-datasource.version>
+        <!-- SQL parsing — dùng cho data-permission StatementInspector.
+             Pin explicit để kiểm soát version độc lập với Spring Data (Spring Data khai báo jsqlparser optional).
+             5.3 = stable hiện tại; 5.2/5.3 là perf-fix, không API-breaking so với 5.1. -->
+        <jsqlparser.version>5.3</jsqlparser.version>
         <!-- Message queue -->
         <rocketmq-spring.version>2.3.5</rocketmq-spring.version>
         <!-- Service reliability -->
@@ -127,6 +131,11 @@
                 <version>${revision}</version>
             </dependency>
             <!-- soar-spring-boot-starter-biz-data-permission -->
+            <dependency>
+                <groupId>com.hdl.boot</groupId>
+                <artifactId>soar-spring-boot-starter-biz-data-permission</artifactId>
+                <version>${revision}</version>
+            </dependency>
             <!-- soar-spring-boot-starter-biz-ip -->
 
             <!--
@@ -183,6 +192,11 @@
                 <groupId>com.baomidou</groupId>
                 <artifactId>dynamic-datasource-spring-boot-starter</artifactId> <!-- Multiple Data Sources -->
                 <version>${dynamic-datasource.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.jsqlparser</groupId>
+                <artifactId>jsqlparser</artifactId>
+                <version>${jsqlparser.version}</version>
             </dependency>
 
             <dependency>
