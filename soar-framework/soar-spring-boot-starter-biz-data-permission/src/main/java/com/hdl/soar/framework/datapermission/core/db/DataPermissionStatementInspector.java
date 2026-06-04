@@ -3,7 +3,9 @@ package com.hdl.soar.framework.datapermission.core.db;
 import com.hdl.soar.framework.datapermission.core.rule.DataPermissionRule;
 import com.hdl.soar.framework.datapermission.core.rule.DataPermissionRuleFactory;
 import com.hdl.soar.framework.security.core.util.SecurityFrameworkUtils;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Alias;
@@ -43,9 +45,10 @@ import java.util.Map;
  */
 @Slf4j
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DataPermissionStatementInspector implements StatementInspector, HibernatePropertiesCustomizer {
 
-    private final ObjectProvider<DataPermissionRuleFactory> ruleFactoryProvider;
+    ObjectProvider<DataPermissionRuleFactory> ruleFactoryProvider;
 
     @Override
     public String inspect(String sql) {

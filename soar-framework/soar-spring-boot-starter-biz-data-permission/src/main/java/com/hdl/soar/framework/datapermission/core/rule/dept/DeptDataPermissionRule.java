@@ -37,7 +37,7 @@ import java.util.Set;
 public class DeptDataPermissionRule implements DataPermissionRule {
 
     /**
-     * LoginUser context cache key — memoizes the per-request resolved permission.
+     * LoginUser context cache key — memorizes the per-request resolved permission.
      */
     protected static final String CONTEXT_KEY = DeptDataPermissionRule.class.getSimpleName();
 
@@ -69,7 +69,7 @@ public class DeptDataPermissionRule implements DataPermissionRule {
             return null;
         }
 
-        // resolve the permission, memoizing on the LoginUser context
+        // resolve the permission, memorizing on the LoginUser context
         DeptDataPermissionRespDTO permission = loginUser.getContext(CONTEXT_KEY, DeptDataPermissionRespDTO.class);
         if (permission == null) {
             permission = permissionApi.getDeptDataPermission(loginUser.getId());
@@ -85,7 +85,7 @@ public class DeptDataPermissionRule implements DataPermissionRule {
         if (Boolean.TRUE.equals(permission.getAll())) {
             return null;
         }
-        // case 2: neither dept nor self → 100% no permission → empty result
+        // case 2: neither dept nor self -> 100% no permission -> empty result
         if (isEmpty(permission.getDeptIds()) && Boolean.FALSE.equals(permission.getSelf())) {
             return alwaysFalse();
         }
@@ -93,7 +93,7 @@ public class DeptDataPermissionRule implements DataPermissionRule {
         Expression deptExpression = buildDeptExpression(tableName, tableAlias, permission.getDeptIds());
         Expression userExpression = buildUserExpression(tableName, tableAlias, permission.getSelf(), loginUser.getId());
         if (deptExpression == null && userExpression == null) {
-            // table registered but no usable column for this user → return nothing rather than everything
+            // table registered but no usable column for this user -> return nothing rather than everything
             log.warn("[getExpression] LoginUser({}) Table({}) built an empty condition", loginUser.getId(), tableName);
             return alwaysFalse();
         }

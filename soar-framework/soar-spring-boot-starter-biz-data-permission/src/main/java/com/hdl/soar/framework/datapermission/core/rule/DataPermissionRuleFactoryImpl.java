@@ -2,7 +2,9 @@ package com.hdl.soar.framework.datapermission.core.rule;
 
 import com.hdl.soar.framework.datapermission.core.annotation.DataPermission;
 import com.hdl.soar.framework.datapermission.core.aop.DataPermissionContextHolder;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,9 +18,10 @@ import java.util.stream.Collectors;
  * (all rules apply); {@code enable = false} turns it off.
  */
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DataPermissionRuleFactoryImpl implements DataPermissionRuleFactory {
 
-    private final List<DataPermissionRule> rules;
+    List<DataPermissionRule> rules;
 
     @Override
     public List<DataPermissionRule> getDataPermissionRules() {
