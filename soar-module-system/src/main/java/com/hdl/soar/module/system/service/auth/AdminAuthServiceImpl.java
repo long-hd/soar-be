@@ -9,6 +9,7 @@ import com.hdl.soar.framework.common.util.monitor.TracerUtils;
 import com.hdl.soar.framework.common.util.object.BeanUtils;
 import com.hdl.soar.framework.common.util.servlet.ServletUtils;
 import com.hdl.soar.framework.common.util.validation.ValidationUtils;
+import com.hdl.soar.framework.datapermission.core.annotation.DataPermission;
 import com.hdl.soar.module.system.api.logger.dto.LoginLogCreateReqDTO;
 import com.hdl.soar.module.system.api.social.dto.SocialUserBindReqDTO;
 import com.hdl.soar.module.system.controller.admin.auth.dto.*;
@@ -82,7 +83,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
     }
 
     @Override
-    // @DataPermission(enable = false)
+    @DataPermission(enable = false)
     public AuthLoginRespDTO login(AuthLoginReqDTO reqDTO) {
         // Validate captcha
         validateCaptcha(reqDTO);

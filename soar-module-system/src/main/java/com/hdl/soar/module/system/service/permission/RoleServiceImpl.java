@@ -66,9 +66,6 @@ public class RoleServiceImpl implements RoleService {
         role.setDataScope(DataScopeEnum.ALL);
         roleRepository.save(role);
 
-        // TODO: 3. Set operation log context
-        // LogRecordContext.putVariable("role", role);
-
         return role.getId();
     }
 
@@ -84,10 +81,6 @@ public class RoleServiceImpl implements RoleService {
         // 3. Update (only fields in DTO — type/dataScope untouched)
         RoleMapper.INSTANCE.updatePO(updateReqDTO, existing);
         roleRepository.save(existing);
-
-        // TODO: 4. Set operation log context
-        // LogRecordContext.putVariable(DiffParseFunction.OLD_OBJECT, BeanUtils.toBean(role, RoleSaveReqDTO.class));
-        // LogRecordContext.putVariable("role", role);
     }
 
     @Override
@@ -102,9 +95,6 @@ public class RoleServiceImpl implements RoleService {
         // 3. Cleanup join tables
         roleMenuRepository.deleteByRoleId(id);
         userRoleRepository.deleteByRoleId(id);
-
-        // TODO: 4. Set operation log context
-        // LogRecordContext.putVariable("role", role);
     }
 
     @Override
@@ -215,7 +205,28 @@ public class RoleServiceImpl implements RoleService {
         });
     }
 
-    // =================== Utilities class
+    @Override
+    public void updateRoleDataScope(Long roleId, Integer dataScope, Set<Long> dataScopeDeptIds) {
+        RolePO role = roleRepository.findById(roleId)
+                .orElseThrow(() -> exception(ROLE_NOT_EXISTS));
+
+        // Built-in role, deletion is not allowed
+        if (RoleTypeEnum.SYSTEM.equals(role.getType())) {
+            throw exception(ROLE_CAN_NOT_UPDATE_SYSTEM_TYPE_ROLE);
+        }
+
+        DataScopeEnum dataScopeEnum = DataScopeEnum.of(dataScope);
+        if(dataScopeEnum == null) {
+            throw new IllegalArgumentException("Invalid data scope: " + dataScope);
+        }
+
+        role.setDataScope(dataScopeEnum);
+        role.setDataScopeDeptIds(dataScopeDeptIds);
+        roleRepository.save(role);
+        // NOTE: if a role cache exists, evict it here so the new scope takes effect.
+    }
+
+    // =================== Helper
 
     private RoleServiceImpl getSelf() {
         return SpringUtil.getBean(getClass());

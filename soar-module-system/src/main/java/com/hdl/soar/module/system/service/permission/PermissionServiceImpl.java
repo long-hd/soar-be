@@ -8,6 +8,7 @@ import com.google.common.collect.Sets;
 import com.hdl.soar.framework.common.biz.system.permission.dto.DeptDataPermissionRespDTO;
 import com.hdl.soar.framework.common.util.collection.CollectionUtils;
 import com.hdl.soar.framework.common.util.json.JsonUtils;
+import com.hdl.soar.framework.datapermission.core.annotation.DataPermission;
 import com.hdl.soar.module.system.dal.entity.permission.MenuPO;
 import com.hdl.soar.module.system.dal.entity.permission.RoleMenuPO;
 import com.hdl.soar.module.system.dal.entity.permission.RolePO;
@@ -87,7 +88,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    // @DataPermission(enable = false) // Disable data permission; otherwise, it may cause recursive data permission fetching issues
+    @DataPermission(enable = false) // Disable data permission; otherwise, it may cause recursive data permission fetching issues
     public DeptDataPermissionRespDTO getDeptDataPermission(Long userId) {
         // Get the user's roles
         List<RolePO> roles = roleService.getEnableRolesByUserIdFromCache(userId);

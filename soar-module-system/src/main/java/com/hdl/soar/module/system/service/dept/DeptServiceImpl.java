@@ -3,6 +3,7 @@ package com.hdl.soar.module.system.service.dept;
 import cn.hutool.core.collection.CollUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
+import com.hdl.soar.framework.datapermission.core.annotation.DataPermission;
 import com.hdl.soar.module.system.controller.admin.dept.dto.dept.DeptListReqDTO;
 import com.hdl.soar.module.system.controller.admin.dept.dto.dept.DeptSaveReqDTO;
 import com.hdl.soar.module.system.dal.entity.dept.DeptPO;
@@ -160,14 +161,14 @@ public class DeptServiceImpl implements DeptService {
     }
 
     @Override
-    // TODO: @DataPermission(enable = false) // Disable data permission to avoid creating incorrect cache entries
+    @DataPermission(enable = false) // Disable data permission to avoid creating incorrect cache entries
     @Cacheable(cacheNames = RedisKeyConstants.DEPT_CHILDREN_ID_LIST, key = "#deptId")
     public Set<Long> getChildDeptIdsFromCache(Long deptId) {
         List<DeptPO> children = getChildDeptList(deptId);
         return convertSet(children, DeptPO::getId);
     }
 
-    // ============== Utilities method
+    // ============== Helper
 
     @VisibleForTesting
     void validateParentDept(Long id, Long parentId) {

@@ -136,4 +136,13 @@ public interface RoleService {
      */
     boolean hasAnySuperAdmin(Collection<Long> roleIds);
 
+    /**
+     * Update the data scope of a role.
+     *
+     * @param roleId            role ID
+     * @param dataScope         data scope type (see DataScopeEnum)
+     * @param dataScopeDeptIds  custom dept IDs (only for DEPT_CUSTOM)
+     */
+    void updateRoleDataScope(Long roleId, Integer dataScope, Set<Long> dataScopeDeptIds);
+
 }

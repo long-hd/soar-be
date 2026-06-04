@@ -216,7 +216,7 @@ public class UserController {
     })
     @PreAuthorize("@ss.hasPermission('system:user:import')")
     public CommonResult<UserImportRespDTO> importUsers(
-            @RequestParam("file") MultipartFile file,
+            @RequestPart("file") MultipartFile file,
             @RequestParam(value = "updateSupport", required = false, defaultValue = "false") Boolean updateSupport)
             throws IOException {
         List<UserImportExcelDTO> list = ExcelUtils.read(file, UserImportExcelDTO.class);

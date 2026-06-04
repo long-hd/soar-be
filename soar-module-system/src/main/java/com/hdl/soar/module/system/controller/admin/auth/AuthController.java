@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 import com.hdl.soar.framework.common.pojo.CommonResult;
+import com.hdl.soar.framework.datapermission.core.annotation.DataPermission;
 import com.hdl.soar.framework.security.config.SecurityProperties;
 import com.hdl.soar.framework.security.core.util.SecurityFrameworkUtils;
 import com.hdl.soar.module.system.controller.admin.auth.dto.*;
@@ -83,7 +84,7 @@ public class AuthController {
 
     @GetMapping("/get-permission-info")
     @Operation(summary = "Get permission information of the logged-in user")
-    // @DataPermission(enable = false) // Ignore data permissions to avoid filtering issues that may prevent querying the user. Similar to: https://t.zsxq.com/LHnrp
+    @DataPermission(enable = false) // Ignore data permissions to avoid filtering issues that may prevent querying the user. Similar to: https://t.zsxq.com/LHnrp
     public CommonResult<AuthPermissionInfoRespDTO> getPermissionInfo() {
         Long loginUserId = SecurityFrameworkUtils.getLoginUserId();
         // 1.1 Get user information
@@ -99,7 +100,7 @@ public class AuthController {
         }
 
         List<RolePO> roles = roleService.getRolesByIdIn(roleIds);
-        roles.removeIf(role -> !CommonStatusEnum.ENABLE.getStatus().equals(role.getStatus())); // Remove disabled roles
+        roles.removeIf(role -> !CommonStatusEnum.ENABLE.equals(role.getStatus())); // Remove disabled roles
 
         // 1.3 Get menu list
         Set<Long> menuIds = permissionService.getMenuIdsByRoleIds(convertSet(roles, RolePO::getId));
