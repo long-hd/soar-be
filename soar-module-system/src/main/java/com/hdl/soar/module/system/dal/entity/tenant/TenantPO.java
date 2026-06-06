@@ -65,7 +65,7 @@ public class TenantPO extends BasePO {
      * <p>Enum {@link CommonStatusEnum}
      */
     @Column(name = "status")
-    private Integer status;
+    private CommonStatusEnum status;
 
     /**
      * Bound domain list

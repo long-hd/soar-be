@@ -9,6 +9,7 @@ import com.hdl.soar.framework.common.exception.ServiceException;
 import com.hdl.soar.framework.common.pojo.PageResult;
 import com.hdl.soar.framework.jpa.core.util.PageUtils;
 import com.hdl.soar.framework.operatelog.core.annotation.OperateLog;
+import com.hdl.soar.framework.tenant.core.context.TenantContextHolder;
 import com.hdl.soar.module.system.controller.admin.user.dto.profile.UserProfileUpdatePasswordReqDTO;
 import com.hdl.soar.module.system.controller.admin.user.dto.profile.UserProfileUpdateReqDTO;
 import com.hdl.soar.module.system.controller.admin.user.dto.user.UserImportExcelDTO;
@@ -18,6 +19,7 @@ import com.hdl.soar.module.system.controller.admin.user.dto.user.UserSaveReqDTO;
 import com.hdl.soar.module.system.dal.entity.dept.DeptPO;
 import com.hdl.soar.module.system.dal.entity.dept.PostPO;
 import com.hdl.soar.module.system.dal.entity.dept.UserPostPO;
+import com.hdl.soar.module.system.dal.entity.tenant.TenantPO;
 import com.hdl.soar.module.system.dal.entity.user.AdminUserPO;
 import com.hdl.soar.module.system.dal.entity.user.AdminUserPO_;
 import com.hdl.soar.module.system.dal.postgres.dept.UserPostRepository;
@@ -27,6 +29,7 @@ import com.hdl.soar.module.system.enums.common.SexEnum;
 import com.hdl.soar.module.system.mapper.user.AdminUserMapper;
 import com.hdl.soar.module.system.service.dept.DeptService;
 import com.hdl.soar.module.system.service.dept.PostService;
+import com.hdl.soar.module.system.service.tenant.TenantService;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -72,6 +75,7 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     DeptService deptService;
     PostService postService;
+    TenantService tenantService;
 
     PasswordEncoder passwordEncoder;
 
@@ -80,6 +84,8 @@ public class AdminUserServiceImpl implements AdminUserService {
     @OperateLog(module = USER_MODULE, name = "Create User",
             bizId = "#result", content = USER_CREATE_CONTENT)
     public Long createUser(UserSaveReqDTO createReqDTO) {
+        // 0. validate tenant account limit
+        validateTenantAccountLimit();
         // 1. Validate
         validateUserForCreateOrUpdate(null, createReqDTO);
 
@@ -389,6 +395,18 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     // ========== Validation ==========
+
+    private void validateTenantAccountLimit() {
+        // Tenant
+        Long tenantId = TenantContextHolder.getRequiredTenantId();
+        TenantPO tenant = tenantService.getTenant(tenantId);
+
+        // Validate user count
+        long count = adminUserRepository.count();
+        if(count >= tenant.getAccountCount()) {
+            throw exception(USER_COUNT_MAX, tenant.getAccountCount());
+        }
+    }
 
     private void validateUserForCreateOrUpdate(Long id, UserSaveReqDTO reqDTO) {
         // Username unique

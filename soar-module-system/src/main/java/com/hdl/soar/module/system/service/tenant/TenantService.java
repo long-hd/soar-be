@@ -39,4 +39,19 @@ public interface TenantService {
      */
     Set<Long> getTenantMenuIds();
 
+    /**
+     * Retrieves the tenant associated with the specified name.
+     *
+     * @param name the tenant name
+     * @return the corresponding tenant
+     */
+    TenantPO getTenantByName(String name);
+
+    /**
+     * Retrieves the tenant associated with the specified website domain.
+     *
+     * @param website the website domain
+     * @return the corresponding tenant
+     */
+    TenantPO getTenantByWebsite(String website);
 }

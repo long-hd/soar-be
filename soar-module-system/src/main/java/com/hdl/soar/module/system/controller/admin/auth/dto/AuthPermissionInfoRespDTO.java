@@ -71,6 +71,9 @@ public class AuthPermissionInfoRespDTO {
         @Schema(description = "Menu name", requiredMode = Schema.RequiredMode.REQUIRED, example = "Abc management")
         private String name;
 
+        @Schema(description = "Tab dispatcher key", example = "system-user")
+        private String tabKey;
+
         @Schema(description = "Route path, required only when the menu type is Menu or Directory", example = "post")
         private String path;
 

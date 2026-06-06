@@ -49,7 +49,7 @@ public class TenantServiceImpl implements TenantService {
         if (tenant == null) {
             throw exception(TENANT_NOT_EXISTS);
         }
-        if (tenant.getStatus().equals(CommonStatusEnum.DISABLE.getStatus())) {
+        if (CommonStatusEnum.DISABLE.equals(tenant.getStatus())) {
             throw exception(TENANT_DISABLE, tenant.getName());
         }
         if (InstantUtils.isExpired(tenant.getExpireTime())) {
@@ -78,6 +78,17 @@ public class TenantServiceImpl implements TenantService {
         // 4. Get package menu IDs
         TenantPackagePO pkg = tenantPackageRepository.findById(tenant.getPackageId()).orElse(null);
         return pkg != null ? pkg.getMenuIds() : null;
+    }
+
+    @Override
+    public TenantPO getTenantByName(String name) {
+        return tenantRepository.findByName(name).orElse(null);
+    }
+
+    @Override
+    public TenantPO getTenantByWebsite(String website) {
+        return tenantRepository.findByWebsiteContains(website)
+                .orElse(null);
     }
 
 }

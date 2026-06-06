@@ -37,7 +37,8 @@ public class TenantPackagePO extends BasePO {
      * <p>Enum {@link CommonStatusEnum}
      */
     @Column(name = "status")
-    private Integer status;
+    @Builder.Default
+    private CommonStatusEnum status = CommonStatusEnum.ENABLE;
 
     /**
      * Remark

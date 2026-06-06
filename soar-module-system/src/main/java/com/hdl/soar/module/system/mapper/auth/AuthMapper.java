@@ -45,7 +45,7 @@ public interface AuthMapper {
         }
 
         // Remove buttons
-        menuList.removeIf(menu -> menu.getType().equals(MenuTypeEnum.BUTTON.getType()));
+        menuList.removeIf(menu -> MenuTypeEnum.BUTTON.equals(menu.getType()));
 
         // Sort to ensure menu ordering
         menuList.sort(Comparator.comparing(MenuPO::getSort));
