@@ -3,7 +3,7 @@ package com.hdl.soar.module.system.controller.admin.tenant;
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 import com.hdl.soar.framework.common.pojo.CommonResult;
 import com.hdl.soar.framework.tenant.core.aop.TenantIgnore;
-import com.hdl.soar.module.system.controller.admin.tenant.dto.tenant.TenantRespDTO;
+import com.hdl.soar.module.system.controller.admin.tenant.dto.tenant.TenantSimpleRespDTO;
 import com.hdl.soar.module.system.dal.entity.tenant.TenantPO;
 import com.hdl.soar.module.system.mapper.tenant.TenantMapper;
 import com.hdl.soar.module.system.service.tenant.TenantService;
@@ -62,7 +62,7 @@ public class TenantController {
             required = true,
             example = "www.soar.com"
     )
-    public CommonResult<TenantRespDTO> getTenantByWebsite(
+    public CommonResult<TenantSimpleRespDTO> getTenantByWebsite(
             @RequestParam("website")
             @Pattern(
                     regexp = "^[a-zA-Z0-9.-]+(:\\d{1,5})?$",
@@ -73,7 +73,7 @@ public class TenantController {
         if (tenant == null || CommonStatusEnum.isDisable(tenant.getStatus())) {
             return success(null);
         }
-        return success(TenantMapper.INSTANCE.toDTO(tenant));
+        return success(TenantMapper.INSTANCE.toSimpleDTO(tenant));
     }
 
 }

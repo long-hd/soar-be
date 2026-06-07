@@ -39,6 +39,13 @@ public class MenuPO extends BasePO {
     private String name;
 
     /**
+     * Partial unique index: enforce uniqueness only when tab_key is set
+     * (type=1 directories and type=3 buttons have tab_key NULL)
+     */
+    @Column(name = "tab_key")
+    private String tabKey;
+
+    /**
      * Permission identifier
      * <p>
      * General format: ${system}:${module}:${action}
@@ -80,6 +87,7 @@ public class MenuPO extends BasePO {
      * <p>
      * If path starts with http(s), it is treated as an external link.
      */
+    @Deprecated(since = "V1_0_8", forRemoval = true)
     @Column(name = "path")
     private String path;
 
@@ -98,6 +106,7 @@ public class MenuPO extends BasePO {
     /**
      * Component name
      */
+    @Deprecated(since = "V1_0_8", forRemoval = true)
     @Column(name = "component_name")
     private String componentName;
 

@@ -15,11 +15,12 @@ public interface OAuth2RefreshTokenRepository extends JpaRepository<OAuth2Refres
 
     @Modifying
     @Query(value = """
-        DELETE FROM system_oauth2_refresh_token 
-        WHERE id IN (
-            SELECT id FROM system_oauth2_refresh_token 
-            WHERE expires_time < :expiresTime 
-            LIMIT :deleteLimit
-    """, nativeQuery = true)
+                DELETE FROM system_oauth2_refresh_token
+                WHERE id IN (
+                    SELECT id FROM system_oauth2_refresh_token
+                    WHERE expires_time < :expiresTime
+                    LIMIT :deleteLimit
+                )
+            """, nativeQuery = true)
     int deleteByExpiresTimeLt(Instant expireTime, Integer deleteLimit);
 }

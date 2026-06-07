@@ -11,7 +11,7 @@ import lombok.Data;
 import java.time.Instant;
 import java.util.List;
 
-@Schema(description = "Admin Portal - Tenant Response VO")
+@Schema(description = "Admin Portal - Tenant Response DTO")
 @Data
 @ExcelIgnoreUnannotated
 public class TenantRespDTO {
