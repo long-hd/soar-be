@@ -10,6 +10,9 @@ import com.hdl.soar.framework.security.core.service.SecurityFrameworkService;
 import com.hdl.soar.framework.security.core.service.SecurityFrameworkServiceImpl;
 import com.hdl.soar.framework.web.core.handler.GlobalExceptionHandler;
 import jakarta.annotation.Resource;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -32,10 +35,11 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 @AutoConfiguration
 @AutoConfigureOrder(-1)
 @EnableConfigurationProperties(SecurityProperties.class)
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SoarSecurityAutoConfiguration {
 
-    @Resource
-    private SecurityProperties securityProperties;
+    SecurityProperties securityProperties;
 
     /**
      * Bean for handling authentication failures.

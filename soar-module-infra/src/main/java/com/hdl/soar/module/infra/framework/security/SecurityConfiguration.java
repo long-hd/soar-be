@@ -1,6 +1,7 @@
 package com.hdl.soar.module.infra.framework.security;
 
 import com.hdl.soar.framework.security.config.AuthorizeRequestsCustomizer;
+import com.hdl.soar.framework.web.config.WebProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,8 +14,8 @@ import org.springframework.security.config.annotation.web.configurers.AuthorizeH
 public class SecurityConfiguration {
 
     @Bean("infraAuthorizeRequestsCustomizer")
-    public AuthorizeRequestsCustomizer authorizeRequestsCustomizer() {
-        return new AuthorizeRequestsCustomizer() {
+    public AuthorizeRequestsCustomizer authorizeRequestsCustomizer(WebProperties webProperties) {
+        return new AuthorizeRequestsCustomizer(webProperties) {
 
             @Override
             public void customize(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry registry) {

@@ -8,6 +8,9 @@ import com.hdl.soar.framework.web.config.WebProperties;
 import jakarta.annotation.Resource;
 import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.DispatcherType;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -45,39 +48,36 @@ import static com.hdl.soar.framework.common.util.collection.CollectionUtils.conv
 @AutoConfiguration
 @AutoConfigureOrder(-1)
 @EnableMethodSecurity(securedEnabled = true)
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SoarWebSecurityConfigurerAdapter {
 
-    @Resource
-    private WebProperties webProperties;
-    @Resource
-    private SecurityProperties securityProperties;
+    WebProperties webProperties;
+    SecurityProperties securityProperties;
 
     /**
-     * 认证失败处理类 Bean
+     * Authentication failure handler Bean
      */
-    @Resource
-    private AuthenticationEntryPoint authenticationEntryPoint;
-    /**
-     * 权限不够处理器 Bean
-     */
-    @Resource
-    private AccessDeniedHandler accessDeniedHandler;
-    /**
-     * Token 认证过滤器 Bean
-     */
-    @Resource
-    private TokenAuthenticationFilter authenticationTokenFilter;
+    AuthenticationEntryPoint authenticationEntryPoint;
 
     /**
-     * 自定义的权限映射 Bean 们
+     * Insufficient permissions (access denied) handler Bean
+     */
+    AccessDeniedHandler accessDeniedHandler;
+
+    /**
+     * Token authentication filter Bean
+     */
+    TokenAuthenticationFilter authenticationTokenFilter;
+
+    /**
+     * Custom authorization mapping Beans
      *
      * @see #filterChain(HttpSecurity)
      */
-    @Autowired(required = false)
-    private List<AuthorizeRequestsCustomizer> authorizeRequestsCustomizers = Collections.emptyList();
+    List<AuthorizeRequestsCustomizer> authorizeRequestsCustomizers;
 
-    @Resource
-    private ApplicationContext applicationContext;
+    ApplicationContext applicationContext;
 
     /**
      * Because Spring Security does not declare the @Bean annotation when creating the AuthenticationManager instance,
