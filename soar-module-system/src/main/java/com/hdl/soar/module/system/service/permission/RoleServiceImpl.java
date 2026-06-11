@@ -125,8 +125,7 @@ public class RoleServiceImpl implements RoleService {
             likeIfPresent(predicates, cb, root, RolePO_.name, pageReqDTO.getName());
             likeIfPresent(predicates, cb, root, RolePO_.code, pageReqDTO.getCode());
             eqIfPresent(predicates, cb, root, RolePO_.status, CommonStatusEnum.of(pageReqDTO.getStatus()));
-            betweenIfPresent(predicates, cb, root, RolePO_.createTime,
-                    new Instant[] {pageReqDTO.getCreateTimeStart(), pageReqDTO.getCreateTimeEnd()});
+            betweenIfPresent(predicates, cb, root, RolePO_.createTime, pageReqDTO.getCreateTime());
             return cb.and(predicates.toArray(new Predicate[0]));
         };
         Sort sort = Sort.by(Sort.Order.asc(RolePO_.SORT));

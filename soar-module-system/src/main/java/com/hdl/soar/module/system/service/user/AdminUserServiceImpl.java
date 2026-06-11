@@ -183,8 +183,7 @@ public class AdminUserServiceImpl implements AdminUserService {
             likeIfPresent(predicates, cb, root, AdminUserPO_.username, pageReqDTO.getUsername());
             likeIfPresent(predicates, cb, root, AdminUserPO_.mobile, pageReqDTO.getMobile());
             eqIfPresent(predicates, cb, root, AdminUserPO_.status, CommonStatusEnum.of(pageReqDTO.getStatus()));
-            betweenIfPresent(predicates, cb, root, AdminUserPO_.createTime,
-                    new Instant[]{pageReqDTO.getCreateTimeStart(), pageReqDTO.getCreateTimeEnd()});
+            betweenIfPresent(predicates, cb, root, AdminUserPO_.createTime, pageReqDTO.getCreateTime());
             // Dept filter: IN (deptId + child dept IDs)
             if (CollUtil.isNotEmpty(deptIds)) {
                 predicates.add(root.get(AdminUserPO_.deptId).in(deptIds));

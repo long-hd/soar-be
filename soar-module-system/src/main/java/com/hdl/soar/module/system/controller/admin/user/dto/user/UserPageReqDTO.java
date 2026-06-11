@@ -2,6 +2,7 @@ package com.hdl.soar.module.system.controller.admin.user.dto.user;
 
 import com.hdl.soar.framework.common.pojo.PageParam;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -24,10 +25,8 @@ public class UserPageReqDTO extends PageParam {
     @Schema(description = "Department ID (includes child departments)", example = "1")
     private Long deptId;
 
-    @Schema(description = "Create time start")
-    private Instant createTimeStart;
-
-    @Schema(description = "Create time end")
-    private Instant createTimeEnd;
+    @Schema(description = "Create time", example = "[2022-07-01T00:00:00Z, 2022-07-01T00:00:00Z]")
+    @Size(min = 2, max = 2)
+    private Instant[] createTime;
 
 }

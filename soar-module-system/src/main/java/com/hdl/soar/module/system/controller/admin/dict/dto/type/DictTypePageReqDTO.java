@@ -23,10 +23,8 @@ public class DictTypePageReqDTO extends PageParam {
     @Schema(description = "Display status, see CommonStatusEnum enum", example = "0")
     private Integer status;
 
-    @Schema(description = "Create time range start")
-    private Instant createTimeStart;
-
-    @Schema(description = "Create time range end")
-    private Instant createTimeEnd;
+    @Schema(description = "Create time", example = "[2022-07-01T00:00:00Z, 2022-07-01T00:00:00Z]")
+    @Size(min = 2, max = 2)
+    private Instant[] createTime;
 
 }

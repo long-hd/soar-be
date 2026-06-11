@@ -17,7 +17,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -102,8 +101,7 @@ public class DictTypeServiceImpl implements DictTypeService {
             SpecUtils.likeIfPresent(predicates, cb, root, DictTypePO_.type, pageReqDTO.getType());
             SpecUtils.eqIfPresent(predicates, cb, root, DictTypePO_.status,
                     CommonStatusEnum.of(pageReqDTO.getStatus()));
-            SpecUtils.betweenIfPresent(predicates, cb, root, DictTypePO_.createTime,
-                    new Instant[]{pageReqDTO.getCreateTimeStart(), pageReqDTO.getCreateTimeEnd()});
+            SpecUtils.betweenIfPresent(predicates, cb, root, DictTypePO_.createTime, pageReqDTO.getCreateTime());
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 

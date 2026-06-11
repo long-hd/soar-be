@@ -2,6 +2,7 @@ package com.hdl.soar.module.system.controller.admin.permission.dto.role;
 
 import com.hdl.soar.framework.common.pojo.PageParam;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -21,10 +22,8 @@ public class RolePageReqDTO extends PageParam {
     @Schema(description = "Status, see CommonStatusEnum", example = "1")
     private Integer status;
 
-    @Schema(description = "Create time", example = "2022-07-01T00:00:00Z")
-    private Instant createTimeStart;
-
-    @Schema(description = "Create time", example = "2022-07-01T00:00:00Z")
-    private Instant createTimeEnd;
+    @Schema(description = "Create time", example = "[2022-07-01T00:00:00Z, 2022-07-01T00:00:00Z]")
+    @Size(min = 2, max = 2)
+    private Instant[] createTime;
 
 }
