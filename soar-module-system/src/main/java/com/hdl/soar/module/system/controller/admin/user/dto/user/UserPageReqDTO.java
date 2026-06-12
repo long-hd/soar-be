@@ -1,6 +1,7 @@
 package com.hdl.soar.module.system.controller.admin.user.dto.user;
 
 import com.hdl.soar.framework.common.pojo.PageParam;
+import com.hdl.soar.framework.common.pojo.SortablePageParam;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -11,7 +12,7 @@ import java.time.Instant;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Schema(description = "Admin Backend - User Page Request DTO")
-public class UserPageReqDTO extends PageParam {
+public class UserPageReqDTO extends SortablePageParam {
 
     @Schema(description = "Username (fuzzy match)", example = "admin")
     private String username;

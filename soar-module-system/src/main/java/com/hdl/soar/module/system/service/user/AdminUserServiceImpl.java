@@ -191,7 +191,7 @@ public class AdminUserServiceImpl implements AdminUserService {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        Pageable pageable = PageUtils.toPageable(pageReqDTO, Sort.by(Sort.Order.asc(AdminUserPO_.ID)));
+        Pageable pageable = PageUtils.toPageable(pageReqDTO);
         Page<AdminUserPO> page = adminUserRepository.findAll(spec, pageable);
         return PageUtils.toPageResult(page);
     }
