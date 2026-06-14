@@ -1,6 +1,7 @@
 package com.hdl.soar.module.system.service.user;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.hdl.soar.framework.common.biz.infra.config.ConfigCommonApi;
@@ -19,12 +20,14 @@ import com.hdl.soar.module.system.controller.admin.user.dto.user.UserSaveReqDTO;
 import com.hdl.soar.module.system.dal.entity.dept.DeptPO;
 import com.hdl.soar.module.system.dal.entity.dept.PostPO;
 import com.hdl.soar.module.system.dal.entity.dept.UserPostPO;
+import com.hdl.soar.module.system.dal.entity.permission.UserRolePO;
 import com.hdl.soar.module.system.dal.entity.tenant.TenantPO;
 import com.hdl.soar.module.system.dal.entity.user.AdminUserPO;
 import com.hdl.soar.module.system.dal.entity.user.AdminUserPO_;
 import com.hdl.soar.module.system.dal.postgres.dept.UserPostRepository;
 import com.hdl.soar.module.system.dal.postgres.permission.UserRoleRepository;
 import com.hdl.soar.module.system.dal.postgres.user.AdminUserRepository;
+import com.hdl.soar.module.system.dal.redis.RedisKeyConstants;
 import com.hdl.soar.module.system.enums.common.SexEnum;
 import com.hdl.soar.module.system.mapper.user.AdminUserMapper;
 import com.hdl.soar.module.system.service.dept.DeptService;
@@ -34,12 +37,10 @@ import jakarta.persistence.criteria.Predicate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -54,6 +55,7 @@ import static com.hdl.soar.framework.common.exception.util.ServiceExceptionUtil.
 import static com.hdl.soar.module.system.enums.ErrorCodeConstants.*;
 import static com.hdl.soar.framework.jpa.core.util.SpecUtils.*;
 import static com.hdl.soar.module.system.enums.OperateLogConstants.*;
+import static com.hdl.soar.framework.common.util.collection.CollectionUtils.*;
 
 /**
  * Backend User Service Implementation Class
@@ -332,6 +334,36 @@ public class AdminUserServiceImpl implements AdminUserService {
         // 3. Update to new password
         user.setPassword(encodePassword(reqDTO.getNewPassword()));
         adminUserRepository.save(user);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = RedisKeyConstants.USER_ROLE_ID_LIST, key = "#userId")
+    public void assignRoles(Long userId, Set<Long> roleIds) {
+        // Get the role IDs currently assigned to the user
+        Set<Long> dbRoleIds = convertSet(userRoleRepository.findByUserId(userId),
+                UserRolePO::getRoleId);
+
+        // Calculate role IDs to be added and removed
+        Set<Long> roleIdList = CollUtil.emptyIfNull(roleIds);
+        Collection<Long> createRoleIds = CollUtil.subtract(roleIdList, dbRoleIds);
+        Collection<Long> deleteRoleIds = CollUtil.subtract(dbRoleIds, roleIdList);
+
+        // Perform insertions and deletions.
+        // No action is required for roles that are already assigned.
+        if (!CollectionUtil.isEmpty(createRoleIds)) {
+            List<UserRolePO> saveList = convertList(createRoleIds, roleId ->
+                    UserRolePO.builder()
+                        .roleId(roleId)
+                        .userId(userId)
+                        .build()
+            );
+            userRoleRepository.saveAll(saveList);
+        }
+
+        if (!CollectionUtil.isEmpty(deleteRoleIds)) {
+            userRoleRepository.deleteByUserIdAndRoleIdIn(userId, deleteRoleIds);
+        }
     }
 
     // =========== Utilities method

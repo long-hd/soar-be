@@ -14,6 +14,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Backend user service interface
@@ -140,4 +141,13 @@ public interface AdminUserService {
      */
     void updateUserProfilePassword(Long userId, UserProfileUpdatePasswordReqDTO reqDTO);
 
+    // ========== User-Role Methods ==========
+
+    /**
+     * Assign roles to a user.
+     *
+     * @param userId  User ID
+     * @param roleIds Set of role IDs
+     */
+    void assignRoles(Long userId, Set<Long> roleIds);
 }
