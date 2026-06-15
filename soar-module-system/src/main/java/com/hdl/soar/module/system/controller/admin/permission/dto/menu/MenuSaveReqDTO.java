@@ -13,6 +13,10 @@ public class MenuSaveReqDTO {
     @Schema(description = "Menu ID", example = "1024")
     private Long id;
 
+    @Schema(description = "Tab key for flat URL dispatch (Soar-specific)", example = "system-user")
+    @Size(max = 100)
+    private String tabKey;
+
     @Schema(description = "Menu name", requiredMode = Schema.RequiredMode.REQUIRED, example = "Soar")
     @NotBlank(message = "Menu name cannot be empty")
     @Size(max = 50, message = "Menu name length cannot exceed 50 characters")
