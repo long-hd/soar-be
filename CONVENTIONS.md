@@ -294,3 +294,72 @@ Before adopting any library referenced by yudao, verify maintenance status (last
 
 - Branch: `feature/{phase}-{description}` (e.g., `feature/phase4-file-storage`)
 - Commit: Conventional Commits (`feat:`, `fix:`, `refactor:`, `docs:`)
+
+## MapStruct DTO → PO Mapping (BE)
+
+### The Lombok @Builder gotcha
+
+When mapping `DTO → PO` where PO uses Lombok `@Builder` with field default values (e.g., `private Boolean keepAlive = Boolean.TRUE`), MapStruct's default generated code uses the builder pattern which OVERWRITES Lombok field defaults with null source values, causing `nullable=false` constraint violations.
+
+**Symptoms**:
+- BE returns 500 on create when FE strips optional boolean fields
+- `keep_alive cannot be null` or similar PSQL constraint errors
+- Field appears null in PO despite Java default
+
+**Root cause**: 
+- MapStruct generates `MenuPO.builder().keepAlive(dto.getKeepAlive()).build()` — builder methods called unconditionally
+- `@BeanMapping(nullValuePropertyMappingStrategy = IGNORE)` doesn't work with builder pattern
+- Lombok field defaults run in constructor — bypassed by builder
+
+**Fix**: disable builder + explicit null check strategy:
+
+```java
+import org.mapstruct.Builder;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+
+@Mapper(
+    uses = { EnumMapper.class, SystemEnumMapper.class },
+    builder = @Builder(disableBuilder = true)   // force setter-based
+)
+public interface MenuMapper {
+    
+    @BeanMapping(
+        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
+    )
+    MenuPO toPO(MenuSaveReqDTO dto);
+    
+    @BeanMapping(
+        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
+    )
+    void updatePO(MenuSaveReqDTO dto, @MappingTarget MenuPO po);
+}
+```
+
+**Required PO annotations**: `@Data @Builder @NoArgsConstructor @AllArgsConstructor` (all 4 needed for both Lombok builder + MapStruct setter pattern).
+
+**Why both `NullValueCheckStrategy.ALWAYS` and `NullValuePropertyMappingStrategy.IGNORE`?**
+- `ALWAYS`: check source for null before assignment (covers `toPO` create case where target is fresh + has Java defaults)
+- `IGNORE`: preserve target value when source null (covers `updatePO` case where target has existing DB values)
+
+Both together = "missing field = preserve target/default". Semantic match for PATCH-style operations.
+
+**Verify after change**: read `target/generated-sources/annotations/.../MenuMapperImpl.java` — should contain `if (dto.getField() != null)` guards before setters.
+
+**When to extract `SoarMapperConfig`**: When 2nd mapper hits same issue (Rule of Two). Then centralize:
+
+```java
+@MapperConfig(
+    nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
+    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+    builder = @Builder(disableBuilder = true)
+)
+public interface SoarMapperConfig {}
+```
+
+Then `@Mapper(config = SoarMapperConfig.class)` on each mapper.
+
+Location: `soar-framework/soar-spring-boot-starter-jpa/src/main/java/com/hdl/soar/framework/jpa/mapping/SoarMapperConfig.java`.
