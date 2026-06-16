@@ -62,7 +62,7 @@ public class PermissionController {
     @Operation(summary = "Get the list of menu IDs assigned to a role")
     @Parameter(name = "roleId", description = "Role ID", required = true)
     @PreAuthorize("@ss.hasPermission('system:permission:assign-role-menu')")
-    public CommonResult<Set<Long>> getRoleMenuList(Long roleId) {
+    public CommonResult<Set<Long>> getRoleMenuList(@RequestParam("roleId") Long roleId) {
         return success(permissionService.getMenuIdsByRoleId(roleId));
     }
 

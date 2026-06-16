@@ -211,7 +211,6 @@ public class PermissionServiceImpl implements PermissionService {
         // Existing assignment for diff
         Set<Long> dbMenuIds = roleMenuRepository.findMenuIdsByRoleId(roleId);
 
-
         Collection<Long> toCreate = CollUtil.subtract(targetMenuIds, dbMenuIds);
         Collection<Long> toDelete = CollUtil.subtract(dbMenuIds, targetMenuIds);
 
