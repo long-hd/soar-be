@@ -2,6 +2,7 @@ package com.hdl.soar.module.system.controller.admin.permission;
 
 import com.hdl.soar.framework.common.pojo.CommonResult;
 import com.hdl.soar.module.system.controller.admin.permission.dto.permission.RoleAssignDataScopeReqDTO;
+import com.hdl.soar.module.system.controller.admin.permission.dto.permission.RoleAssignMenuReqDTO;
 import com.hdl.soar.module.system.controller.admin.permission.dto.permission.UserAssignRoleReqDTO;
 import com.hdl.soar.module.system.service.permission.PermissionService;
 import com.hdl.soar.module.system.service.permission.RoleService;
@@ -54,6 +55,22 @@ public class PermissionController {
     @PreAuthorize("@ss.hasPermission('system:permission:assign-user-role')")
     public CommonResult<Boolean> assignUserRole(@Valid @RequestBody UserAssignRoleReqDTO reqDTO) {
         adminUserService.assignRoles(reqDTO.getUserId(), reqDTO.getRoleIds());
+        return success(true);
+    }
+
+    @GetMapping("/list-role-menus")
+    @Operation(summary = "Get the list of menu IDs assigned to a role")
+    @Parameter(name = "roleId", description = "Role ID", required = true)
+    @PreAuthorize("@ss.hasPermission('system:permission:assign-role-menu')")
+    public CommonResult<Set<Long>> getRoleMenuList(Long roleId) {
+        return success(permissionService.getMenuIdsByRoleId(roleId));
+    }
+
+    @PostMapping("/assign-role-menu")
+    @Operation(summary = "Assign menus to a role")
+    @PreAuthorize("@ss.hasPermission('system:permission:assign-role-menu')")
+    public CommonResult<Boolean> assignRoleMenu(@Valid @RequestBody RoleAssignMenuReqDTO reqDTO) {
+        permissionService.assignRoleMenu(reqDTO.getRoleId(), reqDTO.getMenuIds());
         return success(true);
     }
 

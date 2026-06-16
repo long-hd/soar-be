@@ -49,4 +49,26 @@ public interface PermissionService {
      */
     Set<Long> getMenuIdsByRoleIds(Collection<Long> roleIds);
 
+    /**
+     * Get the set of menu IDs assigned to a single role.
+     * Used by the admin assign-role-menu UI to populate the picker with current state.
+     *
+     * @param roleId role ID
+     * @return set of menu IDs (empty if none assigned)
+     */
+    Set<Long> getMenuIdsByRoleId(Long roleId);
+
+    /**
+     * Assign menus to a role. Computes diff against current assignment:
+     *  - menus in `menuIds` but not in DB → inserted
+     *  - menus in DB but not in `menuIds` → deleted
+     *  - menus in both → untouched (idempotent)
+     *
+     * Pass an empty set to revoke all menus from the role.
+     *
+     * @param roleId role ID
+     * @param menuIds target menu IDs (may be empty)
+     */
+    void assignRoleMenu(Long roleId, Set<Long> menuIds);
+
 }

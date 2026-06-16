@@ -13,7 +13,7 @@ import java.util.Set;
 @Repository
 public interface UserRoleRepository extends JpaRepository<UserRolePO, Long> {
     @Query("select ur.roleId from UserRolePO ur where ur.userId = :userId")
-    Set<Long> findRoleIdsByUserId (@Param("userId") Long userId);
+    Set<Long> findRoleIdsByUserId(@Param("userId") Long userId);
 
     List<UserRolePO> findAllByRoleIdIn(Collection<Long> roleIds);
 

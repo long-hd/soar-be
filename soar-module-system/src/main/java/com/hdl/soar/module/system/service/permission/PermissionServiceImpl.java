@@ -16,16 +16,21 @@ import com.hdl.soar.module.system.dal.postgres.permission.RoleMenuRepository;
 import com.hdl.soar.module.system.dal.redis.RedisKeyConstants;
 import com.hdl.soar.module.system.enums.permission.DataScopeEnum;
 import com.hdl.soar.module.system.service.dept.DeptService;
+import com.hdl.soar.module.system.service.tenant.TenantService;
 import com.hdl.soar.module.system.service.user.AdminUserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static com.hdl.soar.framework.common.util.collection.CollectionUtils.*;
 
@@ -42,6 +47,7 @@ public class PermissionServiceImpl implements PermissionService {
     RoleService roleService;
     MenuService menuService;
     DeptService deptService;
+    TenantService tenantService;
 
     RoleMenuRepository roleMenuRepository;
 
@@ -174,6 +180,56 @@ public class PermissionServiceImpl implements PermissionService {
 
         // Otherwise, return menu IDs associated with the given roles
         return roleMenuRepository.findAllByRoleIdIn(roleIds);
+    }
+
+    @Override
+    public Set<Long> getMenuIdsByRoleId(Long roleId) {
+        if (roleId == null) {
+            return Collections.emptySet();
+        }
+        return roleMenuRepository.findMenuIdsByRoleId(roleId);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @Caching(evict = {
+            @CacheEvict(value = RedisKeyConstants.MENU_ROLE_ID_LIST, allEntries = true),
+            @CacheEvict(value = RedisKeyConstants.PERMISSION_MENU_ID_LIST, allEntries = true)
+    })
+    public void assignRoleMenu(Long roleId, Set<Long> menuIds) {
+        Set<Long> targetMenuIds = CollUtil.emptyIfNull(menuIds);
+
+        // Multi-tenant safety: drop any menu outside the current tenant's package.
+        // Null means "no filter applies" (system tenant or tenancy disabled).
+        Set<Long> tenantMenuIds = tenantService.getTenantMenuIds();
+        if (tenantMenuIds != null) {
+            targetMenuIds = targetMenuIds.stream()
+                    .filter(tenantMenuIds::contains)
+                    .collect(Collectors.toSet());
+        }
+
+        // Existing assignment for diff
+        Set<Long> dbMenuIds = roleMenuRepository.findMenuIdsByRoleId(roleId);
+
+
+        Collection<Long> toCreate = CollUtil.subtract(targetMenuIds, dbMenuIds);
+        Collection<Long> toDelete = CollUtil.subtract(dbMenuIds, targetMenuIds);
+
+        // Insert new pairs
+        if (CollUtil.isNotEmpty(toCreate)) {
+            List<RoleMenuPO> newPairs = toCreate.stream()
+                    .map(menuId -> RoleMenuPO.builder()
+                            .roleId(roleId)
+                            .menuId(menuId)
+                            .build())
+                    .collect(Collectors.toList());
+            roleMenuRepository.saveAll(newPairs);
+        }
+
+        // Remove obsolete pairs
+        if (CollUtil.isNotEmpty(toDelete)) {
+            roleMenuRepository.deleteByRoleIdAndMenuIdIn(roleId, toDelete);
+        }
     }
 
     // =================== Helper

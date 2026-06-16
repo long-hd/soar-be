@@ -86,7 +86,6 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @CacheEvict(value = RedisKeyConstants.ROLE, key = "#id")
-    // @LogRecord(type = SYSTEM_ROLE_TYPE, subType = SYSTEM_ROLE_DELETE_SUB_TYPE, bizNo = "{{#id}}", success = SYSTEM_ROLE_DELETE_SUCCESS)
     public void deleteRole(Long id) {
         // 1. Validate exists + not system role
         validateRoleForUpdate(id);
@@ -205,6 +204,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    @CacheEvict(value = RedisKeyConstants.ROLE, key = "#roleId")
     public void updateRoleDataScope(Long roleId, Integer dataScope, Set<Long> dataScopeDeptIds) {
         RolePO role = roleRepository.findById(roleId)
                 .orElseThrow(() -> exception(ROLE_NOT_EXISTS));
