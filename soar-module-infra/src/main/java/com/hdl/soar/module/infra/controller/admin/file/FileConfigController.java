@@ -20,6 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.hdl.soar.framework.common.pojo.CommonResult.success;
@@ -65,6 +66,24 @@ public class FileConfigController {
     public CommonResult<Boolean> deleteFileConfig(@RequestParam("id") Long id) {
         fileConfigService.deleteFileConfig(id);
         return success(true);
+    }
+
+    @DeleteMapping("/delete-list")
+    @Operation(summary = "Bulk delete file configs")
+    @Parameter(name = "ids", description = "Config IDs (comma-separated)", required = true)
+    @PreAuthorize("@ss.hasPermission('infra:file-config:delete')")
+    public CommonResult<Boolean> deleteFileConfigList(@RequestParam("ids") List<Long> ids) {
+        fileConfigService.deleteFileConfigList(ids);
+        return success(true);
+    }
+
+    @GetMapping("/get")
+    @Operation(summary = "Get file config detail")
+    @Parameter(name = "id", description = "Config ID", required = true, example = "1024")
+    @PreAuthorize("@ss.hasPermission('infra:file-config:query')")
+    public CommonResult<FileConfigRespDTO> getFileConfig(@RequestParam("id") Long id) {
+        FileConfigPO po = fileConfigService.getFileConfig(id);
+        return success(toRespDTO(po));
     }
 
     @GetMapping("/page")

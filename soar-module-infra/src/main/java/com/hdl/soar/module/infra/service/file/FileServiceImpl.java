@@ -1,5 +1,6 @@
 package com.hdl.soar.module.infra.service.file;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.io.FileUtil;
@@ -20,11 +21,13 @@ import jakarta.persistence.criteria.Predicate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.Tika;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -34,6 +37,7 @@ import static com.hdl.soar.framework.common.exception.util.ServiceExceptionUtil.
 import static com.hdl.soar.framework.jpa.core.util.SpecUtils.*;
 import static com.hdl.soar.module.infra.enums.ErrorCodeConstants.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -120,6 +124,31 @@ public class FileServiceImpl implements FileService {
             client.delete(file.getPath());
         }
         fileRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteFileList(List<Long> ids) {
+        if (CollUtil.isEmpty(ids)) return;
+
+        // Optional: pre-fetch to validate existence (mirror single deleteFile behavior)
+        List<FilePO> files = fileRepository.findAllById(ids);
+        if (files.size() != ids.size()) {
+            throw exception(FILE_NOT_EXISTS);
+        }
+
+        // For each file, delete from storage (S3/local/db) — same loop logic as single deleteFile
+        for (FilePO file : files) {
+            try {
+                FileClient client = fileConfigService.getFileClient(file.getConfigId());
+                if (client != null) {
+                    client.delete(file.getPath());
+                }
+            } catch (Exception ex) {
+                log.error("File delete file ID: {} failed: {}", file.getId(), ex.getMessage(), ex);
+            }
+        }
+        fileRepository.deleteAllById(ids);
     }
 
     @Override

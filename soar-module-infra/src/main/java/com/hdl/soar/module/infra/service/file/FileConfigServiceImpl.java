@@ -1,5 +1,6 @@
 package com.hdl.soar.module.infra.service.file;
 
+import cn.hutool.core.collection.CollUtil;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.hdl.soar.framework.common.pojo.PageResult;
 import com.hdl.soar.framework.common.util.cache.CacheUtils;
@@ -28,10 +29,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static com.hdl.soar.framework.common.exception.util.ServiceExceptionUtil.exception;
@@ -126,8 +129,29 @@ public class FileConfigServiceImpl implements FileConfigService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteFileConfigList(Collection<Long> ids) {
+        if (CollUtil.isEmpty(ids)) return;
+
+        // Master guard — fetch and check before any delete
+        List<FileConfigPO> configs = fileConfigRepository.findAllById(ids);
+        if (configs.size() != ids.size()) {
+            throw exception(FILE_CONFIG_NOT_EXISTS);
+        }
+        boolean anyMaster = configs.stream().anyMatch(FileConfigPO::getMaster);
+        if (anyMaster) {
+            throw exception(FILE_CONFIG_DELETE_FAIL_MASTER);
+        }
+
+        // Cache invalidation parity với single deleteFileConfig
+        fileConfigRepository.deleteAllById(ids);
+        clearCache();
+    }
+
+    @Override
     public FileConfigPO getFileConfig(Long id) {
-        return fileConfigRepository.findById(id).orElse(null);
+        return fileConfigRepository.findById(id)
+                .orElseThrow(() -> exception(FILE_CONFIG_NOT_EXISTS));
     }
 
     @Override

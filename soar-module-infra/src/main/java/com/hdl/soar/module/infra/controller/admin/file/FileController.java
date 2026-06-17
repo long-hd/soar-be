@@ -36,6 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import static com.hdl.soar.framework.common.pojo.CommonResult.success;
 
@@ -108,6 +109,15 @@ public class FileController {
     @PreAuthorize("@ss.hasPermission('infra:file:delete')")
     public CommonResult<Boolean> deleteFile(@RequestParam("id") Long id) throws Exception {
         fileService.deleteFile(id);
+        return success(true);
+    }
+
+    @DeleteMapping("/delete-list")
+    @Operation(summary = "Bulk delete files")
+    @Parameter(name = "ids", description = "File IDs (comma-separated)", required = true)
+    @PreAuthorize("@ss.hasPermission('infra:file:delete')")
+    public CommonResult<Boolean> deleteFileList(@RequestParam("ids") List<Long> ids) throws Exception {
+        fileService.deleteFileList(ids);
         return success(true);
     }
 

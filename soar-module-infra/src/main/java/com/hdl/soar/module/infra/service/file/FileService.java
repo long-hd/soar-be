@@ -6,6 +6,8 @@ import com.hdl.soar.module.infra.controller.admin.file.dto.file.FilePageReqDTO;
 import com.hdl.soar.module.infra.controller.admin.file.dto.file.FilePresignedUrlRespDTO;
 import com.hdl.soar.module.infra.dal.entity.file.FilePO;
 
+import java.util.List;
+
 public interface FileService {
 
     /**
@@ -28,6 +30,8 @@ public interface FileService {
     Long createFile(FileCreateReqDTO createReqDTO);
 
     void deleteFile(Long id) throws Exception;
+
+    void deleteFileList(List<Long> ids);
 
     /**
      * Read content for the public download endpoint.
