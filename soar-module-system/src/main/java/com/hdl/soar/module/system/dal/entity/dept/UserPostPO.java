@@ -3,6 +3,7 @@ package com.hdl.soar.module.system.dal.entity.dept;
 import com.hdl.soar.framework.tenant.core.db.TenantBasePO;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import com.hdl.soar.module.system.dal.entity.user.AdminUserPO;
 import lombok.experimental.SuperBuilder;
@@ -14,6 +15,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLRestriction("deleted = false")
 public class UserPostPO extends TenantBasePO {
 
     @Id

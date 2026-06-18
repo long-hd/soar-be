@@ -3,6 +3,7 @@ package com.hdl.soar.module.infra.dal.entity.file;
 import com.hdl.soar.framework.jpa.core.entity.BasePO;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 import lombok.experimental.SuperBuilder;
 
 /**
@@ -17,6 +18,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLRestriction("deleted = false")
 public class FileConfigPO extends BasePO {
 
     @Id

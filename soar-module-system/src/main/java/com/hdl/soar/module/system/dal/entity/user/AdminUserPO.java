@@ -4,6 +4,7 @@ import com.hdl.soar.framework.jpa.core.converter.JsonLongSetConverter;
 import com.hdl.soar.framework.tenant.core.db.TenantBasePO;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
@@ -25,6 +26,7 @@ import java.util.Set;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLRestriction("deleted = false")
 public class AdminUserPO extends TenantBasePO {
 
     /**

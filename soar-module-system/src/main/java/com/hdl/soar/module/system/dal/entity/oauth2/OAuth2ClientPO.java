@@ -7,6 +7,7 @@ import com.hdl.soar.framework.jpa.core.converter.JsonStringListConverter;
 import com.hdl.soar.framework.jpa.core.entity.BasePO;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.List;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLRestriction("deleted = false")
 public class OAuth2ClientPO extends BasePO {
 
     @Id

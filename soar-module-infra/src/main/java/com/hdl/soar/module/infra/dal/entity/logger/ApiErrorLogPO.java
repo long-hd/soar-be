@@ -5,6 +5,7 @@ import com.hdl.soar.framework.tenant.core.db.TenantBasePO;
 import com.hdl.soar.module.infra.enums.logger.ApiErrorLogProcessStatusEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ import java.time.Instant;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLRestriction("deleted = false")
 public class ApiErrorLogPO extends TenantBasePO {
 
     /**

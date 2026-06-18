@@ -3,6 +3,7 @@ package com.hdl.soar.module.system.dal.entity.dept;
 import com.hdl.soar.framework.tenant.core.db.TenantBasePO;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 import lombok.experimental.SuperBuilder;
@@ -17,6 +18,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLRestriction("deleted = false")
 public class PostPO extends TenantBasePO {
 
     @Id

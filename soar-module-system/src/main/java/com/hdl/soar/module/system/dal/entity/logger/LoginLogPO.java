@@ -3,6 +3,7 @@ package com.hdl.soar.module.system.dal.entity.logger;
 import com.hdl.soar.framework.tenant.core.db.TenantBasePO;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import com.hdl.soar.module.system.enums.logger.LoginResultEnum;
 import com.hdl.soar.module.system.enums.logger.LoginLogTypeEnum;
@@ -21,6 +22,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLRestriction("deleted = false")
 public class LoginLogPO extends TenantBasePO {
 
     @Id
