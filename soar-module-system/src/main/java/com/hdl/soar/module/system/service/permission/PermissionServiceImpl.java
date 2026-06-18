@@ -179,7 +179,7 @@ public class PermissionServiceImpl implements PermissionService {
         }
 
         // Otherwise, return menu IDs associated with the given roles
-        return roleMenuRepository.findAllByRoleIdIn(roleIds);
+        return roleMenuRepository.findMenuIdsByRoleIdIn(roleIds);
     }
 
     @Override

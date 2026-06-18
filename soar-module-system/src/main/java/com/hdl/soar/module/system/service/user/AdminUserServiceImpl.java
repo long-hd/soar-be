@@ -127,6 +127,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Transactional(rollbackFor = Exception.class)
     @OperateLog(module = USER_MODULE, name = "Delete User",
             bizId = "#id", content = USER_DELETE_CONTENT)
+    @CacheEvict(value = RedisKeyConstants.USER_ROLE_ID_LIST, key = "#id")
     public void deleteUser(Long id) {
         // 1. Validate exists
         adminUserRepository.findById(id)
@@ -140,6 +141,7 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @CacheEvict(value = RedisKeyConstants.USER_ROLE_ID_LIST, allEntries = true)
     public void deleteUserList(List<Long> ids) {
         // 1. Validate all exist
         List<AdminUserPO> users = adminUserRepository.findAllById(ids);

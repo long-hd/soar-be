@@ -27,6 +27,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -85,7 +86,11 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CacheEvict(value = RedisKeyConstants.ROLE, key = "#id")
+    @Caching(evict = {
+            @CacheEvict(value = RedisKeyConstants.ROLE, key = "#id"),
+            @CacheEvict(value = RedisKeyConstants.MENU_ROLE_ID_LIST, allEntries = true),
+            @CacheEvict(value = RedisKeyConstants.USER_ROLE_ID_LIST, allEntries = true)
+    })
     public void deleteRole(Long id) {
         // 1. Validate exists + not system role
         validateRoleForUpdate(id);
@@ -98,7 +103,11 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @CacheEvict(value = RedisKeyConstants.ROLE, allEntries = true)
+    @Caching(evict = {
+            @CacheEvict(value = RedisKeyConstants.ROLE, allEntries = true),
+            @CacheEvict(value = RedisKeyConstants.MENU_ROLE_ID_LIST, allEntries = true),
+            @CacheEvict(value = RedisKeyConstants.USER_ROLE_ID_LIST, allEntries = true)
+    })
     public void deleteRoleList(List<Long> ids) {
         // 1. Validate all exist + none are system roles
         ids.forEach(this::validateRoleForUpdate);
@@ -220,9 +229,11 @@ public class RoleServiceImpl implements RoleService {
         }
 
         role.setDataScope(dataScopeEnum);
-        role.setDataScopeDeptIds(dataScopeDeptIds);
+        // Defensive: deptIds chỉ có ý nghĩa khi scope = DEPT_CUSTOM
+        role.setDataScopeDeptIds(
+                dataScopeEnum == DataScopeEnum.DEPT_CUSTOM ? dataScopeDeptIds : null
+        );
         roleRepository.save(role);
-        // NOTE: if a role cache exists, evict it here so the new scope takes effect.
     }
 
     // =================== Helper

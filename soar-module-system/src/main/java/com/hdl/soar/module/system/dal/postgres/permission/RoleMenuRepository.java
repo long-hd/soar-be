@@ -17,7 +17,7 @@ public interface RoleMenuRepository extends JpaRepository<RoleMenuPO, Long> {
     List<RoleMenuPO> findAllByMenuId(Long menuId);
 
     @Query("SELECT rm.menuId FROM RoleMenuPO rm WHERE rm.roleId IN :roleIds")
-    Set<Long> findAllByRoleIdIn(@Param("roleIds") Collection<Long> roleIds);
+    Set<Long> findMenuIdsByRoleIdIn(@Param("roleIds") Collection<Long> roleIds);
 
     @Query("SELECT rm.menuId FROM RoleMenuPO rm WHERE rm.roleId = :roleId")
     Set<Long> findMenuIdsByRoleId(@Param("roleId") Long roleId);

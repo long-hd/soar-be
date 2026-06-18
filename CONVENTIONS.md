@@ -363,3 +363,129 @@ public interface SoarMapperConfig {}
 Then `@Mapper(config = SoarMapperConfig.class)` on each mapper.
 
 Location: `soar-framework/soar-spring-boot-starter-jpa/src/main/java/com/hdl/soar/framework/jpa/mapping/SoarMapperConfig.java`.
+
+## Spring Data `@Query` projection rule
+
+**Rule**: When a Spring Data JPA repository method's return type does NOT match the entity type, you MUST add an explicit `@Query` annotation with projection. Spring Data derived queries (`findAllBy...`, `findBy...`) return the entity type by default; type-erasure casting to a primitive collection (`Set<Long>`, `List<String>`, etc.) at runtime causes silent failures (Hibernate IN-clause binding errors, ClassCastException on iteration, TypeMismatchException).
+
+### Anti-pattern
+
+```java
+// ❌ Looks fine, fails at runtime when result is non-empty
+Set<Long> findAllByRoleIdIn(Collection<Long> roleIds);
+```
+
+### Pattern
+
+```java
+// ✅ Explicit projection
+@Query("SELECT rm.menuId FROM RoleMenuPO rm WHERE rm.roleId IN :roleIds")
+Set<Long> findAllByRoleIdIn(@Param("roleIds") Collection<Long> roleIds);
+```
+
+OR rename + return entity:
+
+```java
+// ✅ Conventional naming, caller projects
+List<RoleMenuPO> findAllByRoleIdIn(Collection<Long> roleIds);
+// caller: convertSet(result, RoleMenuPO::getMenuId)
+```
+
+### Audit checklist khi add repository method
+
+1. Does method follow `findAll<X>By...` / `findBy...` derived-query naming?
+2. Is the declared return type `<Entity>`, `Collection<Entity>`, `Optional<Entity>`, `Stream<Entity>`?
+3. If NO to #2 → must have explicit `@Query` annotation. If missing → BUG.
+---
+
+## Service-layer tenant filter
+
+**Rule**: For multi-tenant safety on operations that grant cross-cutting access (role-menu, role-dept, user-role, etc.), tenant filter belongs in **service layer**, not controller.
+
+Justification:
+- Business invariant (tenant cannot grant assets outside its package) — belongs với domain logic
+- Reusable: future internal callers (bulk ops, migrations, scheduled tasks) also protected
+- Immutable filtering — service produces new filtered Set thay vì mutating caller's DTO collection
+### Pattern
+
+```java
+@Override
+@Transactional(rollbackFor = Exception.class)
+@Caching(evict = { ... })
+public void assignFoo(Long entityId, Set<Long> targetIds) {
+    Set<Long> safe = CollUtil.emptyIfNull(targetIds);
+ 
+    // Tenant safety
+    Set<Long> tenantAllowed = tenantService.getTenantFooIds();   // null = no filter
+    if (tenantAllowed != null) {
+        safe = safe.stream()
+                .filter(tenantAllowed::contains)
+                .collect(Collectors.toSet());
+    }
+ 
+    // ... diff-based assign logic
+}
+```
+
+`null` semantics từ `tenantService.get<Resource>Ids()` nghĩa "no filter applies" (system tenant hoặc tenancy disabled). Always handle this branch.
+
+### Anti-pattern (yudao-style controller filter)
+
+```java
+// ❌ Controller mutates DTO + bypassable từ internal callers
+public CommonResult<Boolean> assignFoo(@RequestBody Req req) {
+    tenantService.handleTenantFoo(allowed ->
+        req.getIds().removeIf(id -> !allowed.contains(id))   // mutation!
+    );
+    service.assign(req.getId(), req.getIds());
+    return success(true);
+}
+```
+
+Soar diverges từ yudao on this — keep filter trong service.
+ 
+---
+
+## Missing `@CacheEvict` audit checklist
+
+**Bug class**: mutation operation modifies data backing a `@Cacheable` read method, nhưng mutation không `@CacheEvict` corresponding cache → stale reads.
+
+### Convention going forward
+
+Every `@Cacheable` method should have a comment listing mutations that should evict it. Example:
+
+```java
+/**
+ * Caches: ROLE/{id}
+ * Mutations that must @CacheEvict: createRole, updateRole, deleteRole,
+ *   deleteRoleList, updateRoleStatus, updateRoleDataScope.
+ */
+@Cacheable(value = RedisKeyConstants.ROLE, key = "#id", unless = "#result == null")
+public RolePO getRoleFromCache(Long id) { ... }
+```
+
+This makes dependency explicit trong code — anyone adding mutation sẽ thấy comment + remember add `@CacheEvict`.
+
+### Audit procedure (run before any release)
+
+```bash
+# Find all @Cacheable annotations
+grep -rn "@Cacheable" soar-module-system/src/main/java
+grep -rn "@Cacheable" soar-module-infra/src/main/java
+```
+
+For each `@Cacheable` cache name (vd `ROLE`, `MENU_ROLE_ID_LIST`):
+1. Identify ALL mutations changing underlying data (insert/update/delete trên backing entity/relationship)
+2. Verify mỗi mutation có `@CacheEvict` cho cache name đó
+3. If missing → fix or document trong TECH_DEBT
+### Common patterns
+
+- Single-row evict: `@CacheEvict(value = X, key = "#id")`
+- Cross-cutting evict (bulk + join tables): `@CacheEvict(value = X, allEntries = true)`
+- Multi-cache evict cần `@Caching`:
+```java
+@Caching(evict = {
+    @CacheEvict(value = CACHE_A, key = "#id"),
+    @CacheEvict(value = CACHE_B, allEntries = true)
+})
+```
