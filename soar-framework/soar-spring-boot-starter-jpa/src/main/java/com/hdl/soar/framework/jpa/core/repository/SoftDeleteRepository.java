@@ -9,9 +9,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.util.Collection;
-import java.util.Collections;
-
 public class SoftDeleteRepository <T extends BasePO, ID> extends SimpleJpaRepository<T, ID> {
 
     public SoftDeleteRepository(JpaEntityInformation<T, ?> entityInformation, EntityManager entityManager) {

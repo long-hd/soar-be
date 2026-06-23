@@ -2,7 +2,6 @@ package com.hdl.soar.module.system.dal.postgres.dept;
 
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 import com.hdl.soar.module.system.dal.entity.dept.DeptPO;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;

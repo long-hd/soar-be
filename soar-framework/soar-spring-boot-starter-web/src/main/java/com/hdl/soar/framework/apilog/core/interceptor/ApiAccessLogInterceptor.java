@@ -15,8 +15,10 @@ import java.util.Map;
  * API Access Log Interceptor.
  * <p>
  * Two responsibilities:
- * 1. Store {@link HandlerMethod} as request attribute for {@code ApiAccessLogFilter} to read.
- * 2. Print request/response logs to console in non-prod environments.
+ * <ul>
+ *  <li> 1. Store {@link HandlerMethod} as request attribute for {@code ApiAccessLogFilter} to read.</li>
+ *  <li> 2. Print request/response logs to console in non-prod environments.</li>
+ * </ul>
  */
 @Slf4j
 public class ApiAccessLogInterceptor implements HandlerInterceptor {

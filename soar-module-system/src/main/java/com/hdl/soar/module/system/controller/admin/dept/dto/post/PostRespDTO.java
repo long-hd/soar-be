@@ -23,7 +23,7 @@ public class PostRespDTO {
     @ExcelProperty("Position name")
     private String name;
 
-    @Schema(description = "Position code", requiredMode = Schema.RequiredMode.REQUIRED, example = "yudao")
+    @Schema(description = "Position code", requiredMode = Schema.RequiredMode.REQUIRED, example = "dev")
     @ExcelProperty("Position code")
     private String code;
 

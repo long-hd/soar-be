@@ -5,7 +5,6 @@ import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 import com.hdl.soar.module.system.controller.admin.dept.dto.dept.DeptListReqDTO;
 import com.hdl.soar.module.system.controller.admin.dept.dto.dept.DeptSaveReqDTO;
 import com.hdl.soar.module.system.dal.entity.dept.DeptPO;
-import jakarta.validation.Valid;
 
 import java.util.*;
 import java.util.stream.Collectors;

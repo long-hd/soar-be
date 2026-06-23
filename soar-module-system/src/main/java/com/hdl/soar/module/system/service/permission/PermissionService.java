@@ -1,10 +1,8 @@
 package com.hdl.soar.module.system.service.permission;
 
 import com.hdl.soar.framework.common.biz.system.permission.dto.DeptDataPermissionRespDTO;
-import com.hdl.soar.module.system.dal.entity.permission.RolePO;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 /**

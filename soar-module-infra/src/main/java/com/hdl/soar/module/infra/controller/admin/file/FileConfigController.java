@@ -106,8 +106,10 @@ public class FileConfigController {
     }
 
     /**
-     * Map PO to RespDTO, parsing the JSON {@code config} string back into a map for the FE.
+     * Map PO to RespDTO, parsing the JSON {@code config} string back into a map for
+     * the FE.
      */
+    @SuppressWarnings("unchecked")
     private FileConfigRespDTO toRespDTO(FileConfigPO po) {
         if (po == null) {
             return null;

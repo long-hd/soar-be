@@ -20,7 +20,7 @@ public class PostSaveReqDTO {
     @Size(max = 50, message = "Position name length cannot exceed 50 characters")
     private String name;
 
-    @Schema(description = "Position code", requiredMode = Schema.RequiredMode.REQUIRED, example = "yudao")
+    @Schema(description = "Position code", requiredMode = Schema.RequiredMode.REQUIRED, example = "dev")
     @NotBlank(message = "Position code cannot be empty")
     @Size(max = 64, message = "Position code length cannot exceed 64 characters")
     private String code;

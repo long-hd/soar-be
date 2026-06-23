@@ -3,7 +3,6 @@ package com.hdl.soar.framework.security.core.util;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
-import com.hdl.soar.framework.common.enums.UserTypeEnum;
 import com.hdl.soar.framework.security.core.LoginUser;
 import com.hdl.soar.framework.web.core.util.WebFrameworkUtils;
 import jakarta.servlet.http.HttpServletRequest;

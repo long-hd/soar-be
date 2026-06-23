@@ -27,6 +27,9 @@ public class InDictCollectionValidator implements ConstraintValidator<InDict, Co
         boolean allValid = list.stream()
                 .allMatch(item -> values.stream()
                         .anyMatch(v -> v.equalsIgnoreCase(item.toString())));
+        if(allValid){
+            return true;
+        }
 
         // Validation failed
         context.disableDefaultConstraintViolation();

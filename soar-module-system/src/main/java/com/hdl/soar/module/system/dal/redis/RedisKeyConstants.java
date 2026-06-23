@@ -15,90 +15,90 @@ public interface RedisKeyConstants {
 
     /**
      * Role cache
-     *
-     * KEY format: role:{id}
+     * <p>
+     * KEY format: role:{id} <br>
      * VALUE type: String (role information)
      */
     String ROLE = "role";
 
     /**
      * Cache of role IDs owned by a user
-     *
-     * KEY format: user_role_ids:{userId}
+     * <p>
+     * KEY format: user_role_ids:{userId} <br>
      * VALUE type: String (collection of role IDs)
      */
     String USER_ROLE_ID_LIST = "user_role_ids";
 
     /**
      * Cache of role IDs associated with a specific menu
-     *
-     * KEY format: menu_role_ids:{menuId}
+     * <p>
+     * KEY format: menu_role_ids:{menuId} <br>
      * VALUE type: String (collection of role IDs)
      */
     String MENU_ROLE_ID_LIST = "menu_role_ids";
 
     /**
      * Cache of menu IDs associated with a permission
-     *
-     * KEY format: permission_menu_ids:{permission}
+     * <p>
+     * KEY format: permission_menu_ids:{permission} <br>
      * VALUE type: String (array of menu IDs)
      */
     String PERMISSION_MENU_ID_LIST = "permission_menu_ids";
 
     /**
      * OAuth2 client cache
-     *
-     * KEY format: oauth_client:{id}
+     * <p>
+     * KEY format: oauth_client:{id} <br>
      * VALUE type: String (client information)
      */
     String OAUTH_CLIENT = "oauth_client";
 
     /**
      * Access token cache
-     *
-     * KEY format: oauth2_access_token:{token}
-     * VALUE type: String (access token info {@link OAuth2AccessTokenEntity})
-     *
+     * <p>
+     * KEY format: oauth2_access_token:{token} <br>
+     * VALUE type: String (access token info {@link com.hdl.soar.module.system.dal.entity.oauth2.OAuth2AccessTokenPO})
+     * <p>
      * Uses RedisTemplate due to dynamic expiration time
      */
     String OAUTH2_ACCESS_TOKEN = "oauth2_access_token:%s";
 
     /**
      * Notification template cache
-     *
-     * KEY format: notify_template:{code}
+     * <p>
+     * KEY format: notify_template:{code} <br>
      * VALUE type: String (template information)
      */
     String NOTIFY_TEMPLATE = "notify_template";
 
     /**
      * Mail account cache
-     *
-     * KEY format: mail_account:{id}
+     * <p>
+     * KEY format: mail_account:{id} <br>
      * VALUE type: String (account information)
      */
     String MAIL_ACCOUNT = "mail_account";
 
     /**
      * Mail template cache
-     *
-     * KEY format: mail_template:{code}
+     * <p>
+     * KEY format: mail_template:{code} <br>
      * VALUE type: String (template information)
      */
     String MAIL_TEMPLATE = "mail_template";
 
     /**
      * SMS template cache
-     *
-     * KEY format: sms_template:{id}
+     * <p>
+     * KEY format: sms_template:{id} <br>
      * VALUE type: String (template information)
      */
     String SMS_TEMPLATE = "sms_template";
 
     /**
      * Mini-program subscription template cache
-     *
-     * KEY format: wxa_subscribe_template:{userType}
+     * <p>
+     * KEY format: wxa_subscribe_template:{userType} <br>
      * VALUE type: String (template information)
      */
     String WXA_SUBSCRIBE_TEMPLATE = "wxa_subscribe_template";

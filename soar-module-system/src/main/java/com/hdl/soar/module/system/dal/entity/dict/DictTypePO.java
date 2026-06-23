@@ -7,8 +7,6 @@ import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 import lombok.experimental.SuperBuilder;
 
-import java.time.Instant;
-
 @Entity
 @Table(name = "system_dict_type")
 @Data

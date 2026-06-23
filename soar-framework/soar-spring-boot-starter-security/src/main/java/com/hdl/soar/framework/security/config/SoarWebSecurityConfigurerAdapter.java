@@ -5,13 +5,11 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.hdl.soar.framework.security.core.filter.TokenAuthenticationFilter;
 import com.hdl.soar.framework.web.config.WebProperties;
-import jakarta.annotation.Resource;
 import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.DispatcherType;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.context.ApplicationContext;
@@ -93,20 +91,20 @@ public class SoarWebSecurityConfigurerAdapter {
     /**
      * URL security configuration.
      * <p>
-     * anyRequest          | matches all request paths
-     * access              | allows access when the Spring EL expression evaluates to true
-     * anonymous           | allows access for anonymous users
-     * denyAll             | denies access for all users
+     * anyRequest          | matches all request paths <br>
+     * access              | allows access when the Spring EL expression evaluates to true <br>
+     * anonymous           | allows access for anonymous users <br>
+     * denyAll             | denies access for all users <br>
      * fullyAuthenticated  | allows access only to fully authenticated users
-     *                      (not via remember-me automatic login)
-     * hasAnyAuthority     | allows access if the user has any of the specified authorities
-     * hasAnyRole          | allows access if the user has any of the specified roles
-     * hasAuthority        | allows access if the user has the specified authority
-     * hasIpAddress        | allows access if the request IP matches the specified IP address
-     * hasRole             | allows access if the user has the specified role
-     * permitAll           | allows access to everyone
-     * rememberMe          | allows access for users authenticated via remember-me
-     * authenticated       | allows access for any authenticated user
+     *                      (not via remember-me automatic login) <br>
+     * hasAnyAuthority     | allows access if the user has any of the specified authorities <br>
+     * hasAnyRole          | allows access if the user has any of the specified roles <br>
+     * hasAuthority        | allows access if the user has the specified authority <br>
+     * hasIpAddress        | allows access if the request IP matches the specified IP address <br>
+     * hasRole             | allows access if the user has the specified role <br>
+     * permitAll           | allows access to everyone <br>
+     * rememberMe          | allows access for users authenticated via remember-me <br>
+     * authenticated       | allows access for any authenticated user <br>
      */
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -147,7 +145,8 @@ public class SoarWebSecurityConfigurerAdapter {
                         .requestMatchers(securityProperties.getPermitAllUrls().toArray(new String[0])).permitAll()
                 )
                 // 2. Custom rules for each module/project
-                .authorizeHttpRequests(c -> authorizeRequestsCustomizers.forEach(customizer -> customizer.customize(c)))
+                .authorizeHttpRequests(c -> authorizeRequestsCustomizers
+                        .forEach(customizer -> customizer.customize(c)))
                 // 3. Default fallback rule: authentication required for all other requests
                 .authorizeHttpRequests(c -> c
                         .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll() // Async requests (e.g., SSE) do not require authentication

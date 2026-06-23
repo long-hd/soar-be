@@ -5,7 +5,6 @@ import com.hdl.soar.framework.common.pojo.PageResult;
 import com.hdl.soar.module.system.controller.admin.dept.dto.post.PostPageReqDTO;
 import com.hdl.soar.module.system.controller.admin.dept.dto.post.PostSaveReqDTO;
 import com.hdl.soar.module.system.dal.entity.dept.PostPO;
-import jakarta.validation.Valid;
 
 import java.util.Collection;
 import java.util.List;

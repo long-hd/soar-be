@@ -4,7 +4,6 @@ import com.hdl.soar.framework.common.pojo.PageResult;
 import com.hdl.soar.module.system.controller.admin.dict.dto.type.DictTypePageReqDTO;
 import com.hdl.soar.module.system.controller.admin.dict.dto.type.DictTypeSaveReqDTO;
 import com.hdl.soar.module.system.dal.entity.dict.DictTypePO;
-import jakarta.validation.Valid;
 
 import java.util.List;
 

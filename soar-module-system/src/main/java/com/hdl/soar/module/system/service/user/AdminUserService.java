@@ -9,9 +9,6 @@ import com.hdl.soar.module.system.controller.admin.user.dto.user.UserImportRespD
 import com.hdl.soar.module.system.controller.admin.user.dto.user.UserPageReqDTO;
 import com.hdl.soar.module.system.controller.admin.user.dto.user.UserSaveReqDTO;
 import com.hdl.soar.module.system.dal.entity.user.AdminUserPO;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 import java.util.List;
 import java.util.Set;

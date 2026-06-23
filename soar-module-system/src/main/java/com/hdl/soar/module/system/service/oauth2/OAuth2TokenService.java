@@ -5,7 +5,6 @@ import com.hdl.soar.module.system.controller.admin.oauth2.dto.token.OAuth2Access
 import com.hdl.soar.module.system.dal.entity.oauth2.OAuth2AccessTokenPO;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * OAuth2.0 Token Service interface.

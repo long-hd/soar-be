@@ -1,6 +1,5 @@
 package com.hdl.soar.framework.common.enums;
 
-import cn.hutool.core.util.ObjUtil;
 import com.hdl.soar.framework.common.core.ArrayValuable;
 import com.hdl.soar.framework.common.enums.converter.IntEnumConverter;
 import jakarta.persistence.Converter;
@@ -8,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.Arrays;
-import java.util.function.Function;
 
 /**
  * Common status enum.

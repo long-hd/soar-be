@@ -142,7 +142,7 @@ public class SoarWebAutoConfiguration {
     }
 
     /**
-     * 创建 DemoFilter Bean，演示模式
+     * Create a DemoFilter Bean for demo mode.
      */
     @Bean
     @ConditionalOnProperty(value = "soar.demo", havingValue = "true")

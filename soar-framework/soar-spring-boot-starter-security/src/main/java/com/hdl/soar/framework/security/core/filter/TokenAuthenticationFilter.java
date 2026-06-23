@@ -4,7 +4,6 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.hdl.soar.framework.common.biz.system.oauth2.OAuth2TokenCommonApi;
 import com.hdl.soar.framework.common.biz.system.oauth2.dto.OAuth2AccessTokenCheckRespDTO;
-import com.hdl.soar.framework.common.enums.UserTypeEnum;
 import com.hdl.soar.framework.common.exception.ServiceException;
 import com.hdl.soar.framework.common.pojo.CommonResult;
 import com.hdl.soar.framework.common.util.servlet.ServletUtils;

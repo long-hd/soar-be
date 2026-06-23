@@ -21,7 +21,7 @@ public class SecurityProperties {
 
     /**
      * HTTP request parameter used for access token transmission
-     *
+     * <p>
      * Originally introduced to support WebSocket,
      * since WebSocket cannot pass headers and must pass tokens via URL parameters.
      */

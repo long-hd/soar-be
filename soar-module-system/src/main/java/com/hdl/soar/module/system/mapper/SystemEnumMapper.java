@@ -1,6 +1,5 @@
 package com.hdl.soar.module.system.mapper;
 
-import com.hdl.soar.framework.common.enums.UserTypeEnum;
 import com.hdl.soar.module.system.enums.common.SexEnum;
 import com.hdl.soar.module.system.enums.logger.LoginLogTypeEnum;
 import com.hdl.soar.module.system.enums.logger.LoginResultEnum;
@@ -8,7 +7,6 @@ import com.hdl.soar.module.system.enums.permission.DataScopeEnum;
 import com.hdl.soar.module.system.enums.permission.MenuTypeEnum;
 import com.hdl.soar.module.system.enums.permission.RoleTypeEnum;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
 
 @Mapper
 public interface SystemEnumMapper {

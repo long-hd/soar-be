@@ -24,7 +24,7 @@ public class SoarRedisAutoConfiguration {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
 
         // Set RedisConnection factory.
-        // 😈 It is the “secret factory” that enables integration with multiple Java Redis clients.
+        // It is the “secret factory” that enables integration with multiple Java Redis clients.
         // If you're interested, you can explore its implementation yourself.
         template.setConnectionFactory(factory);
 

@@ -5,7 +5,6 @@ import com.hdl.soar.framework.common.pojo.CommonResult;
 import com.hdl.soar.module.system.controller.app.dict.dto.AppDictDataRespDTO;
 import com.hdl.soar.module.system.dal.entity.dict.DictDataPO;
 import com.hdl.soar.module.system.mapper.dict.DictDataMapper;
-import com.hdl.soar.module.system.mapper.dict.DictTypeMapper;
 import com.hdl.soar.module.system.service.dict.DictDataService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

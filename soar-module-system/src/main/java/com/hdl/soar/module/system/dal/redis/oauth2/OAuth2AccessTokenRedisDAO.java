@@ -1,6 +1,5 @@
 package com.hdl.soar.module.system.dal.redis.oauth2;
 
-import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.date.TemporalUtil;
 import com.hdl.soar.framework.common.util.collection.CollectionUtils;
 import com.hdl.soar.framework.common.util.json.JsonUtils;
@@ -13,7 +12,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;

@@ -9,7 +9,6 @@ import com.hdl.soar.framework.security.core.handler.AuthenticationEntryPointImpl
 import com.hdl.soar.framework.security.core.service.SecurityFrameworkService;
 import com.hdl.soar.framework.security.core.service.SecurityFrameworkServiceImpl;
 import com.hdl.soar.framework.web.core.handler.GlobalExceptionHandler;
-import jakarta.annotation.Resource;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
