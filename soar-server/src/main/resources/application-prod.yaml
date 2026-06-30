@@ -1,0 +1,47 @@
+server:
+  port: 48080
+
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/${POSTGRES_DB:soar}
+    username: ${POSTGRES_USER:soar}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+      database: 0
+      # password: ${REDIS_PASSWORD}  # Uncomment nếu enable Redis auth
+
+logging:
+  level:
+    root: INFO
+    com.hdl.soar: INFO
+    org.hibernate.SQL: WARN
+    org.flywaydb: INFO
+  file:
+    name: /app/logs/soar.log
+  logback:
+    rollingpolicy:
+      max-file-size: 50MB
+      max-history: 7
+
+# Soar prod overrides
+soar:
+  web:
+    admin-ui:
+      url: http://23.111.14.106  # đổi sang https://soar.<domain>
+  security:
+    mock-enable: false
+  tenant:
+    enable: true
+  captcha:
+    enable: true
+  user:
+    init-password: "${SOAR_INIT_PASSWORD:123456}"
