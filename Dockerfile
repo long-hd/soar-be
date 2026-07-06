@@ -31,8 +31,10 @@ COPY soar-module-infra soar-module-infra/
 COPY soar-module-system soar-module-system/
 COPY soar-server soar-server/
 
+ARG REVISION=0.0.1-SNAPSHOT
+
 # Build (skip tests for speed; tests verify trong dev workflow)
-RUN ./mvnw clean package -DskipTests -B
+RUN ./mvnw clean package -DskipTests -B -Drevision=${REVISION}
 
 # Stage 2: Runtime
 FROM docker.io/library/eclipse-temurin:21-jre-alpine
