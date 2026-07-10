@@ -1,6 +1,22 @@
 server:
   port: 48080
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always      # component nào DOWN (db/redis)
+      probes:
+        enabled: true           # thêm /health/liveness, /health/readiness
+  health:
+    db:
+      enabled: true             # Postgres indicator
+    redis:
+      enabled: true             # Redis indicator
+
 spring:
   datasource:
     url: jdbc:postgresql://postgres:5432/${POSTGRES_DB:soar}
@@ -36,7 +52,7 @@ logging:
 soar:
   web:
     admin-ui:
-      url: http://23.111.14.106  # đổi sang https://soar.<domain>
+      url: https://soar.haduylong.com  # đổi sang https://soar.<domain>
   security:
     mock-enable: false
   tenant:

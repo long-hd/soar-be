@@ -17,7 +17,7 @@
 
     <description>
         The main project of the backend server integrates the required soar-module-xxx dependencies,
-        thereby providing RESTful APIs for frontend projects such as soar-ui-admin and soar-ui-user.
+        thereby providing RESTFul APIs for frontend projects such as soar-ui-admin and soar-ui-user.
 
         Essentially, it is just an empty shell (container)!
     </description>
@@ -38,6 +38,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
         <dependency>
