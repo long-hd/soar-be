@@ -1,15 +1,20 @@
 package com.hdl.soar.framework.common.util.monitor;
 
 import org.apache.skywalking.apm.toolkit.trace.TraceContext;
+import org.slf4j.MDC;
 
 /**
  * Distributed tracing utility class.
- *
- * Since every starter needs to use this utility, it is placed under the util package
- * in the common module.
- *
+ * <p>
+ * Reads the current trace ID from SLF4J {@link MDC}, which Micrometer Tracing
+ * populates per request under the {@code "traceId"} key (Spring Boot 3 default).
+ * Returns an empty string when no span is in scope (e.g. outside an HTTP request,
+ * or on a pooled thread that did not receive the correlation context).
  */
 public class TracerUtils {
+
+    /** MDC key Micrometer Tracing uses for the trace ID. */
+    private static final String MDC_KEY_TRACE_ID = "traceId";
 
     /**
      * Private constructor to prevent instantiation.
@@ -18,13 +23,13 @@ public class TracerUtils {
     }
 
     /**
-     * Gets the distributed trace ID, directly returning SkyWalking's TraceId.
-     * Returns an empty string if it does not exist!!!
+     * Gets the current distributed trace ID.
      *
-     * @return the distributed trace ID
+     * @return the trace ID, or empty string if none is active
      */
     public static String getTraceId() {
-        return TraceContext.traceId();
+        String traceId = MDC.get(MDC_KEY_TRACE_ID);
+        return traceId != null ? traceId : "";
     }
 
 }
