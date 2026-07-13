@@ -1,6 +1,5 @@
 package com.hdl.soar.framework.common.util.monitor;
 
-import org.apache.skywalking.apm.toolkit.trace.TraceContext;
 import org.slf4j.MDC;
 
 /**

@@ -1,14 +1,13 @@
 package com.hdl.soar.framework.common.biz.system.dict.util;
 
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.hdl.soar.framework.common.biz.system.dict.DictDataCommonApi;
 import com.hdl.soar.framework.common.biz.system.dict.dto.DictDataRespDTO;
 import com.hdl.soar.framework.common.util.cache.CacheUtils;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,17 +29,12 @@ public class DictFrameworkUtils {
     private static DictDataCommonApi dictDataApi;
 
     /**
-     * Cache: dictType → List<DictDataRespDTO>
+     * Cache: dictType -> List<DictDataRespDTO>
      */
     private static final LoadingCache<String, List<DictDataRespDTO>> DICT_DATA_CACHE =
-            CacheUtils.buildAsyncReloadingCache(
+            CacheUtils.buildAsyncReloadingCaffeine(
                     Duration.ofMinutes(1L),
-                    new CacheLoader<>() {
-                        @Override
-                        public List<DictDataRespDTO> load(String dictType) {
-                            return dictDataApi.getDictDataList(dictType);
-                        }
-                    });
+                    dictType -> dictDataApi.getDictDataList(dictType));
 
     /**
      * Called by auto-configuration to inject the API implementation.
@@ -54,6 +48,17 @@ public class DictFrameworkUtils {
         DICT_DATA_CACHE.invalidateAll();
     }
 
+    /**
+     * Look up cached dict data for a type, never returning {@code null}.
+     *
+     * <p>Caffeine's {@code get} may return {@code null} if the loader yields null;
+     * we treat an unknown dict type as "no entries" so callers can stream safely.
+     */
+    private static List<DictDataRespDTO> getCachedDictDataList(String dictType) {
+        List<DictDataRespDTO> dictDatas = DICT_DATA_CACHE.get(dictType);
+        return dictDatas != null ? dictDatas : Collections.emptyList();
+    }
+
     // ========== Label / Value conversion ==========
 
     /**
@@ -63,7 +68,6 @@ public class DictFrameworkUtils {
      * @param value    the stored value (as Integer)
      * @return label string, or null if not found
      */
-    @SneakyThrows
     public static String parseDictDataLabel(String dictType, Integer value) {
         if (value == null) {
             return null;
@@ -78,10 +82,8 @@ public class DictFrameworkUtils {
      * @param value    the stored value (as String)
      * @return label string, or null if not found
      */
-    @SneakyThrows
     public static String parseDictDataLabel(String dictType, String value) {
-        List<DictDataRespDTO> dictDatas = DICT_DATA_CACHE.get(dictType);
-        return dictDatas.stream()
+        return getCachedDictDataList(dictType).stream()
                 .filter(data -> Objects.equals(data.getValue(), value))
                 .map(DictDataRespDTO::getLabel)
                 .findFirst()
@@ -95,10 +97,8 @@ public class DictFrameworkUtils {
      * @param label    the display label
      * @return value string, or null if not found
      */
-    @SneakyThrows
     public static String parseDictDataValue(String dictType, String label) {
-        List<DictDataRespDTO> dictDatas = DICT_DATA_CACHE.get(dictType);
-        return dictDatas.stream()
+        return getCachedDictDataList(dictType).stream()
                 .filter(data -> Objects.equals(data.getLabel(), label))
                 .map(DictDataRespDTO::getValue)
                 .findFirst()
@@ -108,10 +108,8 @@ public class DictFrameworkUtils {
     /**
      * Get all labels for a dict type (used for Excel dropdown options).
      */
-    @SneakyThrows
     public static List<String> getDictDataLabelList(String dictType) {
-        List<DictDataRespDTO> dictDatas = DICT_DATA_CACHE.get(dictType);
-        return dictDatas.stream()
+        return getCachedDictDataList(dictType).stream()
                 .map(DictDataRespDTO::getLabel)
                 .toList();
     }
@@ -119,10 +117,8 @@ public class DictFrameworkUtils {
     /**
      * Get all values for a dict type (used for @InDict validation).
      */
-    @SneakyThrows
     public static List<String> getDictDataValueList(String dictType) {
-        List<DictDataRespDTO> dictDatas = DICT_DATA_CACHE.get(dictType);
-        return dictDatas.stream()
+        return getCachedDictDataList(dictType).stream()
                 .map(DictDataRespDTO::getValue)
                 .toList();
     }
