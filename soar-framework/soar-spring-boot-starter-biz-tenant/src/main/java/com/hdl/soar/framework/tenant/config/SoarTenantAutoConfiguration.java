@@ -2,9 +2,12 @@ package com.hdl.soar.framework.tenant.config;
 
 import com.hdl.soar.framework.common.biz.system.tenant.TenantCommonApi;
 import com.hdl.soar.framework.common.enums.WebFilterOrderEnum;
+import com.hdl.soar.framework.redis.config.SoarCacheAutoConfiguration;
+import com.hdl.soar.framework.redis.config.SoarCacheProperties;
 import com.hdl.soar.framework.tenant.core.aop.TenantIgnore;
 import com.hdl.soar.framework.tenant.core.aop.TenantIgnoreAspect;
 import com.hdl.soar.framework.tenant.core.db.SoarTenantIdentifierResolver;
+import com.hdl.soar.framework.tenant.core.redis.TenantRedisCacheManager;
 import com.hdl.soar.framework.tenant.core.security.TenantSecurityWebFilter;
 import com.hdl.soar.framework.tenant.core.service.TenantFrameworkService;
 import com.hdl.soar.framework.tenant.core.service.TenantFrameworkServiceImpl;
@@ -16,6 +19,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
+import org.springframework.data.redis.cache.BatchStrategies;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheWriter;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -40,7 +49,7 @@ import static com.hdl.soar.framework.common.util.collection.CollectionUtils.conv
  *
  * <p>Disabled entirely with {@code soar.tenant.enable=false}.
  */
-@AutoConfiguration
+@AutoConfiguration(after = SoarCacheAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "soar.tenant", name = "enable", matchIfMissing = true)
 public class SoarTenantAutoConfiguration {
 
@@ -145,7 +154,26 @@ public class SoarTenantAutoConfiguration {
 
     // ========== Redis Cache ==========
 
-    // TODO [Tenant Cache] TenantRedisCacheManager — tenant-aware Redis cache with key prefix.
-    //  Requires: TenantProperties.ignoreCaches, @Primary RedisCacheManager bean
+    /**
+     * Tenant-aware cache manager, marked {@link Primary} so Spring Cache uses it over the
+     * plain {@code redisCacheManager}. Caches in {@code soar.tenant.ignore-caches} stay global.
+     */
+    @Bean
+    @Primary
+    public RedisCacheManager tenantRedisCacheManager(
+            RedisConnectionFactory connectionFactory,
+            RedisCacheConfiguration redisCacheConfiguration,
+            SoarCacheProperties soarCacheProperties,
+            TenantProperties tenantProperties) {
+        RedisCacheWriter cacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(
+                connectionFactory,
+                BatchStrategies.scan(soarCacheProperties.getRedisScanBatchSize()));
+        TenantRedisCacheManager cacheManager = new TenantRedisCacheManager(cacheWriter, redisCacheConfiguration,
+                tenantProperties.getIgnoreCaches());
+        // Defer @CacheEvict/@CachePut inside a @Transactional method to afterCommit,
+        // avoiding a read-through that re-caches a stale value before the tx commits.
+        cacheManager.setTransactionAware(true);
+        return cacheManager;
+    }
 
 }

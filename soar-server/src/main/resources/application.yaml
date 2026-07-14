@@ -80,6 +80,10 @@ soar:
     mock-enable: false
   tenant:
     enable: true
+    ignore-caches:
+      - user_role_ids
+      - permission_menu_ids
+      - oauth_client
   captcha:
     enable: false
   user:
