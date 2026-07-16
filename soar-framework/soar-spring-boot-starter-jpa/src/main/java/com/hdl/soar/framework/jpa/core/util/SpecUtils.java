@@ -26,7 +26,7 @@ public class SpecUtils {
                                             CriteriaBuilder cb, Root<T> root,
                                             SingularAttribute<? super T, String> field, String value) {
         if(StrUtil.isNotBlank(value)) {
-            predicates.add(cb.like(root.get(field), "%" + value + "%"));
+            predicates.add(cb.like(root.get(field), "%" + value.toLowerCase() + "%"));
         }
     }
 

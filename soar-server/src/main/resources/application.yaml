@@ -10,6 +10,25 @@ spring:
   profiles:
     active: local
 
+  quartz:
+    job-store-type: jdbc          # lưu lịch ở qrtz_* -> bền qua restart, sẵn sàng clustered
+    jdbc:
+      initialize-schema: never    # Flyway là nguồn duy nhất quản schema (migration V1_1_5)
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: SoarScheduler
+            instanceId: AUTO      # mỗi node tự sinh id riêng - bắt buộc khi clustered
+          jobStore:
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+            isClustered: true     # node tranh khoá ở DB -> job chỉ chạy 1 lần dù nhiều node
+            clusterCheckinInterval: 15000
+            useProperties: false
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 10
+
   # Servlet
   servlet:
     multipart:

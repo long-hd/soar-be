@@ -214,6 +214,11 @@
                 Scheduled tasks
             -->
             <!-- soar-spring-boot-starter-job -->
+            <dependency>
+                <groupId>com.hdl.boot</groupId>
+                <artifactId>soar-spring-boot-starter-job</artifactId>
+                <version>${revision}</version>
+            </dependency>
 
             <!--
                 Message queue

@@ -7,6 +7,8 @@ import com.hdl.soar.framework.redis.config.SoarCacheProperties;
 import com.hdl.soar.framework.tenant.core.aop.TenantIgnore;
 import com.hdl.soar.framework.tenant.core.aop.TenantIgnoreAspect;
 import com.hdl.soar.framework.tenant.core.db.SoarTenantIdentifierResolver;
+import com.hdl.soar.framework.tenant.core.job.TenantJob;
+import com.hdl.soar.framework.tenant.core.job.TenantJobAspect;
 import com.hdl.soar.framework.tenant.core.redis.TenantRedisCacheManager;
 import com.hdl.soar.framework.tenant.core.security.TenantSecurityWebFilter;
 import com.hdl.soar.framework.tenant.core.service.TenantFrameworkService;
@@ -149,8 +151,13 @@ public class SoarTenantAutoConfiguration {
 
     // ========== Job ==========
 
-    // TODO [Tenant Job] TenantJobAspect — iterate all tenants for scheduled jobs.
-    //  Requires: TenantFrameworkService.getTenantIds(), TenantUtils.execute(tenantId, runnable)
+    /**
+     * Runs {@link TenantJob} methods once per tenant.
+     */
+    @Bean
+    public TenantJobAspect tenantJobAspect(TenantFrameworkService tenantFrameworkService) {
+        return new TenantJobAspect(tenantFrameworkService);
+    }
 
     // ========== Redis Cache ==========
 
