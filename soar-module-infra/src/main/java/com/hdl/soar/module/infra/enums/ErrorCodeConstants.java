@@ -24,6 +24,7 @@ public interface ErrorCodeConstants {
     ErrorCode JOB_CRON_EXPRESSION_VALID = new ErrorCode(1_001_001_005, "Invalid CRON expression");
     ErrorCode JOB_HANDLER_BEAN_NOT_EXISTS = new ErrorCode(1_001_001_006, "Job handler Bean does not exist. Note: Bean names are lowercase by default");
     ErrorCode JOB_HANDLER_BEAN_TYPE_ERROR = new ErrorCode(1_001_001_007, "Invalid job handler Bean type. It does not implement the JobHandler interface");
+    ErrorCode JOB_LOG_NOT_EXISTS = new ErrorCode(1_001_001_008, "Job log does not exist");
 
     // ========== API Error Logs 1-001-002-000 ==========
     ErrorCode API_ERROR_LOG_NOT_FOUND = new ErrorCode(1_001_002_000, "API error log does not exist");

@@ -1,5 +1,6 @@
 package com.hdl.soar.module.infra.mapper;
 
+import com.hdl.soar.module.infra.enums.job.JobLogStatusEnum;
 import com.hdl.soar.module.infra.enums.logger.ApiErrorLogProcessStatusEnum;
 import org.mapstruct.Mapper;
 
@@ -16,6 +17,16 @@ public interface InfraEnumMapper {
     }
 
     default Integer toIntProcessStatus(ApiErrorLogProcessStatusEnum e) {
+        return e == null ? null : e.getStatus();
+    }
+
+    // =============== JobLogStatusEnum
+
+    default JobLogStatusEnum toJobLogStatusEnum(Integer val) {
+        return JobLogStatusEnum.of(val);
+    }
+
+    default Integer toIntJobLogStatus(JobLogStatusEnum e) {
         return e == null ? null : e.getStatus();
     }
 
