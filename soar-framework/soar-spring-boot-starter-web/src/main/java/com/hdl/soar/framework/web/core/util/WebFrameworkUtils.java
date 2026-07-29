@@ -21,6 +21,7 @@ public class WebFrameworkUtils {
     private static final String REQUEST_ATTRIBUTE_COMMON_RESULT = "common_result";
 
     public static final String HEADER_TENANT_ID = "tenant-id";
+    public static final String HEADER_VISIT_TENANT_ID = "visit-tenant-id";
 
     private static WebProperties properties;
 
@@ -38,6 +39,20 @@ public class WebFrameworkUtils {
      */
     public static Long getTenantId(HttpServletRequest request) {
         String tenantId = request.getHeader(HEADER_TENANT_ID);
+        return NumberUtil.isNumber(tenantId) ? Long.valueOf(tenantId) : null;
+    }
+
+    /**
+     * Gets the "visit" tenant ID from the request header.
+     * <p>
+     * Set by an admin (with the tenant-visit permission) to temporarily operate under
+     * another tenant's context for the duration of the request.
+     *
+     * @param request the HTTP request
+     * @return the visit tenant ID, or null if not present
+     */
+    public static Long getVisitTenantId(HttpServletRequest request) {
+        String tenantId = request.getHeader(HEADER_VISIT_TENANT_ID);
         return NumberUtil.isNumber(tenantId) ? Long.valueOf(tenantId) : null;
     }
 

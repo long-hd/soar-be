@@ -4,6 +4,7 @@ import com.hdl.soar.framework.common.biz.system.tenant.TenantCommonApi;
 import com.hdl.soar.framework.common.enums.WebFilterOrderEnum;
 import com.hdl.soar.framework.redis.config.SoarCacheAutoConfiguration;
 import com.hdl.soar.framework.redis.config.SoarCacheProperties;
+import com.hdl.soar.framework.security.core.service.SecurityFrameworkService;
 import com.hdl.soar.framework.tenant.core.aop.TenantIgnore;
 import com.hdl.soar.framework.tenant.core.aop.TenantIgnoreAspect;
 import com.hdl.soar.framework.tenant.core.db.SoarTenantIdentifierResolver;
@@ -14,6 +15,7 @@ import com.hdl.soar.framework.tenant.core.security.TenantSecurityWebFilter;
 import com.hdl.soar.framework.tenant.core.service.TenantFrameworkService;
 import com.hdl.soar.framework.tenant.core.service.TenantFrameworkServiceImpl;
 import com.hdl.soar.framework.tenant.core.web.TenantContextWebFilter;
+import com.hdl.soar.framework.tenant.core.web.TenantVisitContextInterceptor;
 import com.hdl.soar.framework.web.config.WebProperties;
 import com.hdl.soar.framework.web.core.handler.GlobalExceptionHandler;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -28,6 +30,8 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.util.pattern.PathPattern;
@@ -92,10 +96,25 @@ public class SoarTenantAutoConfiguration {
         return registrationBean;
     }
 
-    // TODO [Tenant Visit] TenantVisitContextInterceptor — allows admin with "system:tenant:visit"
-    //  permission to temporarily view another tenant's data via visit-tenant-id header.
-    //  Requires: TenantVisitContextInterceptor, SecurityFrameworkService,
-    //  WebMvcConfigurer to register interceptor, TenantProperties.ignoreVisitUrls
+    // ========== Tenant Visit ==========
+
+    @Bean
+    public TenantVisitContextInterceptor tenantVisitContextInterceptor(
+            SecurityFrameworkService securityFrameworkService) {
+        return new TenantVisitContextInterceptor(securityFrameworkService);
+    }
+
+    @Bean
+    public WebMvcConfigurer tenantWebMvcConfigurer(TenantProperties tenantProperties,
+                                                   TenantVisitContextInterceptor tenantVisitContextInterceptor) {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addInterceptors(InterceptorRegistry registry) {
+                registry.addInterceptor(tenantVisitContextInterceptor)
+                        .excludePathPatterns(tenantProperties.getIgnoreVisitUrls().toArray(new String[0]));
+            }
+        };
+    }
 
     // ========== Security ==========
 
