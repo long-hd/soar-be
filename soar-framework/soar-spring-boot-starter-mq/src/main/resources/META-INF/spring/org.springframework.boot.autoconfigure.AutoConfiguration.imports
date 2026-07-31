@@ -1,0 +1,2 @@
+com.hdl.soar.framework.mq.redis.config.SoarRedisMQProducerAutoConfiguration
+com.hdl.soar.framework.mq.redis.config.SoarRedisMQConsumerAutoConfiguration
