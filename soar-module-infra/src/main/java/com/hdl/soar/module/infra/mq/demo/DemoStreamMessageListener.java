@@ -1,6 +1,7 @@
 package com.hdl.soar.module.infra.mq.demo;
 
 import com.hdl.soar.framework.mq.redis.core.stream.AbstractRedisStreamMessageListener;
+import com.hdl.soar.framework.tenant.core.context.TenantContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,7 @@ public class DemoStreamMessageListener extends AbstractRedisStreamMessageListene
 
     @Override
     public void onMessage(DemoStreamMessage message) {
-        log.info("[DemoStream][received text={} fail={}]", message.getText(), message.getFail());
+        log.info("[DemoStream][received text={} tenant={}]", message.getText(), TenantContextHolder.getTenantId());
         if (Boolean.TRUE.equals(message.getFail())) {
             throw new IllegalStateException("intentional failure to exercise redelivery");
         }

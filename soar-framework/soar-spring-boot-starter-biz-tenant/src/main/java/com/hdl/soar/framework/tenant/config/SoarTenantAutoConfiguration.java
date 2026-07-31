@@ -2,6 +2,7 @@ package com.hdl.soar.framework.tenant.config;
 
 import com.hdl.soar.framework.common.biz.system.tenant.TenantCommonApi;
 import com.hdl.soar.framework.common.enums.WebFilterOrderEnum;
+import com.hdl.soar.framework.mq.redis.core.interceptor.RedisMessageInterceptor;
 import com.hdl.soar.framework.redis.config.SoarCacheAutoConfiguration;
 import com.hdl.soar.framework.redis.config.SoarCacheProperties;
 import com.hdl.soar.framework.security.core.service.SecurityFrameworkService;
@@ -10,6 +11,7 @@ import com.hdl.soar.framework.tenant.core.aop.TenantIgnoreAspect;
 import com.hdl.soar.framework.tenant.core.db.SoarTenantIdentifierResolver;
 import com.hdl.soar.framework.tenant.core.job.TenantJob;
 import com.hdl.soar.framework.tenant.core.job.TenantJobAspect;
+import com.hdl.soar.framework.tenant.core.mq.redis.TenantRedisMessageInterceptor;
 import com.hdl.soar.framework.tenant.core.redis.TenantRedisCacheManager;
 import com.hdl.soar.framework.tenant.core.security.TenantSecurityWebFilter;
 import com.hdl.soar.framework.tenant.core.service.TenantFrameworkService;
@@ -19,10 +21,12 @@ import com.hdl.soar.framework.tenant.core.web.TenantVisitContextInterceptor;
 import com.hdl.soar.framework.web.config.WebProperties;
 import com.hdl.soar.framework.web.core.handler.GlobalExceptionHandler;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.cache.BatchStrategies;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -164,7 +168,22 @@ public class SoarTenantAutoConfiguration {
 
     // ========== MQ ==========
 
-    // TODO [Tenant MQ] TenantRedisMessageInterceptor — propagate tenant context through Redis MQ messages
+    /**
+     * Registers the Redis MQ tenant interceptor, but only when the MQ starter is on
+     * the classpath. The interceptor is picked up by the MQ template via its
+     * {@code List<RedisMessageInterceptor>} injection.
+     */
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnClass(RedisMessageInterceptor.class)
+    public static class TenantRedisMQConfiguration {
+
+        @Bean
+        public TenantRedisMessageInterceptor tenantRedisMessageInterceptor() {
+            return new TenantRedisMessageInterceptor();
+        }
+
+    }
+
     // TODO [Tenant MQ] TenantRabbitMQInitializer — @ConditionalOnClass(RabbitTemplate)
     // TODO [Tenant MQ] TenantRocketMQInitializer — @ConditionalOnClass(RocketMQTemplate)
 
