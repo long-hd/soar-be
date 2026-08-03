@@ -25,6 +25,7 @@
         <module>soar-spring-boot-starter-biz-data-permission</module>
         <module>soar-spring-boot-starter-job</module>
         <module>soar-spring-boot-starter-mq</module>
+        <module>soar-spring-boot-starter-websocket</module>
     </modules>
 
     <description>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.hdl.boot</groupId>
+        <artifactId>soar-framework</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <packaging>jar</packaging>
+
+    <artifactId>soar-spring-boot-starter-websocket</artifactId>
+    <name>${project.artifactId}</name>
+    <description>WebSocket with multi-node message fan-out</description>
+    <url>https://github.com/long-hd/soar-be.git</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.hdl.boot</groupId>
+            <artifactId>soar-common</artifactId>
+        </dependency>
+
+        <!-- Spring WebSocket -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
+        <!-- security: LoginUser, SecurityFrameworkUtils, AuthorizeRequestsCustomizer -->
+        <dependency>
+            <groupId>com.hdl.boot</groupId>
+            <artifactId>soar-spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- mq: RedisMQTemplate + pub/sub bases, for the redis sender -->
+        <dependency>
+            <groupId>com.hdl.boot</groupId>
+            <artifactId>soar-spring-boot-starter-mq</artifactId>
+        </dependency>
+
+        <!-- tenant: TenantUtils, TenantContextHolder -->
+        <dependency>
+            <groupId>com.hdl.boot</groupId>
+            <artifactId>soar-spring-boot-starter-biz-tenant</artifactId>
+        </dependency>
+
+        <!-- optional: chỉ cần khi sender-type = rabbitmq -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!-- optional: chỉ cần khi sender-type = kafka -->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+    </dependencies>
+</project>

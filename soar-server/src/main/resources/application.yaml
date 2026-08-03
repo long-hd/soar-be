@@ -10,25 +10,6 @@ spring:
   profiles:
     active: local
 
-  quartz:
-    job-store-type: jdbc          # lưu lịch ở qrtz_* -> bền qua restart, sẵn sàng clustered
-    jdbc:
-      initialize-schema: never    # Flyway là nguồn duy nhất quản schema (migration V1_1_5)
-    properties:
-      org:
-        quartz:
-          scheduler:
-            instanceName: SoarScheduler
-            instanceId: AUTO      # mỗi node tự sinh id riêng - bắt buộc khi clustered
-          jobStore:
-            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
-            isClustered: true     # node tranh khoá ở DB -> job chỉ chạy 1 lần dù nhiều node
-            clusterCheckinInterval: 15000
-            useProperties: false
-          threadPool:
-            class: org.quartz.simpl.SimpleThreadPool
-            threadCount: 10
-
   # Servlet
   servlet:
     multipart:
@@ -89,6 +70,47 @@ springdoc:
     path: /swagger-ui
   default-flat-param-object: true
 
+--- #################### Scheduler ####################
+
+spring:
+  quartz:
+    job-store-type: jdbc          # lưu lịch ở qrtz_* -> bền qua restart, sẵn sàng clustered
+    jdbc:
+      initialize-schema: never    # Flyway là nguồn duy nhất quản schema (migration V1_1_5)
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: SoarScheduler
+            instanceId: AUTO      # mỗi node tự sinh id riêng - bắt buộc khi clustered
+          jobStore:
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+            isClustered: true     # node tranh khoá ở DB -> job chỉ chạy 1 lần dù nhiều node
+            clusterCheckinInterval: 15000
+            useProperties: false
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 10
+
+#--- #################### MQ ####################
+#
+#spring:
+#  # khi sender-type = rabbitmq
+#  rabbitmq:
+#    host: localhost
+#    port: 5672
+#    username: guest
+#    password: guest
+#  # khi sender-type = kafka
+#  kafka:
+#    bootstrap-servers: localhost:9092
+#    consumer:
+#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+#      properties:
+#        spring.json.trusted.packages: "com.hdl.soar.framework.websocket.core.sender.kafka"
+#    producer:
+#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
 # Soar custom properties
 
 soar:
@@ -107,3 +129,17 @@ soar:
     enable: false
   user:
     init-password: "123456"
+
+--- #################### WebSocket ####################
+
+soar:
+  websocket:
+    enable: true          # mặc định true
+    path: /infra/ws       # đường handshake
+    sender-type: local    # local (1 node) | redis (đa node). Mặc định local.
+    sender-rabbitmq:
+      exchange: ${spring.application.name}-websocket-exchange
+      queue: ${spring.application.name}-websocket-queue
+    sender-kafka:
+      topic: ${spring.application.name}-websocket
+      consumer-group: ${spring.application.name}-websocket-consumer
