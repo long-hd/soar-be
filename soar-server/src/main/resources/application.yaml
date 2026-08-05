@@ -143,3 +143,10 @@ soar:
     sender-kafka:
       topic: ${spring.application.name}-websocket
       consumer-group: ${spring.application.name}-websocket-consumer
+
+--- #################### Pay ####################
+
+soar:
+  pay:
+    order-notify-url: http://localhost:48080/app-api/pay/notify/order   # dev; prod = https://<domain>/app-api/pay/notify/order
+    order-no-prefix: P

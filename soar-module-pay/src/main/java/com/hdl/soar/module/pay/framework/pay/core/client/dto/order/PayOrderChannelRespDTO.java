@@ -1,5 +1,6 @@
 package com.hdl.soar.module.pay.framework.pay.core.client.dto.order;
 
+import com.hdl.soar.module.pay.enums.order.PayOrderStatusEnum;
 import lombok.Data;
 
 import java.time.Instant;
@@ -30,6 +31,12 @@ public class PayOrderChannelRespDTO {
     /** Time the payment succeeded. */
     private Instant successTime;
 
+    /** How the caller should present the next step (e.g. {@code url}), for WAITING results. */
+    private String displayMode;
+
+    /** The content to present (e.g. a redirect URL), for WAITING results. */
+    private String displayContent;
+
     /** Raw channel payload, stored for audit. */
     private String rawData;
 
@@ -38,5 +45,43 @@ public class PayOrderChannelRespDTO {
 
     /** Channel error message, when failed. */
     private String channelErrorMsg;
+
+    /** Build a WAITING result carrying how to continue payment (e.g. a redirect URL). */
+    public static PayOrderChannelRespDTO waitingOf(String displayMode, String displayContent,
+                                                   String outTradeNo, String rawData) {
+        PayOrderChannelRespDTO resp = new PayOrderChannelRespDTO();
+        resp.status = PayOrderStatusEnum.WAITING.getStatus();
+        resp.displayMode = displayMode;
+        resp.displayContent = displayContent;
+        resp.outTradeNo = outTradeNo;
+        resp.rawData = rawData;
+        return resp;
+    }
+
+    /** Build a SUCCESS result. */
+    public static PayOrderChannelRespDTO successOf(String channelOrderNo, String channelUserId,
+                                                   Instant successTime, String outTradeNo, String rawData) {
+        PayOrderChannelRespDTO resp = new PayOrderChannelRespDTO();
+        resp.status = PayOrderStatusEnum.SUCCESS.getStatus();
+        resp.channelOrderNo = channelOrderNo;
+        resp.channelUserId = channelUserId;
+        resp.successTime = successTime;
+        resp.outTradeNo = outTradeNo;
+        resp.rawData = rawData;
+        return resp;
+    }
+
+    /** Build a CLOSED (failed/cancelled) result. */
+    public static PayOrderChannelRespDTO closedOf(String channelErrorCode, String channelErrorMsg,
+                                                  String outTradeNo, String rawData) {
+        PayOrderChannelRespDTO resp = new PayOrderChannelRespDTO();
+        resp.status = PayOrderStatusEnum.CLOSED.getStatus();
+        resp.channelErrorCode = channelErrorCode;
+        resp.channelErrorMsg = channelErrorMsg;
+        resp.outTradeNo = outTradeNo;
+        resp.rawData = rawData;
+        return resp;
+    }
+
 
 }

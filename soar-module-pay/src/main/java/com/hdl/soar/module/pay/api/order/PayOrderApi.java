@@ -1,6 +1,7 @@
 package com.hdl.soar.module.pay.api.order;
 
 import com.hdl.soar.module.pay.api.order.dto.PayOrderCreateReqDTO;
+import com.hdl.soar.module.pay.api.order.dto.PayOrderRespDTO;
 import jakarta.validation.Valid;
 
 /**
@@ -18,5 +19,14 @@ public interface PayOrderApi {
      * @return the order id
      */
     Long createOrder(@Valid PayOrderCreateReqDTO reqDTO);
+
+
+    /**
+     * Get an order by id.
+     *
+     * @param id order id
+     * @return the order, or {@code null} if not found
+     */
+    PayOrderRespDTO getOrder(Long id);
 
 }

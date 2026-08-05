@@ -1,7 +1,9 @@
 package com.hdl.soar.module.pay.service.channel;
 
+import cn.hutool.core.lang.Assert;
 import com.hdl.soar.framework.common.enums.CommonStatusEnum;
 import com.hdl.soar.framework.common.pojo.PageResult;
+import com.hdl.soar.framework.common.util.json.JsonUtils;
 import com.hdl.soar.framework.jpa.core.util.PageUtils;
 import com.hdl.soar.module.pay.controller.admin.channel.dto.PayChannelPageReqDTO;
 import com.hdl.soar.module.pay.controller.admin.channel.dto.PayChannelSaveReqDTO;
@@ -9,6 +11,9 @@ import com.hdl.soar.module.pay.dal.entity.channel.PayChannelPO;
 import com.hdl.soar.module.pay.dal.entity.channel.PayChannelPO_;
 import com.hdl.soar.module.pay.dal.postgres.channel.PayChannelRepository;
 import com.hdl.soar.module.pay.enums.PayChannelEnum;
+import com.hdl.soar.module.pay.framework.pay.core.client.PayClient;
+import com.hdl.soar.module.pay.framework.pay.core.client.PayClientConfig;
+import com.hdl.soar.module.pay.framework.pay.core.client.PayClientFactory;
 import com.hdl.soar.module.pay.mapper.channel.PayChannelMapper;
 import com.hdl.soar.module.pay.service.app.PayAppService;
 import jakarta.persistence.criteria.Predicate;
@@ -35,6 +40,7 @@ public class PayChannelServiceImpl implements PayChannelService {
 
     PayChannelRepository channelRepository;
     PayAppService appService;
+    PayClientFactory payClientFactory;
 
     @Override
     public Long createChannel(PayChannelSaveReqDTO createReqDTO) {
@@ -99,6 +105,19 @@ public class PayChannelServiceImpl implements PayChannelService {
                 .orElseThrow(() -> exception(CHANNEL_NOT_FOUND));
         validateChannelEnabled(channel);
         return channel;
+    }
+
+    // ================ Pay Client ================
+
+    @Override
+    public PayClient<?> getPayClient(Long channelId) {
+        PayChannelPO channel = validChannel(channelId);
+        PayChannelEnum channelEnum = PayChannelEnum.of(channel.getCode());
+        Assert.notNull(channelEnum, "Payment channel ({}) is not supported", channel.getCode());
+        PayClientConfig config = JsonUtils.parseObject(
+                        channel.getConfig(), channelEnum.getConfigClass());
+        payClientFactory.createOrUpdatePayClient(channelId, channel.getCode(), config);
+        return payClientFactory.getPayClient(channelId);
     }
 
     // ================ helpers ================

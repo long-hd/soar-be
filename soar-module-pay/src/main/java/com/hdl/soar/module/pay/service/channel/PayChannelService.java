@@ -4,6 +4,7 @@ import com.hdl.soar.framework.common.pojo.PageResult;
 import com.hdl.soar.module.pay.controller.admin.channel.dto.PayChannelPageReqDTO;
 import com.hdl.soar.module.pay.controller.admin.channel.dto.PayChannelSaveReqDTO;
 import com.hdl.soar.module.pay.dal.entity.channel.PayChannelPO;
+import com.hdl.soar.module.pay.framework.pay.core.client.PayClient;
 
 /**
  * Payment channel service.
@@ -36,5 +37,13 @@ public interface PayChannelService {
      * @return the enabled channel
      */
     PayChannelPO validChannel(Long id);
+
+    /**
+     * Resolve (build or refresh) and return the live {@code PayClient} for a channel.
+     *
+     * @param channelId channel id
+     * @return the client bound to that channel
+     */
+    PayClient<?> getPayClient(Long channelId);
 
 }

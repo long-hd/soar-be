@@ -7,6 +7,8 @@ import com.hdl.soar.framework.jpa.core.util.PageUtils;
 import com.hdl.soar.framework.tenant.core.util.TenantUtils;
 import com.hdl.soar.module.pay.api.order.dto.PayOrderCreateReqDTO;
 import com.hdl.soar.module.pay.controller.admin.order.dto.PayOrderPageReqDTO;
+import com.hdl.soar.module.pay.controller.app.order.dto.PayOrderSubmitReqDTO;
+import com.hdl.soar.module.pay.controller.app.order.dto.PayOrderSubmitRespDTO;
 import com.hdl.soar.module.pay.dal.entity.app.PayAppPO;
 import com.hdl.soar.module.pay.dal.entity.channel.PayChannelPO;
 import com.hdl.soar.module.pay.dal.entity.order.PayOrderExtensionPO;
@@ -15,9 +17,13 @@ import com.hdl.soar.module.pay.dal.entity.order.PayOrderPO_;
 import com.hdl.soar.module.pay.dal.postgres.order.PayOrderExtensionRepository;
 import com.hdl.soar.module.pay.dal.postgres.order.PayOrderRepository;
 import com.hdl.soar.module.pay.dal.redis.no.PayNoRedisDAO;
+import com.hdl.soar.module.pay.enums.PayChannelEnum;
 import com.hdl.soar.module.pay.enums.PayCurrencyEnum;
 import com.hdl.soar.module.pay.enums.order.PayOrderStatusEnum;
+import com.hdl.soar.module.pay.framework.pay.config.PayProperties;
+import com.hdl.soar.module.pay.framework.pay.core.client.PayClient;
 import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderChannelRespDTO;
+import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderUnifiedReqDTO;
 import com.hdl.soar.module.pay.mapper.order.PayOrderMapper;
 import com.hdl.soar.module.pay.service.app.PayAppService;
 import com.hdl.soar.module.pay.service.channel.PayChannelService;
@@ -50,8 +56,7 @@ import static com.hdl.soar.module.pay.enums.ErrorCodeConstants.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PayOrderServiceImpl implements PayOrderService {
 
-    /** Prefix for generated payment numbers. */
-    static final String ORDER_NO_PREFIX = "P";
+    PayProperties payProperties;
 
     PayOrderRepository orderRepository;
     PayOrderExtensionRepository orderExtensionRepository;
@@ -91,14 +96,45 @@ public class PayOrderServiceImpl implements PayOrderService {
     // ================ submit (channel-independent half) ================
 
     @Override
-    public PayOrderExtensionPO createOrderExtension(Long orderId, String channelCode, String userIp) {
+    public PayOrderSubmitRespDTO submitOrder(PayOrderSubmitReqDTO reqDTO, String userIp) {
+        // 1. Create the WAITING attempt (validates the order can submit + the channel is enabled)
+        PayOrderExtensionPO extension = createOrderExtension(reqDTO.getId(), reqDTO.getChannelCode(), userIp);
+        PayOrderPO order = getOrder(reqDTO.getId());
+        PayChannelPO channel = channelService.validChannel(order.getAppId(), reqDTO.getChannelCode());
+
+        // 2. Validate the order's currency is accepted by this rail
+        validateCurrencySupported(channel.getCode(), order.getCurrency());
+
+        // 3. Call the rail
+        PayClient<?> client = channelService.getPayClient(channel.getId());
+        PayOrderUnifiedReqDTO unifiedReq = buildUnifiedReq(order, extension, channel.getId(), reqDTO, userIp);
+        PayOrderChannelRespDTO channelResp = client.unifiedOrder(unifiedReq);
+
+        // 4. If the rail returned a terminal result now (e.g. mock SUCCESS), drive the state machine.
+        //    For async rails this is WAITING and notifyOrder is a no-op; SUCCESS arrives later via callback.
+        if (channelResp != null) {
+            notifyOrder(channel.getId(), channelResp);
+        }
+
+        // 5. Build the response from the (possibly updated) order
+        order = getOrder(order.getId());
+        PayOrderSubmitRespDTO resp = new PayOrderSubmitRespDTO();
+        resp.setStatus(order.getStatus().getStatus());
+        if (channelResp != null) {
+            resp.setDisplayMode(channelResp.getDisplayMode());
+            resp.setDisplayContent(channelResp.getDisplayContent());
+        }
+        return resp;
+    }
+
+    private PayOrderExtensionPO createOrderExtension(Long orderId, String channelCode, String userIp) {
         // 1. Validate the order can still be paid
         PayOrderPO order = validateOrderCanSubmit(orderId);
         // 2. Validate the channel is enabled for this app
         PayChannelPO channel = channelService.validChannel(order.getAppId(), channelCode);
 
         // 3. Insert a WAITING extension with a fresh no
-        String no = noRedisDAO.generate(ORDER_NO_PREFIX);
+        String no = noRedisDAO.generate(payProperties.getOrderNoPrefix());
         PayOrderExtensionPO extension = PayOrderExtensionPO.builder()
                 .no(no)
                 .orderId(order.getId())
@@ -130,6 +166,29 @@ public class PayOrderServiceImpl implements PayOrderService {
             throw exception(ORDER_EXTENSION_IS_PAID);
         }
         return order;
+    }
+
+    private void validateCurrencySupported(String channelCode, PayCurrencyEnum currency) {
+        PayChannelEnum rail = PayChannelEnum.of(channelCode);
+        if (rail == null || !rail.getSupportedCurrencies().contains(currency)) {
+            throw exception(ORDER_CURRENCY_INVALID);
+        }
+    }
+
+    private PayOrderUnifiedReqDTO buildUnifiedReq(PayOrderPO order, PayOrderExtensionPO extension,
+                                                  Long channelId, PayOrderSubmitReqDTO reqDTO, String userIp) {
+        PayOrderUnifiedReqDTO req = new PayOrderUnifiedReqDTO();
+        req.setUserIp(userIp);
+        req.setOutTradeNo(extension.getNo());
+        req.setSubject(order.getSubject());
+        req.setBody(order.getBody());
+        req.setPrice(order.getPrice());
+        req.setCurrency(order.getCurrency());
+        req.setNotifyUrl(payProperties.getOrderNotifyUrl() + "/" + channelId);
+        req.setReturnUrl(reqDTO.getReturnUrl());
+        req.setExpireTime(order.getExpireTime());
+        req.setChannelExtras(reqDTO.getChannelExtras());
+        return req;
     }
 
     // ================ notify (state machine) ================
