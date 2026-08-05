@@ -97,13 +97,14 @@ public class PayOrderServiceImpl implements PayOrderService {
 
     @Override
     public PayOrderSubmitRespDTO submitOrder(PayOrderSubmitReqDTO reqDTO, String userIp) {
-        // 1. Create the WAITING attempt (validates the order can submit + the channel is enabled)
-        PayOrderExtensionPO extension = createOrderExtension(reqDTO.getId(), reqDTO.getChannelCode(), userIp);
-        PayOrderPO order = getOrder(reqDTO.getId());
+        // 1. Validate EVERYTHING before creating any row — submitOrder is not transactional,
+        //    so a validation failure must not leave an orphan WAITING extension behind.
+        PayOrderPO order = validateOrderCanSubmit(reqDTO.getId());
         PayChannelPO channel = channelService.validChannel(order.getAppId(), reqDTO.getChannelCode());
-
-        // 2. Validate the order's currency is accepted by this rail
         validateCurrencySupported(channel.getCode(), order.getCurrency());
+
+        // 2. Now create the WAITING attempt
+        PayOrderExtensionPO extension = createOrderExtension(order, channel, userIp);
 
         // 3. Call the rail
         PayClient<?> client = channelService.getPayClient(channel.getId());
@@ -127,13 +128,7 @@ public class PayOrderServiceImpl implements PayOrderService {
         return resp;
     }
 
-    private PayOrderExtensionPO createOrderExtension(Long orderId, String channelCode, String userIp) {
-        // 1. Validate the order can still be paid
-        PayOrderPO order = validateOrderCanSubmit(orderId);
-        // 2. Validate the channel is enabled for this app
-        PayChannelPO channel = channelService.validChannel(order.getAppId(), channelCode);
-
-        // 3. Insert a WAITING extension with a fresh no
+    private PayOrderExtensionPO createOrderExtension(PayOrderPO order, PayChannelPO channel, String userIp) {
         String no = noRedisDAO.generate(payProperties.getOrderNoPrefix());
         PayOrderExtensionPO extension = PayOrderExtensionPO.builder()
                 .no(no)

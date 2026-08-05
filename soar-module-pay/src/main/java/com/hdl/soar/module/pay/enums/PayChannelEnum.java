@@ -5,6 +5,8 @@ import com.hdl.soar.module.pay.framework.pay.core.client.PayClient;
 import com.hdl.soar.module.pay.framework.pay.core.client.PayClientConfig;
 import com.hdl.soar.module.pay.framework.pay.core.client.impl.NonePayClientConfig;
 import com.hdl.soar.module.pay.framework.pay.core.client.impl.mock.MockPayClient;
+import com.hdl.soar.module.pay.framework.pay.core.client.impl.vnpay.VnpayPayClient;
+import com.hdl.soar.module.pay.framework.pay.core.client.impl.vnpay.VnpayPayClientConfig;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -25,8 +27,8 @@ import static com.hdl.soar.module.pay.enums.PayCurrencyEnum.VND;
 @AllArgsConstructor
 public enum PayChannelEnum {
 
-    MOCK("mock", Set.of(VND), NonePayClientConfig.class, MockPayClient.class);
-    // VNPAY("vnpay", Set.of(VND), VnpayPayClientConfig.class, VnpayPayClient.class) — added in 2b
+    MOCK("mock", Set.of(VND), NonePayClientConfig.class, MockPayClient.class),
+    VNPAY("vnpay", Set.of(VND), VnpayPayClientConfig.class, VnpayPayClient.class);
 
     /** Stable rail identifier, stored in {@code pay_channel.code}. */
     private final String code;
