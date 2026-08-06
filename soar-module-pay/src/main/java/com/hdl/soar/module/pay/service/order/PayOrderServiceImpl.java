@@ -27,6 +27,7 @@ import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderUnifi
 import com.hdl.soar.module.pay.mapper.order.PayOrderMapper;
 import com.hdl.soar.module.pay.service.app.PayAppService;
 import com.hdl.soar.module.pay.service.channel.PayChannelService;
+import com.hdl.soar.module.pay.service.notify.PayNotifyService;
 import com.hdl.soar.module.pay.util.PayMoneyUtils;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AccessLevel;
@@ -64,6 +65,8 @@ public class PayOrderServiceImpl implements PayOrderService {
 
     PayAppService appService;
     PayChannelService channelService;
+
+    PayNotifyService payNotifyService;
 
     // ================ create ================
 
@@ -218,7 +221,13 @@ public class PayOrderServiceImpl implements PayOrderService {
         if (alreadyPaid) {
             return;
         }
-        // slice 3: enqueue an outbox notify task here (PayNotifyService.createPayNotifyTask)
+
+        // slice 3: enqueue the outbox notify task in THIS transaction (transactional outbox).
+        // The order is reloaded (not re-fetched from the channel) to hand PayNotifyService the
+        // appId / notifyUrl / merchantOrderId without giving it a dependency on PayOrderService.
+        PayOrderPO order = orderRepository.findById(extension.getOrderId())
+                .orElseThrow(() -> exception(ORDER_NOT_FOUND));
+        payNotifyService.createPayNotifyTask(order);
     }
 
     /**

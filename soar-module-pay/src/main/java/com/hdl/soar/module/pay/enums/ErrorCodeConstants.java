@@ -29,4 +29,7 @@ public interface ErrorCodeConstants {
     ErrorCode ORDER_EXTENSION_STATUS_IS_NOT_WAITING = new ErrorCode(1_003_003_011, "Payment order extension status is not waiting");
     ErrorCode ORDER_EXTENSION_IS_PAID = new ErrorCode(1_003_003_012, "A payment attempt on this order is already paid");
 
+    // ========== Notify 1_003_004_xxx ==========
+    ErrorCode NOTIFY_TASK_NOT_FOUND = new ErrorCode(1_003_004_000, "Payment notify task does not exist");
+
 }

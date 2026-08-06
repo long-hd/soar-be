@@ -14,4 +14,13 @@ public interface RedisKeyConstants {
      */
     String PAY_NO = "pay_no:";
 
+    /**
+     * Per-task notify delivery lock.
+     * <ul>
+     *  <li>KEY format: pay_notify_lock:{taskId}</li>
+     *  <li>TYPE: Redisson lock</li>
+     * </ul>
+     */
+    String PAY_NOTIFY_LOCK = "pay_notify_lock:";
+
 }
