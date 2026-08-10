@@ -5,6 +5,7 @@ import com.hdl.soar.framework.tenant.core.aop.TenantIgnore;
 import com.hdl.soar.module.pay.api.order.PayOrderApi;
 import com.hdl.soar.module.pay.api.order.dto.PayOrderCreateReqDTO;
 import com.hdl.soar.module.pay.api.order.dto.PayOrderRespDTO;
+import com.hdl.soar.module.pay.service.order.PayOrderService;
 import jakarta.annotation.security.PermitAll;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class PayTestController {
     private static volatile boolean SINK_OK = true;
 
     PayOrderApi orderApi;
+    PayOrderService payOrderService;
 
     @PostMapping("/create-order")
     @PermitAll
@@ -58,6 +60,12 @@ public class PayTestController {
     public CommonResult<Boolean> toggleSink(@RequestParam("ok") boolean ok) {
         SINK_OK = ok;
         return CommonResult.success(ok);
+    }
+
+    @GetMapping("/sync-order")
+    @PermitAll
+    public CommonResult<Integer> syncOrder() {
+        return success(payOrderService.syncOrder());
     }
 
 }

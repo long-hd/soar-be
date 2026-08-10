@@ -187,6 +187,7 @@ public class PayOrderServiceImpl implements PayOrderService {
         req.setReturnUrl(reqDTO.getReturnUrl());
         req.setExpireTime(order.getExpireTime());
         req.setChannelExtras(reqDTO.getChannelExtras());
+        req.setCreateTime(extension.getCreateTime());
         return req;
     }
 

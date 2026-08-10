@@ -1,5 +1,6 @@
 package com.hdl.soar.module.pay.framework.pay.core.client.impl.vnpay;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.hdl.soar.framework.common.util.json.JsonUtils;
 import com.hdl.soar.module.pay.framework.pay.core.client.dto.PayOrderGetReqDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderChannelRespDTO;
@@ -82,7 +83,7 @@ public class VnpayPayClient extends AbstractPayClient<VnpayPayClientConfig> {
         params.put("vnp_Locale", LOCALE);
         params.put("vnp_ReturnUrl", reqDTO.getReturnUrl());
         params.put("vnp_IpAddr", reqDTO.getUserIp());
-        params.put("vnp_CreateDate", LocalDateTime.now(ZONE).format(DATE_FORMAT));
+        params.put("vnp_CreateDate", LocalDateTime.ofInstant(reqDTO.getCreateTime(), ZONE).format(DATE_FORMAT));
         if (reqDTO.getExpireTime() != null) {
             params.put("vnp_ExpireDate", LocalDateTime.ofInstant(reqDTO.getExpireTime(), ZONE).format(DATE_FORMAT));
         }
@@ -128,7 +129,7 @@ public class VnpayPayClient extends AbstractPayClient<VnpayPayClientConfig> {
     protected PayOrderChannelRespDTO doGetOrder(PayOrderGetReqDTO reqDTO) throws Throwable {
         String outTradeNo = reqDTO.getOutTradeNo();
         String requestId = UUID.randomUUID().toString();
-        String createDate = LocalDateTime.now(ZONE).format(DATE_FORMAT);
+        String createDate = LocalDateTime.now(ZONE).format(DATE_FORMAT); // request time
         // vnp_TransactionDate MUST be the original pay request's create date — carried in via createTime.
         String transactionDate = LocalDateTime.ofInstant(reqDTO.getCreateTime(), ZONE).format(DATE_FORMAT);
         String orderInfo = "Query transaction " + outTradeNo;
@@ -162,9 +163,9 @@ public class VnpayPayClient extends AbstractPayClient<VnpayPayClientConfig> {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         String raw = response.body();
+        log.info("[doGetOrder][querydr response raw: {}]", raw);
 
-        @SuppressWarnings("unchecked")
-        Map<String, String> result = JsonUtils.parseObject(raw, Map.class);
+        Map<String, String> result = JsonUtils.parseObject(raw, new TypeReference<Map<String, String>>() {});
         String responseCode = result != null ? result.get("vnp_ResponseCode") : null;
         String transactionStatus = result != null ? result.get("vnp_TransactionStatus") : null;
         String channelOrderNo = result != null ? result.get("vnp_TransactionNo") : null;

@@ -46,4 +46,6 @@ public class PayOrderUnifiedReqDTO {
     /** Extra channel-specific parameters. */
     private Map<String, String> channelExtras;
 
+    private Instant createTime;
+
 }
