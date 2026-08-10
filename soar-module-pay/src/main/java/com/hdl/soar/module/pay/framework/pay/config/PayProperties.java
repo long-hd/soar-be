@@ -5,6 +5,8 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.Duration;
+
 /**
  * Pay module configuration, bound from {@code soar.pay.*}.
  */
@@ -26,5 +28,12 @@ public class PayProperties {
      * Prefix for generated payment numbers.
      */
     private String orderNoPrefix = "P";
+
+    /**
+     * Only WAITING orders created within this window are reconciled by the sync job. A payment
+     * usually resolves within ~10 min, so polling a recent window keeps querydr volume bounded;
+     * older WAITING orders are left to the expire job.
+     */
+    private Duration orderSyncCreateTimeWithin = Duration.ofMinutes(10);
 
 }

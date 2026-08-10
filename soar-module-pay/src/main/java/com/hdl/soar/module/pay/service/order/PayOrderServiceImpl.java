@@ -22,6 +22,7 @@ import com.hdl.soar.module.pay.enums.PayCurrencyEnum;
 import com.hdl.soar.module.pay.enums.order.PayOrderStatusEnum;
 import com.hdl.soar.module.pay.framework.pay.config.PayProperties;
 import com.hdl.soar.module.pay.framework.pay.core.client.PayClient;
+import com.hdl.soar.module.pay.framework.pay.core.client.dto.PayOrderGetReqDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderChannelRespDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderUnifiedReqDTO;
 import com.hdl.soar.module.pay.mapper.order.PayOrderMapper;
@@ -327,6 +328,112 @@ public class PayOrderServiceImpl implements PayOrderService {
     public PayOrderExtensionPO getOrderExtensionByNo(String no) {
         return orderExtensionRepository.findByNo(no)
                 .orElseThrow(() -> exception(ORDER_EXTENSION_NOT_FOUND));
+    }
+
+    // ================ reconcile (sync) ================
+
+    @Override
+    public int syncOrder() {
+        Instant cutoff = Instant.now().minus(payProperties.getOrderSyncCreateTimeWithin());
+        List<PayOrderExtensionPO> extensions = orderExtensionRepository
+                .findTop200ByStatusAndCreateTimeGreaterThanEqualOrderByIdAsc(
+                        PayOrderStatusEnum.WAITING, cutoff);
+        int count = 0;
+        for (PayOrderExtensionPO extension : extensions) {
+            if (syncOrder0(extension)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Reconcile one attempt. Loads the channel ignoring tenant (like {@link #notifyOrder}), asks the
+     * channel for the transaction result, and on SUCCESS drives the order through {@code notifyOrder}
+     * (CAS + outbox — idempotent against a real callback that may have raced). Returns whether it
+     * recovered. A failure on one attempt is logged and swallowed so the batch continues.
+     */
+    private boolean syncOrder0(PayOrderExtensionPO extension) {
+        try {
+            PayClient<?> client = TenantUtils.executeIgnore(
+                    () -> channelService.getPayClient(extension.getChannelId()));
+
+            PayOrderGetReqDTO getReqDTO = new PayOrderGetReqDTO();
+            getReqDTO.setOutTradeNo(extension.getNo());
+            getReqDTO.setCreateTime(extension.getCreateTime());
+            PayOrderChannelRespDTO resp = client.getOrder(getReqDTO);
+
+            if (PayOrderStatusEnum.isSuccess(resp.getStatus())) {
+                notifyOrder(extension.getChannelId(), resp);
+                return true;
+            }
+            // CLOSED / still WAITING at the channel: leave it — a callback may still arrive, and the
+            // expire job will close it if it's truly abandoned. Sync only advances the SUCCESS case.
+            return false;
+        } catch (Throwable ex) {
+            log.warn("[syncOrder0][extension({}) no({}) reconcile failed]",
+                    extension.getId(), extension.getNo(), ex);
+            return false;
+        }
+    }
+
+    // ================ expire ================
+
+    @Override
+    public int expireOrder() {
+        List<PayOrderPO> orders = orderRepository
+                .findTop200ByStatusAndExpireTimeLessThanOrderByIdAsc(
+                        PayOrderStatusEnum.WAITING, Instant.now());
+        int count = 0;
+        for (PayOrderPO order : orders) {
+            if (expireOrder0(order)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Expire one order. Before closing, re-checks every WAITING attempt against the channel one last
+     * time: if any is actually paid, recover it via {@code notifyOrder} instead of closing (a dropped
+     * callback for an order now past its expire window). Only if none recovered does it CAS-close the
+     * order. Returns whether it closed. Per-order failures are logged and swallowed.
+     */
+    private boolean expireOrder0(PayOrderPO order) {
+        try {
+            List<PayOrderExtensionPO> extensions = orderExtensionRepository.findByOrderId(order.getId());
+            for (PayOrderExtensionPO extension : extensions) {
+                if (!PayOrderStatusEnum.WAITING.equals(extension.getStatus())) {
+                    continue;
+                }
+                PayClient<?> client = TenantUtils.executeIgnore(
+                        () -> channelService.getPayClient(extension.getChannelId()));
+
+                PayOrderGetReqDTO getReqDTO = new PayOrderGetReqDTO();
+                getReqDTO.setOutTradeNo(extension.getNo());
+                getReqDTO.setCreateTime(extension.getCreateTime());
+                PayOrderChannelRespDTO resp = client.getOrder(getReqDTO);
+
+                if (PayOrderStatusEnum.isSuccess(resp.getStatus())) {
+                    notifyOrder(extension.getChannelId(), resp); // recover, do not close
+                    return false;
+                }
+            }
+            return getSelf().closeExpiredOrder(order.getId());
+        } catch (Throwable ex) {
+            log.warn("[expireOrder0][order({}) expire failed]", order.getId(), ex);
+            return false;
+        }
+    }
+
+    /**
+     * CAS-close a WAITING order that has expired. Through {@code getSelf()} so the transaction applies.
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public boolean closeExpiredOrder(Long orderId) {
+        int updated = orderRepository.updateStatusToClosed(
+                orderId, PayOrderStatusEnum.WAITING, PayOrderStatusEnum.CLOSED);
+        return updated > 0;
     }
 
     // ================ helper ================

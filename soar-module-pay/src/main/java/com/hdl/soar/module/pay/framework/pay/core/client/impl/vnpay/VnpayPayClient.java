@@ -1,6 +1,7 @@
 package com.hdl.soar.module.pay.framework.pay.core.client.impl.vnpay;
 
 import com.hdl.soar.framework.common.util.json.JsonUtils;
+import com.hdl.soar.module.pay.framework.pay.core.client.dto.PayOrderGetReqDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderChannelRespDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderUnifiedReqDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.exception.PayClientException;
@@ -10,14 +11,22 @@ import lombok.extern.slf4j.Slf4j;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.math.BigDecimal;
+import java.net.InetAddress;
+import java.net.URI;
 import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.UUID;
 
 /**
  * VNPay client (rail: VNPay redirect gateway).
@@ -37,9 +46,12 @@ public class VnpayPayClient extends AbstractPayClient<VnpayPayClientConfig> {
     private static final String CURR_CODE = "VND";
     private static final String LOCALE = "vn";
     private static final String SUCCESS_CODE = "00";
+    private static final String QUERY_COMMAND = "querydr";
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     private static final ZoneId ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
+
+    private HttpClient httpClient;
 
     public VnpayPayClient(Long channelId, VnpayPayClientConfig config) {
         super(channelId, config);
@@ -47,7 +59,9 @@ public class VnpayPayClient extends AbstractPayClient<VnpayPayClientConfig> {
 
     @Override
     protected void doInit() {
-        // no rail-specific initialization; the config is validated in init()
+        this.httpClient = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(5)) // never hang the reconcile loop on a slow channel
+                .build();
     }
 
     @Override
@@ -111,9 +125,57 @@ public class VnpayPayClient extends AbstractPayClient<VnpayPayClientConfig> {
     }
 
     @Override
-    protected PayOrderChannelRespDTO doGetOrder(String outTradeNo) throws Throwable {
-        // VNPay's querydr API needs an outbound HTTP call; implemented in the reconcile slice
-        throw new UnsupportedOperationException("VNPay getOrder (querydr) is implemented in the reconcile slice");
+    protected PayOrderChannelRespDTO doGetOrder(PayOrderGetReqDTO reqDTO) throws Throwable {
+        String outTradeNo = reqDTO.getOutTradeNo();
+        String requestId = UUID.randomUUID().toString();
+        String createDate = LocalDateTime.now(ZONE).format(DATE_FORMAT);
+        // vnp_TransactionDate MUST be the original pay request's create date — carried in via createTime.
+        String transactionDate = LocalDateTime.ofInstant(reqDTO.getCreateTime(), ZONE).format(DATE_FORMAT);
+        String orderInfo = "Query transaction " + outTradeNo;
+        String ipAddr = resolveServerIp();
+
+        // querydr signs a PIPE-joined string in this exact field order (a VNPay quirk — NOT the sorted
+        // key=value form used for the pay URL).
+        String hashData = String.join("|",
+                requestId, VERSION, QUERY_COMMAND, config.getTmnCode(), outTradeNo,
+                transactionDate, createDate, ipAddr, orderInfo);
+        String secureHash = hmacSHA512(config.getHashSecret(), hashData);
+
+        Map<String, String> body = new LinkedHashMap<>();
+        body.put("vnp_RequestId", requestId);
+        body.put("vnp_Version", VERSION);
+        body.put("vnp_Command", QUERY_COMMAND);
+        body.put("vnp_TmnCode", config.getTmnCode());
+        body.put("vnp_TxnRef", outTradeNo);
+        body.put("vnp_OrderInfo", orderInfo);
+        body.put("vnp_TransactionDate", transactionDate);
+        body.put("vnp_CreateDate", createDate);
+        body.put("vnp_IpAddr", ipAddr);
+        body.put("vnp_SecureHash", secureHash);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(config.getQueryUrl()))
+                .timeout(Duration.ofSeconds(10)) // read timeout
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(JsonUtils.toJsonString(body)))
+                .build();
+
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        String raw = response.body();
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> result = JsonUtils.parseObject(raw, Map.class);
+        String responseCode = result != null ? result.get("vnp_ResponseCode") : null;
+        String transactionStatus = result != null ? result.get("vnp_TransactionStatus") : null;
+        String channelOrderNo = result != null ? result.get("vnp_TransactionNo") : null;
+
+        if (SUCCESS_CODE.equals(responseCode) && SUCCESS_CODE.equals(transactionStatus)) {
+            return PayOrderChannelRespDTO.successOf(channelOrderNo, null, Instant.now(), outTradeNo, raw);
+        }
+
+        // Anything not clearly successful -> WAITING: reconcile must NOT close here (closing is the
+        // expire job's careful decision). Keeps sync strictly a forward-only, success-only driver.
+        return PayOrderChannelRespDTO.waitingOf(null, null, outTradeNo, raw);
     }
 
     // ================ helpers ================
@@ -180,6 +242,15 @@ public class VnpayPayClient extends AbstractPayClient<VnpayPayClientConfig> {
         } catch (Exception ex) {
             log.warn("[parsePayDate][cannot parse vnp_PayDate({})]", payDate);
             return Instant.now();
+        }
+    }
+
+    /** The merchant server's IP for {@code vnp_IpAddr}. Loopback only if the host lookup fails. */
+    private String resolveServerIp() {
+        try {
+            return InetAddress.getLocalHost().getHostAddress();
+        } catch (Exception ex) {
+            return "127.0.0.1";
         }
     }
 

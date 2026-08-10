@@ -1,5 +1,6 @@
 package com.hdl.soar.module.pay.framework.pay.core.client;
 
+import com.hdl.soar.module.pay.framework.pay.core.client.dto.PayOrderGetReqDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderChannelRespDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderUnifiedReqDTO;
 
@@ -42,9 +43,9 @@ public interface PayClient<Config extends PayClientConfig> {
     /**
      * Query the rail for an order's current status (used for reconciliation).
      *
-     * @param outTradeNo the extension's {@code no}
+     * @param reqDTO request to query a transaction's status at the channel
      * @return the channel result
      */
-    PayOrderChannelRespDTO getOrder(String outTradeNo);
+    PayOrderChannelRespDTO getOrder(PayOrderGetReqDTO reqDTO);
 
 }

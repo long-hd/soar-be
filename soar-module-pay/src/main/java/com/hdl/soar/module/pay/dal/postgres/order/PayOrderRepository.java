@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -58,5 +59,23 @@ public interface PayOrderRepository extends JpaRepository<PayOrderPO, Long>,
                               @Param("channelUserId") String channelUserId,
                               @Param("channelFeeRate") Double channelFeeRate,
                               @Param("channelFeePrice") BigDecimal channelFeePrice);
+
+    /** WAITING orders past their expire time, oldest first, capped — the expire job's driving query. */
+    List<PayOrderPO> findTop200ByStatusAndExpireTimeLessThanOrderByIdAsc(
+            PayOrderStatusEnum status, Instant expireTime);
+
+    /**
+     * CAS-close a WAITING order (WAITING -> CLOSED). Returns rows affected: 0 means another path
+     * already moved it (a late callback or reconcile), so the caller must not treat it as closed.
+     */
+    @Modifying(clearAutomatically = true)
+    @Query("""
+            UPDATE PayOrderPO o
+               SET o.status = :newStatus
+             WHERE o.id = :id AND o.status = :oldStatus
+            """)
+    int updateStatusToClosed(@Param("id") Long id,
+                             @Param("oldStatus") PayOrderStatusEnum oldStatus,
+                             @Param("newStatus") PayOrderStatusEnum newStatus);
 
 }

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +20,13 @@ public interface PayOrderExtensionRepository extends JpaRepository<PayOrderExten
     Optional<PayOrderExtensionPO> findByNo(String no);
 
     List<PayOrderExtensionPO> findAllByOrderId(Long orderId);
+
+    /** Recent WAITING attempts, oldest first, capped — the sync job's driving query (global). */
+    List<PayOrderExtensionPO> findTop200ByStatusAndCreateTimeGreaterThanEqualOrderByIdAsc(
+            PayOrderStatusEnum status, Instant createTime);
+
+    /** All attempts of an order — used by the expire job to re-check before closing. */
+    List<PayOrderExtensionPO> findByOrderId(Long orderId);
 
     /**
      * Compare-and-swap the extension to SUCCESS. See

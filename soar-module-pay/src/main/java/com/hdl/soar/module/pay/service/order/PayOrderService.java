@@ -45,4 +45,18 @@ public interface PayOrderService {
      */
     PayOrderSubmitRespDTO submitOrder(PayOrderSubmitReqDTO reqDTO, String userIp);
 
+    /**
+     * Reconcile: for recent WAITING attempts, ask the channel whether payment actually landed and, if
+     * so, drive the order to SUCCESS through {@link #notifyOrder}. Returns the number of attempts that
+     * recovered. Called by the sync job.
+     */
+    int syncOrder();
+
+    /**
+     * Expire: for WAITING orders past their expire time, re-check each attempt against the channel
+     * (recover if paid) and otherwise close the order. Returns the number of orders closed. Called by
+     * the expire job.
+     */
+    int expireOrder();
+
 }

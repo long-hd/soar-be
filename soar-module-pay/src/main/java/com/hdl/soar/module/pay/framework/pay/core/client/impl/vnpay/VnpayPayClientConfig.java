@@ -30,6 +30,13 @@ public class VnpayPayClientConfig implements PayClientConfig {
     @NotEmpty(message = "payUrl cannot be empty")
     private String payUrl;
 
+    /**
+     * VNPay's transaction-query (querydr) API endpoint, e.g.
+     * {@code https://sandbox.vnpayment.vn/merchant_webapi/api/transaction}. Distinct from
+     * {@code payUrl} (the redirect gateway). Used by {@code getOrder} in the reconcile flow.
+     */
+    private String queryUrl;
+
     @Override
     public void validate(Validator validator) {
         Set<ConstraintViolation<VnpayPayClientConfig>> violations = validator.validate(this);

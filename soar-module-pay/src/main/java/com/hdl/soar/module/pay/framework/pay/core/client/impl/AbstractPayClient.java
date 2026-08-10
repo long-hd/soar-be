@@ -4,6 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.hdl.soar.module.pay.framework.pay.core.client.PayClient;
 import com.hdl.soar.module.pay.framework.pay.core.client.PayClientConfig;
+import com.hdl.soar.module.pay.framework.pay.core.client.dto.PayOrderGetReqDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderChannelRespDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderUnifiedReqDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.exception.PayClientException;
@@ -92,15 +93,15 @@ public abstract class AbstractPayClient<Config extends PayClientConfig> implemen
     // ============= Get Order
 
     @Override
-    public PayOrderChannelRespDTO getOrder(String outTradeNo) {
+    public PayOrderChannelRespDTO getOrder(PayOrderGetReqDTO reqDTO) {
         try {
-            return doGetOrder(outTradeNo);
+            return doGetOrder(reqDTO);
         } catch (Throwable ex) {
-            throw buildException("getOrder", outTradeNo, ex);
+            throw buildException("getOrder", reqDTO.getOutTradeNo(), ex);
         }
     }
 
-    protected abstract PayOrderChannelRespDTO doGetOrder(String outTradeNo) throws Throwable;
+    protected abstract PayOrderChannelRespDTO doGetOrder(PayOrderGetReqDTO reqDTO) throws Throwable;
 
     // ============= helper
 

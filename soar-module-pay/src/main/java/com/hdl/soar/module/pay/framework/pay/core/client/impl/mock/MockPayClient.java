@@ -1,6 +1,7 @@
 package com.hdl.soar.module.pay.framework.pay.core.client.impl.mock;
 
 import com.hdl.soar.module.pay.enums.order.PayOrderStatusEnum;
+import com.hdl.soar.module.pay.framework.pay.core.client.dto.PayOrderGetReqDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderChannelRespDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderUnifiedReqDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.impl.AbstractPayClient;
@@ -50,7 +51,9 @@ public class MockPayClient extends AbstractPayClient<NonePayClientConfig> {
     }
 
     @Override
-    protected PayOrderChannelRespDTO doGetOrder(String outTradeNo) throws Throwable {
+    protected PayOrderChannelRespDTO doGetOrder(PayOrderGetReqDTO reqDTO) throws Throwable {
+        // mock ignores createTime; always reports SUCCESS so the reconcile flow is testable offline
+        String outTradeNo = reqDTO.getOutTradeNo();
         return PayOrderChannelRespDTO.successOf("MOCK-" + outTradeNo, "mock-user",
                 Instant.now(), outTradeNo, MOCK_RAW_DATA);
     }
