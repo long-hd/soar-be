@@ -57,7 +57,7 @@ Paired frontend: `../soar-fe` — React 19 + TypeScript + Ant Design v6 + Redux 
 | `soar-module-system` | Layered | `auth`, `dept` (dept + post), `dict`, `logger`, `oauth2`, `permission` (menu + role + permission), `tenant`, `user` |
 | `soar-module-infra` | Layered | `config`, `file`, `job`, `logger` |
 | `soar-module-pay` | Layered (yudao port) | `app`, `channel`, `notify`, `order` |
-| `soar-server` | — | Spring Boot app; aggregates modules; holds `application.yaml` + `db/migration` |
+| `soar-server` | — | Spring Boot app; aggregates modules; holds `application.yaml` + `db/migration` + `db/seed` |
 
 Cross-module calls go through `*CommonApi` interfaces in `soar-common`, implemented per module in `api/{domain}/`. No Feign in the monolith.
 
@@ -94,6 +94,8 @@ Flyway migrations `V1_0_1` → `V1_2_0` (20 scripts). Broad phases:
 DB is **not in production** → migrations are edited **in place**; no ALTER-only scripts yet.
 
 `V1_0_8__add_tab_key_to_system_menu.sql` is the FE contract seam: `system_menu.tab_key` drives `soar-fe`'s flat `?tab=` routing (FE ADR 0001).
+
+`db/seed/` sits next to the migrations and is **not** scanned by Flyway (`spring.flyway.locations` is `classpath:db/migration` only). It holds reference SQL that is run by hand for per-environment setup — today the `infra_job` rows the pay module needs. See `db/seed/README.md` for why job rows are seeded rather than migrated, and for the `PUT /admin-api/infra/job/sync` call that must follow.
 
 ---
 
