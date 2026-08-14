@@ -8,9 +8,9 @@ management:
         include: health
   endpoint:
     health:
-      show-details: always      # component nào DOWN (db/redis)
+      show-details: always      # which component is DOWN (db/redis)
       probes:
-        enabled: true           # thêm /health/liveness, /health/readiness
+        enabled: true           # adds /health/liveness, /health/readiness
   health:
     db:
       enabled: true             # Postgres indicator
@@ -33,7 +33,7 @@ spring:
       host: ${REDIS_HOST:redis}
       port: ${REDIS_PORT:6379}
       database: 0
-      # password: ${REDIS_PASSWORD}  # Uncomment nếu enable Redis auth
+      # password: ${REDIS_PASSWORD}  # Uncomment when Redis auth is enabled
 
 logging:
   level:
@@ -52,7 +52,7 @@ logging:
 soar:
   web:
     admin-ui:
-      url: https://soar.haduylong.com  # đổi sang https://soar.<domain>
+      url: https://soar.haduylong.com  # change to https://soar.<domain>
   security:
     mock-enable: false
   tenant:

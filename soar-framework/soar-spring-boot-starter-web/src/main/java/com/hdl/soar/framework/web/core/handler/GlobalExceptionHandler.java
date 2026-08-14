@@ -354,22 +354,22 @@ public class GlobalExceptionHandler {
     }
 
     private void buildExceptionLog(ApiErrorLogCreateReqDTO errorLog, HttpServletRequest request, Throwable e) {
-        // 处理用户信息
+        // User information
         errorLog.setUserId(WebFrameworkUtils.getLoginUserId(request));
         errorLog.setUserType(WebFrameworkUtils.getLoginUserType(request));
-        // 设置异常字段
+        // Exception fields
         errorLog.setExceptionName(e.getClass().getName());
         errorLog.setExceptionMessage(ExceptionUtil.getMessage(e));
         errorLog.setExceptionRootCauseMessage(ExceptionUtil.getRootCauseMessage(e));
         errorLog.setExceptionStackTrace(ExceptionUtil.stacktraceToString(e));
         StackTraceElement[] stackTraceElements = e.getStackTrace();
-        Assert.notEmpty(stackTraceElements, "异常 stackTraceElements 不能为空");
+        Assert.notEmpty(stackTraceElements, "Exception stackTraceElements must not be empty");
         StackTraceElement stackTraceElement = stackTraceElements[0];
         errorLog.setExceptionClassName(stackTraceElement.getClassName());
         errorLog.setExceptionFileName(stackTraceElement.getFileName());
         errorLog.setExceptionMethodName(stackTraceElement.getMethodName());
         errorLog.setExceptionLineNumber(stackTraceElement.getLineNumber());
-        // 设置其它字段
+        // Request context fields
         errorLog.setTraceId(TracerUtils.getTraceId());
         errorLog.setApplicationName(applicationName);
         errorLog.setRequestUrl(request.getRequestURI());

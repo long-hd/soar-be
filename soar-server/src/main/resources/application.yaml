@@ -74,18 +74,18 @@ springdoc:
 
 spring:
   quartz:
-    job-store-type: jdbc          # lưu lịch ở qrtz_* -> bền qua restart, sẵn sàng clustered
+    job-store-type: jdbc          # schedules live in qrtz_* -> survive restart, ready for clustering
     jdbc:
-      initialize-schema: never    # Flyway là nguồn duy nhất quản schema (migration V1_1_5)
+      initialize-schema: never    # Flyway is the only owner of the schema (migration V1_1_5)
     properties:
       org:
         quartz:
           scheduler:
             instanceName: SoarScheduler
-            instanceId: AUTO      # mỗi node tự sinh id riêng - bắt buộc khi clustered
+            instanceId: AUTO      # each node generates its own id - required when clustered
           jobStore:
             driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
-            isClustered: true     # node tranh khoá ở DB -> job chỉ chạy 1 lần dù nhiều node
+            isClustered: true     # nodes contend for a DB lock -> a job runs once no matter how many nodes
             clusterCheckinInterval: 15000
             useProperties: false
           threadPool:
@@ -134,9 +134,9 @@ soar:
 
 soar:
   websocket:
-    enable: true          # mặc định true
-    path: /infra/ws       # đường handshake
-    sender-type: local    # local (1 node) | redis (đa node). Mặc định local.
+    enable: true          # default true
+    path: /infra/ws       # handshake path
+    sender-type: local    # local (single node) | redis (multi node). Default local.
     sender-rabbitmq:
       exchange: ${spring.application.name}-websocket-exchange
       queue: ${spring.application.name}-websocket-queue

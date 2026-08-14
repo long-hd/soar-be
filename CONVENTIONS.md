@@ -2,7 +2,12 @@
 
 > Detailed coding standards. Referenced by AGENTS.md.
 > Update this file when new conventions are established.
-> **Last synced with code: 2026-06-02 (post-S9).** This file was previously out of date; it now reflects the actual codebase.
+> **Last synced with code: 2026-08-14.**
+>
+> **Scope**: this file owns **what** the convention is and **how** to apply it.
+> The **why** behind cross-cutting decisions lives in `docs/decisions/adr/` — sections below link to the
+> relevant ADR instead of restating its rationale. Index: [`docs/decisions/README.md`](docs/decisions/README.md).
+> Cite cross-repo decisions as "BE ADR 0004" / "FE ADR 0001", never a bare number.
 
 ---
 
@@ -19,8 +24,8 @@ yudao/RuoYi-Vue-Pro follows China-enterprise conventions (`*VO` for DTOs, `*DO` 
 | Object mapping | `*Convert` (MapStruct) | **`*Mapper`** (MapStruct) with static `INSTANCE`, in **`mapper/{sub}/`** | `*Mapper` is free since DAL uses `*Repository` |
 | Status / type fields | `Integer` | **Enum + `IntEnumConverter`** (preferred) or `Integer` with mapping Javadoc | Type-safe |
 | User context | `ThreadLocal` | `SecurityContextHolder` (auth); `TenantContextHolder` (tenant) | Spring-managed |
-| Auth token | JWT | **Opaque token** (UUID in DB/Redis) | Immediate revocation |
-| Multi-tenancy | manual | **Active** Hibernate 6 `@TenantId` | Real isolation, not a stub |
+| Auth token | JWT | **Opaque token** (UUID in DB/Redis) | Immediate revocation — [BE ADR 0001](docs/decisions/adr/0001-opaque-tokens-instead-of-jwt.md) |
+| Multi-tenancy | manual | **Active** Hibernate 6 `@TenantId` | Real isolation, not a stub — [BE ADR 0004](docs/decisions/adr/0004-active-multi-tenancy-via-hibernate-tenantid.md) |
 | Permission SpEL | `@ss.hasPermission(...)` | **`@ss.hasPermission(...)`** (same) | |
 | API prefix | `/admin-api`, `/app-api` | **same**, auto-prepended by package (`controller.admin.*` / `controller.app.*`) | |
 | Mappers for diff/log | mzt-biz-log, java-object-diff | **JaVers** (when needed); custom `@OperateLog` aspect | China libs unmaintained |
@@ -52,7 +57,7 @@ com.hdl.soar.framework/                            # shared starters
 ├── security/   redis/   web/   jpa/   tenant/   excel/   (+ apilog, operatelog framework code)
 ```
 
-No `api`/`biz` module split (unlike yudao). One module per domain; the `api/` package within a module holds `*CommonApi` impls. `*CommonApi` interfaces live in `soar-common`.
+No `api`/`biz` module split (unlike yudao). One module per domain; the `api/` package within a module holds `*CommonApi` impls. `*CommonApi` interfaces live in `soar-common`. Rationale + which modules are Layered vs (future) DDD: [BE ADR 0002](docs/decisions/adr/0002-layered-modules-no-api-biz-split.md).
 
 ---
 
@@ -144,7 +149,7 @@ Key rules:
 - Extend **`BasePO`** (global) or **`TenantBasePO`** (has `tenant_id`). `BasePO` provides `creator/createTime/updater/updateTime/deleted` + `@SQLRestriction("deleted = false")`.
 - Lombok: `@Data @SuperBuilder(toBuilder=true) @EqualsAndHashCode(callSuper=true) @NoArgsConstructor @AllArgsConstructor`.
 - `@GeneratedValue(IDENTITY)` (PostgreSQL `bigserial`).
-- ID references only (`Long deptId`), never JPA object relations.
+- ID references only (`Long deptId`), never JPA object relations — [BE ADR 0003](docs/decisions/adr/0003-id-references-only-no-jpa-associations.md).
 - Timestamps: `Instant` + `timestamptz`. Audit creator/updater: `Long`. `deleted`: `Boolean`.
 - **Enum field** → enum type + an `IntEnumConverter.JpaConverter` (see Enum Converter). **Never** rely on `@Enumerated(ORDINAL)`.
 - **`Integer`/`String` field that encodes an enum/dict** → Javadoc must list the value mapping (e.g. `1=DB, 10=LOCAL, 20=S3`).
@@ -225,7 +230,7 @@ public class FileServiceImpl implements FileService {
     }
 }
 ```
-Service impl lives **alongside** the interface in `service/{domain}/` (not in an `impl/` subpackage). Dynamic queries use JPA `Specification` + `SpecUtils.*IfPresent` + Metamodel `*PO_` field constants. Errors: `throw exception(ERROR_CODE_CONSTANT)`.
+Service impl lives **alongside** the interface in `service/{domain}/` (not in an `impl/` subpackage). Dynamic queries use JPA `Specification` + `SpecUtils.*IfPresent` (`eqIfPresent`, `likeIfPresent`, `gteIfPresent`, `betweenIfPresent`) + Metamodel `*PO_` field constants — [BE ADR 0005](docs/decisions/adr/0005-dynamic-queries-via-specification-and-specutils.md). Errors: `throw exception(ERROR_CODE_CONSTANT)`.
 
 ---
 
@@ -249,6 +254,8 @@ ErrorCodes are constants in each module's `ErrorCodeConstants` (interface with `
 
 - Redis for serializable data (tokens, permissions, dict).
 - **Caffeine** (in-memory) for non-serializable live objects (e.g. file storage clients holding S3 SDK objects). Built via `CacheUtils.buildAsyncReloadingCaffeine(...)`. Guava cache is being phased out (still in ~13 files; refactor deferred).
+
+Deciding question: serializable data → Redis; live object → Caffeine. See [BE ADR 0006](docs/decisions/adr/0006-redis-and-caffeine-two-tier-caching.md).
 
 ---
 
@@ -391,7 +398,7 @@ List<RoleMenuPO> findAllByRoleIdIn(Collection<Long> roleIds);
 // caller: convertSet(result, RoleMenuPO::getMenuId)
 ```
 
-### Audit checklist khi add repository method
+### Audit checklist when adding a repository method
 
 1. Does method follow `findAll<X>By...` / `findBy...` derived-query naming?
 2. Is the declared return type `<Entity>`, `Collection<Entity>`, `Optional<Entity>`, `Stream<Entity>`?
@@ -400,12 +407,10 @@ List<RoleMenuPO> findAllByRoleIdIn(Collection<Long> roleIds);
 
 ## Service-layer tenant filter
 
-**Rule**: For multi-tenant safety on operations that grant cross-cutting access (role-menu, role-dept, user-role, etc.), tenant filter belongs in **service layer**, not controller.
+**Rule**: For multi-tenant safety on operations that grant cross-cutting access (role-menu, role-dept, user-role, etc.), the tenant filter belongs in the **service layer**, not the controller. Filtering is immutable — the service produces a new filtered `Set` instead of mutating the caller's collection.
 
-Justification:
-- Business invariant (tenant cannot grant assets outside its package) — belongs với domain logic
-- Reusable: future internal callers (bulk ops, migrations, scheduled tasks) also protected
-- Immutable filtering — service produces new filtered Set thay vì mutating caller's DTO collection
+Rationale and the rejected yudao alternative: [BE ADR 0008](docs/decisions/adr/0008-service-layer-tenant-filter-for-assignments.md).
+
 ### Pattern
 
 ```java
@@ -427,12 +432,12 @@ public void assignFoo(Long entityId, Set<Long> targetIds) {
 }
 ```
 
-`null` semantics từ `tenantService.get<Resource>Ids()` nghĩa "no filter applies" (system tenant hoặc tenancy disabled). Always handle this branch.
+`tenantService.get<Resource>Ids()` returns `null` to mean "no filter applies" (system tenant, or tenancy disabled) — distinct from an empty set, which would mean "nothing allowed". Always handle this branch.
 
 ### Anti-pattern (yudao-style controller filter)
 
 ```java
-// ❌ Controller mutates DTO + bypassable từ internal callers
+// ❌ Controller mutates DTO + bypassable by internal callers
 public CommonResult<Boolean> assignFoo(@RequestBody Req req) {
     tenantService.handleTenantFoo(allowed ->
         req.getIds().removeIf(id -> !allowed.contains(id))   // mutation!
@@ -442,13 +447,13 @@ public CommonResult<Boolean> assignFoo(@RequestBody Req req) {
 }
 ```
 
-Soar diverges từ yudao on this — keep filter trong service.
+Soar deliberately diverges from yudao here — keep the filter in the service.
  
 ---
 
 ## Missing `@CacheEvict` audit checklist
 
-**Bug class**: mutation operation modifies data backing a `@Cacheable` read method, nhưng mutation không `@CacheEvict` corresponding cache → stale reads.
+**Bug class**: a mutation modifies data backing a `@Cacheable` read method but does not `@CacheEvict` the corresponding cache → stale reads.
 
 ### Convention going forward
 
@@ -464,7 +469,7 @@ Every `@Cacheable` method should have a comment listing mutations that should ev
 public RolePO getRoleFromCache(Long id) { ... }
 ```
 
-This makes dependency explicit trong code — anyone adding mutation sẽ thấy comment + remember add `@CacheEvict`.
+This makes the dependency explicit in code — anyone adding a mutation sees the comment and remembers to add `@CacheEvict`.
 
 ### Audit procedure (run before any release)
 
@@ -474,15 +479,15 @@ grep -rn "@Cacheable" soar-module-system/src/main/java
 grep -rn "@Cacheable" soar-module-infra/src/main/java
 ```
 
-For each `@Cacheable` cache name (vd `ROLE`, `MENU_ROLE_ID_LIST`):
-1. Identify ALL mutations changing underlying data (insert/update/delete trên backing entity/relationship)
-2. Verify mỗi mutation có `@CacheEvict` cho cache name đó
-3. If missing → fix or document trong TECH_DEBT
+For each `@Cacheable` cache name (e.g. `ROLE`, `MENU_ROLE_ID_LIST`):
+1. Identify ALL mutations changing the underlying data (insert/update/delete on the backing entity or relationship)
+2. Verify each mutation has a `@CacheEvict` for that cache name
+3. If missing → fix, or record it in `TECH_DEBT.md`
 ### Common patterns
 
 - Single-row evict: `@CacheEvict(value = X, key = "#id")`
 - Cross-cutting evict (bulk + join tables): `@CacheEvict(value = X, allEntries = true)`
-- Multi-cache evict cần `@Caching`:
+- Multi-cache evict requires `@Caching`:
 ```java
 @Caching(evict = {
     @CacheEvict(value = CACHE_A, key = "#id"),

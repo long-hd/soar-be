@@ -66,11 +66,11 @@
                 <!-- https://stackoverflow.com/questions/33483697/re-run-spring-boot-configuration-annotation-processor-to-update-generated-metada -->
                 <!--
                     Compiler plugin — annotation processor chain.
-                    Thứ tự quan trọng:
-                    1. spring-boot-configuration-processor (metadata cho application.yml autocomplete)
-                    2. Lombok (generate getters/setters)
+                    Order matters:
+                    1. spring-boot-configuration-processor (metadata for application.yml autocomplete)
+                    2. Lombok (generates getters/setters)
                     3. lombok-mapstruct-binding (bridge)
-                    4. MapStruct (đọc generated getters/setters → generate mappers)
+                    4. MapStruct (reads the generated getters/setters to generate mappers)
                 -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

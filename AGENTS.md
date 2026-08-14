@@ -3,7 +3,7 @@
 > Cross-tool standard. Read by Claude Code, Cursor, Codex, and any AI coding agent.
 > This file is the **single source of rules** for AI working on this repo.
 > For detailed rationale, see docs/ARCHITECTURE_DECISIONS.md and CONVENTIONS.md.
-> **Last synced with code: 2026-06-02 (post-S9).** Earlier versions of this file described conventions that do not match the code; this version reflects the actual codebase.
+> **Last synced with code: 2026-08-14.** Earlier versions of this file described conventions that do not match the code; this version reflects the actual codebase.
 
 ## Project Overview
 
@@ -12,7 +12,7 @@ Soar is a full-stack admin platform rebuilt from **RuoYi-Vue-Pro / yudao** (gite
 - Backend: Java 21 + Spring Boot 3.5 + Spring Data JPA + Hibernate 6 + PostgreSQL + Redis
 - Auth: **opaque tokens** (UUID in DB/Redis), not JWT
 - Multi-tenancy: **active** Hibernate 6 `@TenantId` (not a stub)
-- Frontend (separate repo `soar-fe`, Phase 5): React + TypeScript + shadcn/ui + TanStack Query
+- Frontend (separate repo `soar-fe`, Phase 5): React 19 + TypeScript + **Ant Design v6** + Redux Toolkit + TanStack Query. Note: shadcn/ui was **rejected** by FE — do not assume it. See `../soar-fe/AGENTS.md`.
 - DB schema: cloned from yudao (same table/column names), adapted to PostgreSQL
 - Reference: when stuck, compare with yudao source. See docs/RUOYI_REFERENCE_MAP.md
 - **Base package: `com.hdl.soar`**
@@ -41,15 +41,23 @@ soar-be/
 ├── soar-framework/
 │   ├── soar-common/             # BasePO, TenantBasePO, CommonResult, PageResult, exceptions, utils, *CommonApi
 │   ├── soar-spring-boot-starter-web/       # CORS, GlobalExceptionHandler, API prefix, SpringDoc, apilog framework
-│   ├── soar-spring-boot-starter-security/  # opaque-token filter, SecurityConfig, operatelog framework
-│   ├── soar-spring-boot-starter-redis/     # RedisTemplate, CacheManager
+│   ├── soar-spring-boot-starter-security/  # opaque-token filter, SecurityConfig, operatelog framework  [README]
+│   ├── soar-spring-boot-starter-redis/     # RedisTemplate, CacheManager                                [README]
 │   ├── soar-spring-boot-starter-jpa/       # SoftDeleteRepository, BasePO, auditing, SpecUtils, Metamodel
-│   ├── soar-spring-boot-starter-biz-tenant/# @TenantId resolver, web filters, AOP
+│   ├── soar-spring-boot-starter-biz-tenant/         # @TenantId resolver, web filters, AOP
+│   ├── soar-spring-boot-starter-biz-data-permission/# @DataPermission, rule factory, Hibernate StatementInspector  [README]
+│   ├── soar-spring-boot-starter-job/       # Quartz scheduling
+│   ├── soar-spring-boot-starter-mq/        # Redis-based message queue (pub/sub + stream)
+│   ├── soar-spring-boot-starter-websocket/ # WebSocket session + message dispatch
 │   └── soar-spring-boot-starter-excel/     # ExcelUtils
 ├── soar-module-system/          # system domain (Layered): user, role, menu, dept, post, dict, auth, oauth2
 ├── soar-module-infra/           # infra domain (Layered): config, logging (access/error/operate), file storage
+├── soar-module-pay/             # pay domain (Layered): order, refund, channel, app, notify
 └── soar-server/                 # Spring Boot app; aggregates modules; holds application.yaml + db/migration
 ```
+
+Starters marked `[README]` carry a module-level README next to the code — read it before touching that
+starter. Indexed in `docs/architecture.md`.
 
 Cross-module calls go through `*CommonApi` interfaces in `soar-common`, implemented in each module's `api/{domain}/` package (`@Service`). No Feign in the monolith.
 
@@ -58,7 +66,8 @@ Cross-module calls go through `*CommonApi` interfaces in `soar-common`, implemen
 ### Per-module architecture
 - **System module** (user, role, menu, dept, post, dict, auth): **Layered** — Controller → Service → Repository. No DDD.
 - **Infra module** (config, file, logs): **Layered** (same). Infra also has `framework/` for cross-cutting infra code (e.g. `framework/file/core` storage clients).
-- **Business modules** (e.g. future logistics): DDD / simplified hexagonal — domain aggregates, use cases, adapters.
+- **Pay module**: **Layered** (same as system/infra). It is a yudao port, so it kept yudao's shape.
+- **Greenfield business modules** (e.g. future logistics): DDD / simplified hexagonal — domain aggregates, use cases, adapters. This is an intent, not yet demonstrated by any module in the repo.
 
 ### JPA Entity Rules (CRITICAL)
 - Suffix **`*PO`** (Persistence Object), package `dal/entity/{domain}/`.
@@ -93,7 +102,8 @@ public class FilePO extends BasePO {
 - Check with `@PreAuthorize("@ss.hasPermission('infra:file:query')")`.
 - Super-admin (role `super_admin`) is granted everything in code (`PermissionService.hasAnySuperAdmin`) — no `role_menu` rows needed for it.
 - **Public endpoints need BOTH `@PermitAll` and `@TenantIgnore`.** `@PermitAll` clears Spring Security; `@TenantIgnore` clears `TenantSecurityWebFilter` (otherwise the request fails with 400 "Missing tenant-id request header" because a browser/anonymous caller sends no `tenant-id`). `@TenantIgnore` on a controller method also auto-registers its URL in the tenant ignore list at startup and sets `TenantContextHolder.setIgnore(true)` so Hibernate skips tenant filtering — correct for global (`BasePO`) data like the file download endpoint.
-- Data scope on roles: ALL(1), DEPT_AND_CHILDREN(2), DEPT_ONLY(3), SELF_ONLY(4) — DataPermission interceptor pending.
+- Data scope on roles (`DataScopeEnum`): ALL(1), DEPT_CUSTOM(2), DEPT_ONLY(3), DEPT_AND_CHILD(4), SELF(5).
+- Data permission is **implemented and on by default** — `DataPermissionStatementInspector` (Hibernate `StatementInspector` + JSqlParser) injects a `WHERE` clause for tables registered via `DeptDataPermissionRuleCustomizer`. Only `system_users` is registered today. Opt out with `@DataPermission(enable = false)` or `DataPermissionUtils.executeIgnore(...)`. Known walker gaps: `docs/decisions/tasks/dp-01-sql-walker-parity.md`.
 
 ## Coding Conventions (see CONVENTIONS.md for full detail)
 
@@ -140,8 +150,46 @@ public class FilePO extends BasePO {
 
 ## Deep Context
 
-- Architecture rationale: `docs/ARCHITECTURE_DECISIONS.md`
-- Current phase & tasks: `docs/PHASE_PLAN.md`
-- yudao code comparison: `docs/RUOYI_REFERENCE_MAP.md`
-- Full project context: `docs/PROJECT_CONTEXT.md`
-- Task templates: `skills/`
+### Documents
+
+| Question | File |
+| -------- | ---- |
+| What exists in this repo and where? | `docs/architecture.md` — inventory + navigation map |
+| Why was a decision made? | `docs/decisions/README.md` → `docs/decisions/adr/<NNNN>-*.md` |
+| How was a specific block built or audited? | `docs/decisions/tasks/<id>-*.md` |
+| What does the frontend depend on? | `docs/api-contract.md` — **canonical** for the wire contract |
+| Coding standards, naming, patterns? | `CONVENTIONS.md` |
+| Known shortcuts and gaps? | `TECH_DEBT.md` |
+| How does starter X work? | `soar-framework/<starter>/README.md` (indexed in `docs/architecture.md`) |
+| Task templates? | `skills/` |
+| What does yudao do here? | Compare directly against the `yudao-boot-mini` checkout |
+
+> Earlier revisions of this file referenced `docs/ARCHITECTURE_DECISIONS.md`, `docs/PHASE_PLAN.md`,
+> `docs/RUOYI_REFERENCE_MAP.md` and `docs/PROJECT_CONTEXT.md`. Those documents never existed in this
+> repo. The table above replaces them.
+
+### Documentation protocol
+
+Which artifact to write, and when:
+
+| Situation | Artifact |
+| --------- | -------- |
+| A cross-cutting architectural choice with real alternatives | **ADR** in `docs/decisions/adr/`. Next number, append-only. Never renumber; supersede instead. |
+| A narrow implementation rule (naming, an annotation combination, a bug-class checklist) | A section in `CONVENTIONS.md`. Do not create an ADR. |
+| A block of work shipped, or an audit completed | **Task deliverable** in `docs/decisions/tasks/<id>-*.md`, plus a row in the task index. |
+| A known shortcut or gap being accepted for now | A row in `TECH_DEBT.md` with an area-prefixed ID. |
+| Anything the frontend consumes changes | Update `docs/api-contract.md` **in the same change**, including its "Last verified" date. |
+| A module's internals need explaining at length | A `README.md` next to the code, indexed from `docs/architecture.md`. |
+
+Ownership boundaries: `AGENTS.md` holds rules an agent must follow; `CONVENTIONS.md` holds what a
+convention is and how to apply it; `docs/decisions/adr/` holds why. Do not restate one in another —
+link instead.
+
+### Cross-repo coordination with `soar-fe`
+
+- ADR numbering is **per-repo**. Cite as **"BE ADR 0004"** / **"FE ADR 0001"**, never a bare number.
+- `docs/api-contract.md` is the single source of truth for the wire contract. When the FE documentation
+  and this repo disagree, this repo wins and the FE doc gets corrected.
+- Before merging a breaking contract change, either land the matching FE change or record the gap in
+  `soar-fe/TECH_DEBT.md`. See `docs/api-contract.md § 12`.
+- FE architecture and decisions: `../soar-fe/docs/architecture.md`, `../soar-fe/docs/decisions/`

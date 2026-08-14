@@ -17,7 +17,10 @@ import java.util.Map;
 
 import static com.hdl.soar.framework.common.pojo.CommonResult.success;
 
-/** TEST ONLY — remove before production. Exposes the in-process PayOrderApi over HTTP. */
+/**
+ * TEST ONLY — remove before production. Exposes the in-process PayOrderApi over
+ * HTTP.
+ */
 @Slf4j
 @RestController
 @RequestMapping("/pay/test")

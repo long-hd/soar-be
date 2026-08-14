@@ -228,7 +228,7 @@ public class RoleServiceImpl implements RoleService {
         }
 
         role.setDataScope(dataScopeEnum);
-        // Defensive: deptIds chỉ có ý nghĩa khi scope = DEPT_CUSTOM
+        // Defensive: deptIds are only meaningful when scope = DEPT_CUSTOM
         role.setDataScopeDeptIds(
                 dataScopeEnum == DataScopeEnum.DEPT_CUSTOM ? dataScopeDeptIds : null
         );

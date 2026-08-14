@@ -49,7 +49,8 @@ import static com.hdl.soar.module.infra.enums.ErrorCodeConstants.*;
 public class FileConfigServiceImpl implements FileConfigService {
 
     /**
-     * Cache key for the master client (configs use their real id; 0 is reserved for "master").
+     * Cache key for the master client (configs use their real id; 0 is reserved for
+     * "master").
      */
     private static final Long CACHE_MASTER_ID = 0L;
 
@@ -80,7 +81,6 @@ public class FileConfigServiceImpl implements FileConfigService {
             return fileClientFactory.getFileClient(config.getId());
         });
     }
-
 
     @Override
     public Long createFileConfig(FileConfigSaveReqDTO createReqDTO) {
@@ -131,7 +131,8 @@ public class FileConfigServiceImpl implements FileConfigService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteFileConfigList(Collection<Long> ids) {
-        if (CollUtil.isEmpty(ids)) return;
+        if (CollUtil.isEmpty(ids))
+            return;
 
         // Master guard — fetch and check before any delete
         List<FileConfigPO> configs = fileConfigRepository.findAllById(ids);
@@ -185,14 +186,16 @@ public class FileConfigServiceImpl implements FileConfigService {
 
     @Override
     public FileClient getMasterFileClient() {
-        return  clientCache.get(CACHE_MASTER_ID);
+        return clientCache.get(CACHE_MASTER_ID);
     }
 
     // ========== Helpers ==========
 
     /**
-     * Resolve and validate the typed client config from a storage code + raw config (map or JSON string).
-     * Core of decision (b): the type comes from {@code storage}, not from any {@code @class} in the JSON.
+     * Resolve and validate the typed client config from a storage code + raw config
+     * (map or JSON string).
+     * Core of decision (b): the type comes from {@code storage}, not from any
+     * {@code @class} in the JSON.
      */
     private FileClientConfig parseClientConfig(Integer storage, Object rawConfig) {
         FileStorageEnum storageEnum = FileStorageEnum.getByStorage(storage);
