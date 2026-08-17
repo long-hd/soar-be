@@ -22,7 +22,7 @@ import com.hdl.soar.module.pay.enums.PayCurrencyEnum;
 import com.hdl.soar.module.pay.enums.order.PayOrderStatusEnum;
 import com.hdl.soar.module.pay.framework.pay.config.PayProperties;
 import com.hdl.soar.module.pay.framework.pay.core.client.PayClient;
-import com.hdl.soar.module.pay.framework.pay.core.client.dto.PayOrderGetReqDTO;
+import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderGetReqDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderChannelRespDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderUnifiedReqDTO;
 import com.hdl.soar.module.pay.mapper.order.PayOrderMapper;
@@ -303,11 +303,27 @@ public class PayOrderServiceImpl implements PayOrderService {
         }
     }
 
+    @Override
+    public void updateOrderRefundPrice(Long orderId, BigDecimal delta) {
+        int updated = orderRepository.updateRefundPrice(orderId, delta,
+                PayOrderStatusEnum.REFUND,
+                List.of(PayOrderStatusEnum.SUCCESS, PayOrderStatusEnum.REFUND));
+        if (updated == 0) {
+            // Order not in SUCCESS/REFUND — should be impossible after validateOrderCanRefund.
+            throw exception(REFUND_ORDER_STATUS_INVALID);
+        }
+    }
+
     // ================ query ================
 
     @Override
     public PayOrderPO getOrder(Long id) {
         return orderRepository.findById(id).orElseThrow(() -> exception(ORDER_NOT_FOUND));
+    }
+
+    @Override
+    public PayOrderPO getOrder(Long appId, String merchantOrderId) {
+        return orderRepository.findByAppIdAndMerchantOrderId(appId, merchantOrderId).orElse(null);
     }
 
     @Override

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,5 +78,22 @@ public interface PayOrderRepository extends JpaRepository<PayOrderPO, Long>,
     int updateStatusToClosed(@Param("id") Long id,
                              @Param("oldStatus") PayOrderStatusEnum oldStatus,
                              @Param("newStatus") PayOrderStatusEnum newStatus);
+
+    /**
+     * Atomically add {@code delta} to the order's refund total and set it to REFUND. Guarded to the
+     * given statuses (pass SUCCESS + REFUND) so a not-yet-paid or closed order is never touched.
+     * Returns rows affected (0 = order not in a refundable state).
+     */
+    @Modifying(clearAutomatically = true)
+    @Query("""
+            UPDATE PayOrderPO o
+               SET o.refundPrice = o.refundPrice + :delta,
+                   o.status = :refundStatus
+             WHERE o.id = :id AND o.status IN :statuses
+            """)
+    int updateRefundPrice(@Param("id") Long id,
+                          @Param("delta") BigDecimal delta,
+                          @Param("refundStatus") PayOrderStatusEnum refundStatus,
+                          @Param("statuses") Collection<PayOrderStatusEnum> statuses);
 
 }

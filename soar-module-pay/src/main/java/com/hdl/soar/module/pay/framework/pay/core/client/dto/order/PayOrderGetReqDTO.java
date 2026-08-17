@@ -1,4 +1,4 @@
-package com.hdl.soar.module.pay.framework.pay.core.client.dto;
+package com.hdl.soar.module.pay.framework.pay.core.client.dto.order;
 
 import lombok.Data;
 

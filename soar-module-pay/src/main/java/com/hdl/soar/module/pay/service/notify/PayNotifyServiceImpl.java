@@ -8,11 +8,13 @@ import com.hdl.soar.framework.jpa.core.util.PageUtils;
 import com.hdl.soar.framework.tenant.core.context.TenantContextHolder;
 import com.hdl.soar.framework.tenant.core.util.TenantUtils;
 import com.hdl.soar.module.pay.api.notify.PayOrderNotifyReqDTO;
+import com.hdl.soar.module.pay.api.notify.PayRefundNotifyReqDTO;
 import com.hdl.soar.module.pay.controller.admin.notify.dto.PayNotifyTaskPageReqDTO;
 import com.hdl.soar.module.pay.dal.entity.notify.PayNotifyLogPO;
 import com.hdl.soar.module.pay.dal.entity.notify.PayNotifyTaskPO;
 import com.hdl.soar.module.pay.dal.entity.notify.PayNotifyTaskPO_;
 import com.hdl.soar.module.pay.dal.entity.order.PayOrderPO;
+import com.hdl.soar.module.pay.dal.entity.refund.PayRefundPO;
 import com.hdl.soar.module.pay.dal.postgres.notify.PayNotifyLogRepository;
 import com.hdl.soar.module.pay.dal.postgres.notify.PayNotifyTaskRepository;
 import com.hdl.soar.module.pay.dal.redis.notify.PayNotifyLockRedisDAO;
@@ -96,6 +98,28 @@ public class PayNotifyServiceImpl implements PayNotifyService {
         registerAfterCommit(() -> executor.execute(() -> executeNotify0(taskId, tenantId)));
     }
 
+    @Override
+    public void createPayNotifyTask(PayRefundPO refund) {
+        Instant now = Instant.now();
+        PayNotifyTaskPO task = PayNotifyTaskPO.builder()
+                .appId(refund.getAppId())
+                .type(PayNotifyTypeEnum.REFUND)
+                .dataId(refund.getId())
+                .merchantOrderId(refund.getMerchantOrderId())
+                .merchantRefundId(refund.getMerchantRefundId())
+                .notifyUrl(refund.getNotifyUrl())
+                .status(PayNotifyStatusEnum.WAITING)
+                .nextNotifyTime(now)
+                .notifyTimes(0)
+                .maxNotifyTimes(MAX_NOTIFY_TIMES)
+                .build();
+        taskRepository.save(task);
+
+        Long taskId = task.getId();
+        Long tenantId = task.getTenantId();
+        registerAfterCommit(() -> executor.execute(() -> executeNotify0(taskId, tenantId)));
+    }
+
     private void registerAfterCommit(Runnable runnable) {
         if (TransactionSynchronizationManager.isSynchronizationActive()) {
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
@@ -152,6 +176,12 @@ public class PayNotifyServiceImpl implements PayNotifyService {
             if (task == null || !PayNotifyStatusEnum.WAITING.equals(task.getStatus())) {
                 return; // already terminal, or vanished
             }
+            // No merchant callback configured -> nothing to deliver. End as SUCCESS no-op with a log
+            // row, so the task doesn't sit WAITING forever or retry against a null url.
+            if (task.getNotifyUrl() == null || task.getNotifyUrl().isBlank()) {
+                getSelf().processNotifyResult(taskId, true, "skipped: no notify url");
+                return;
+            }
             NotifyResult result = requestMerchant(task);
             getSelf().processNotifyResult(taskId, result.success(), result.response());
         }));
@@ -159,9 +189,7 @@ public class PayNotifyServiceImpl implements PayNotifyService {
 
     /** POST the notify body to the merchant and interpret the {@link CommonResult} ack. */
     private NotifyResult requestMerchant(PayNotifyTaskPO task) {
-        PayOrderNotifyReqDTO body = new PayOrderNotifyReqDTO();
-        body.setMerchantOrderId(task.getMerchantOrderId());
-        body.setPayOrderId(task.getDataId());
+        Object body = buildNotifyBody(task);
         try {
             CommonResult<?> result = restClient.post()
                     .uri(task.getNotifyUrl())
@@ -176,6 +204,21 @@ public class PayNotifyServiceImpl implements PayNotifyService {
             log.warn("[executeNotify0][task({}) delivery failed]", task.getId(), ex);
             return new NotifyResult(false, StrUtil.maxLength(StrUtil.toStringOrNull(ex.getMessage()), 1024));
         }
+    }
+
+    /** Build the merchant notify body for this task's type. */
+    private Object buildNotifyBody(PayNotifyTaskPO task) {
+        if (PayNotifyTypeEnum.REFUND.equals(task.getType())) {
+            PayRefundNotifyReqDTO b = new PayRefundNotifyReqDTO();
+            b.setMerchantOrderId(task.getMerchantOrderId());
+            b.setMerchantRefundId(task.getMerchantRefundId());
+            b.setPayRefundId(task.getDataId());
+            return b;
+        }
+        PayOrderNotifyReqDTO b = new PayOrderNotifyReqDTO();
+        b.setMerchantOrderId(task.getMerchantOrderId());
+        b.setPayOrderId(task.getDataId());
+        return b;
     }
 
     /**

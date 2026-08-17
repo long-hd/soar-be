@@ -4,9 +4,12 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.hdl.soar.module.pay.framework.pay.core.client.PayClient;
 import com.hdl.soar.module.pay.framework.pay.core.client.PayClientConfig;
-import com.hdl.soar.module.pay.framework.pay.core.client.dto.PayOrderGetReqDTO;
+import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderGetReqDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderChannelRespDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderUnifiedReqDTO;
+import com.hdl.soar.module.pay.framework.pay.core.client.dto.refund.PayRefundChannelRespDTO;
+import com.hdl.soar.module.pay.framework.pay.core.client.dto.refund.PayRefundGetReqDTO;
+import com.hdl.soar.module.pay.framework.pay.core.client.dto.refund.PayRefundUnifiedReqDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.exception.PayClientException;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
@@ -102,6 +105,42 @@ public abstract class AbstractPayClient<Config extends PayClientConfig> implemen
     }
 
     protected abstract PayOrderChannelRespDTO doGetOrder(PayOrderGetReqDTO reqDTO) throws Throwable;
+
+
+    @Override
+    public PayRefundChannelRespDTO unifiedRefund(PayRefundUnifiedReqDTO reqDTO) {
+        try {
+            return doRefund(reqDTO);
+        } catch (Throwable e) {
+            throw buildException("unifiedRefund", reqDTO, e);
+        }
+    }
+
+    protected abstract PayRefundChannelRespDTO doRefund(PayRefundUnifiedReqDTO reqDTO) throws Throwable;
+
+    @Override
+    public PayRefundChannelRespDTO parseRefundNotify(Map<String, String> params,
+                                                     String body, Map<String, String> headers) {
+        try {
+            return doParseRefundNotify(params, body, headers);
+        } catch (Throwable e) {
+            throw buildException("parseRefundNotify", body, e);
+        }
+    }
+
+    protected abstract PayRefundChannelRespDTO doParseRefundNotify(Map<String, String> params, String body,
+                                                                   Map<String, String> headers) throws Throwable;
+
+    @Override
+    public PayRefundChannelRespDTO getRefund(PayRefundGetReqDTO reqDTO) {
+        try {
+            return doGetRefund(reqDTO);
+        } catch (Throwable e) {
+            throw buildException("getRefund", reqDTO.getOutTradeNo(), e);
+        }
+    }
+
+    protected abstract PayRefundChannelRespDTO doGetRefund(PayRefundGetReqDTO reqDTO) throws Throwable;
 
     // ============= helper
 

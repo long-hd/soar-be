@@ -5,6 +5,7 @@ import com.hdl.soar.module.pay.controller.admin.notify.dto.PayNotifyTaskPageReqD
 import com.hdl.soar.module.pay.dal.entity.notify.PayNotifyLogPO;
 import com.hdl.soar.module.pay.dal.entity.notify.PayNotifyTaskPO;
 import com.hdl.soar.module.pay.dal.entity.order.PayOrderPO;
+import com.hdl.soar.module.pay.dal.entity.refund.PayRefundPO;
 
 import java.util.List;
 
@@ -21,6 +22,12 @@ public interface PayNotifyService {
      * service free of a dependency on {@code PayOrderService}.
      */
     void createPayNotifyTask(PayOrderPO order);
+
+    /**
+     * Enqueue an outbox notify task for a just-succeeded/failed refund. MUST be called inside the
+     * refund transaction. The refund is passed in (not re-fetched), consistent with the order path.
+     */
+    void createPayNotifyTask(PayRefundPO refund);
 
     /**
      * Poll entry point (called by the per-tenant job): dispatch all due WAITING tasks for the current

@@ -72,4 +72,8 @@ public enum PayOrderStatusEnum implements ArrayValuable<Integer> {
         return Objects.equals(status, REFUND.getStatus());
     }
 
+    public static boolean isSuccessOrRefund(Integer status) {
+        return isSuccess(status) || isRefund(status);
+    }
+
 }

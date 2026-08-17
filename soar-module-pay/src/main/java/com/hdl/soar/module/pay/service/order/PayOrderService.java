@@ -9,6 +9,8 @@ import com.hdl.soar.module.pay.dal.entity.order.PayOrderExtensionPO;
 import com.hdl.soar.module.pay.dal.entity.order.PayOrderPO;
 import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderChannelRespDTO;
 
+import java.math.BigDecimal;
+
 public interface PayOrderService {
 
     /**
@@ -30,6 +32,12 @@ public interface PayOrderService {
     void notifyOrder(Long channelId, PayOrderChannelRespDTO notify);
 
     PayOrderPO getOrder(Long id);
+
+    /** Look up a paid order by app + merchant order id (used by the refund flow). */
+    PayOrderPO getOrder(Long appId, String merchantOrderId);
+
+    /** Add {@code delta} to the order's running refund total and flip it to REFUND (atomic). */
+    void updateOrderRefundPrice(Long orderId, BigDecimal delta);
 
     PageResult<PayOrderPO> getOrderPage(PayOrderPageReqDTO pageReqDTO);
 

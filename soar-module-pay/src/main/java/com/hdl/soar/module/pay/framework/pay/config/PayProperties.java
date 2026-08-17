@@ -36,4 +36,17 @@ public class PayProperties {
      */
     private Duration orderSyncCreateTimeWithin = Duration.ofMinutes(10);
 
+
+    /** Prefix for generated refund numbers. */
+    private String refundNoPrefix = "R";
+
+    /**
+     * Base URL a channel should call back to with a refund result (channel id appended). Optional:
+     * synchronous rails (VNPay) never call back. When null, no refund notify URL is sent to the rail.
+     */
+    private String refundNotifyUrl;
+
+    /** Only WAITING refunds created within this window are reconciled by the refund sync job. */
+    private Duration refundSyncCreateTimeWithin = Duration.ofMinutes(10);
+
 }

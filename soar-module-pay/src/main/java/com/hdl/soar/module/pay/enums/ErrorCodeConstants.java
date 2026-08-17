@@ -32,4 +32,12 @@ public interface ErrorCodeConstants {
     // ========== Notify 1_003_004_xxx ==========
     ErrorCode NOTIFY_TASK_NOT_FOUND = new ErrorCode(1_003_004_000, "Payment notify task does not exist");
 
+    // ========== Refund 1_003_005_xxx ==========
+    ErrorCode REFUND_NOT_FOUND = new ErrorCode(1_003_005_000, "Refund does not exist");
+    ErrorCode REFUND_EXISTS = new ErrorCode(1_003_005_001, "A refund with this merchant refund id already exists");
+    ErrorCode REFUND_PRICE_EXCEED = new ErrorCode(1_003_005_002, "Refund amount exceeds the paid amount");
+    ErrorCode REFUND_HAS_REFUNDING = new ErrorCode(1_003_005_003, "A refund is already in progress for this order");
+    ErrorCode REFUND_STATUS_IS_NOT_WAITING = new ErrorCode(1_003_005_004, "Refund status is not waiting");
+    ErrorCode REFUND_ORDER_STATUS_INVALID = new ErrorCode(1_003_005_005, "Order cannot be refunded in its current status");
+
 }

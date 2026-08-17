@@ -15,7 +15,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum PayNotifyTypeEnum {
 
-    ORDER(1, "Order");
+    ORDER(1, "Order"),
+    REFUND(2, "Refund");
 
     /** JPA converter: maps this enum to its integer {@code type} column. */
     @Converter(autoApply = true)

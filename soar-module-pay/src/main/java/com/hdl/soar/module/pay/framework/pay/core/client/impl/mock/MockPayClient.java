@@ -1,9 +1,12 @@
 package com.hdl.soar.module.pay.framework.pay.core.client.impl.mock;
 
 import com.hdl.soar.module.pay.enums.order.PayOrderStatusEnum;
-import com.hdl.soar.module.pay.framework.pay.core.client.dto.PayOrderGetReqDTO;
+import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderGetReqDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderChannelRespDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.dto.order.PayOrderUnifiedReqDTO;
+import com.hdl.soar.module.pay.framework.pay.core.client.dto.refund.PayRefundChannelRespDTO;
+import com.hdl.soar.module.pay.framework.pay.core.client.dto.refund.PayRefundGetReqDTO;
+import com.hdl.soar.module.pay.framework.pay.core.client.dto.refund.PayRefundUnifiedReqDTO;
 import com.hdl.soar.module.pay.framework.pay.core.client.impl.AbstractPayClient;
 import com.hdl.soar.module.pay.framework.pay.core.client.impl.NonePayClientConfig;
 
@@ -56,6 +59,33 @@ public class MockPayClient extends AbstractPayClient<NonePayClientConfig> {
         String outTradeNo = reqDTO.getOutTradeNo();
         return PayOrderChannelRespDTO.successOf("MOCK-" + outTradeNo, "mock-user",
                 Instant.now(), outTradeNo, MOCK_RAW_DATA);
+    }
+
+    @Override
+    protected PayRefundChannelRespDTO doRefund(PayRefundUnifiedReqDTO reqDTO) {
+        // Mock: refund succeeds immediately, driving the state machine offline.
+        return PayRefundChannelRespDTO.successOf(
+                "MOCK-REFUND-" + reqDTO.getOutRefundNo(), Instant.now(),
+                reqDTO.getOutRefundNo(), "{\"mock\":true}");
+    }
+
+    @Override
+    protected PayRefundChannelRespDTO doParseRefundNotify(Map<String, String> params, String body,
+                                                          Map<String, String> headers) {
+        // Curl-testable: read outRefundNo + status straight from params (unsigned).
+        String outRefundNo = params.get("outRefundNo");
+        boolean success = "10".equals(params.get("status"));
+        return success
+                ? PayRefundChannelRespDTO.successOf(null, Instant.now(), outRefundNo, params.toString())
+                : PayRefundChannelRespDTO.failureOf("MOCK_FAIL", "mock failure", outRefundNo, params.toString());
+    }
+
+    @Override
+    protected PayRefundChannelRespDTO doGetRefund(PayRefundGetReqDTO reqDTO) {
+        // Mock: reconcile always reports success (lets syncRefund be exercised offline).
+        return PayRefundChannelRespDTO.successOf(
+                "MOCK-REFUND-" + reqDTO.getOutRefundNo(), Instant.now(),
+                reqDTO.getOutRefundNo(), "{\"mock\":true}");
     }
 
 }

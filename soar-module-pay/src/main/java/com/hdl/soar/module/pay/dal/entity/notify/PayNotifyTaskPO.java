@@ -53,6 +53,10 @@ public class PayNotifyTaskPO extends TenantBasePO {
     @Column(name = "merchant_order_id", nullable = false)
     private String merchantOrderId;
 
+    /** Merchant's own refund id — set only for REFUND-type tasks; null for ORDER. */
+    @Column(name = "merchant_refund_id")
+    private String merchantRefundId;
+
     /** Where to POST the notify. Copied from the order at enqueue time. */
     @Column(name = "notify_url", nullable = false)
     private String notifyUrl;
