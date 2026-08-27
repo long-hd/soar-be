@@ -18,6 +18,7 @@ public interface ErrorCodeConstants {
     ErrorCode CHANNEL_NOT_FOUND = new ErrorCode(1_003_002_000, "Payment channel does not exist");
     ErrorCode CHANNEL_EXIST_SAME_CODE = new ErrorCode(1_003_002_001, "This channel already exists under the app");
     ErrorCode CHANNEL_CODE_INVALID = new ErrorCode(1_003_002_002, "Unknown payment channel code");
+    ErrorCode CHANNEL_MOCK_DISABLED = new ErrorCode(1_003_002_003, "Mock payment channel is disabled in this environment");
 
     // ========== Order 1_003_003_xxx ==========
     ErrorCode ORDER_NOT_FOUND = new ErrorCode(1_003_003_000, "Payment order does not exist");

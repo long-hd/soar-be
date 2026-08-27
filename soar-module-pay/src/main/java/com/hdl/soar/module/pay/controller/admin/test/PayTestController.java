@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -26,6 +27,7 @@ import static com.hdl.soar.framework.common.pojo.CommonResult.success;
 @RequestMapping("/pay/test")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@ConditionalOnProperty(prefix = "soar.pay", name = "mock-enable", havingValue = "true")
 public class PayTestController {
 
     // ===== test: merchant notify sink =====

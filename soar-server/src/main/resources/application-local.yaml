@@ -31,3 +31,11 @@ logging:
 soar:
   security:
     mock-enable: true
+
+
+--- #################### Pay ####################
+
+soar:
+  pay:
+    order-notify-url: http://localhost:48080/admin-api/pay/notify/order
+    mock-enable: true

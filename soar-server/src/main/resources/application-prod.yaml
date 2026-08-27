@@ -61,3 +61,12 @@ soar:
     enable: true
   user:
     init-password: "${SOAR_INIT_PASSWORD:123456}"
+
+
+--- #################### Pay ####################
+
+soar:
+  pay:
+    order-notify-url: https://soar.haduylong.com/app-api/pay/notify/order
+    order-no-prefix: P
+    mock-enable: false

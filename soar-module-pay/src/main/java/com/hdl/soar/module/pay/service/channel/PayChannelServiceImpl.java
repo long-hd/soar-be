@@ -11,6 +11,7 @@ import com.hdl.soar.module.pay.dal.entity.channel.PayChannelPO;
 import com.hdl.soar.module.pay.dal.entity.channel.PayChannelPO_;
 import com.hdl.soar.module.pay.dal.postgres.channel.PayChannelRepository;
 import com.hdl.soar.module.pay.enums.PayChannelEnum;
+import com.hdl.soar.module.pay.framework.pay.config.PayProperties;
 import com.hdl.soar.module.pay.framework.pay.core.client.PayClient;
 import com.hdl.soar.module.pay.framework.pay.core.client.PayClientConfig;
 import com.hdl.soar.module.pay.framework.pay.core.client.PayClientFactory;
@@ -37,6 +38,8 @@ import static com.hdl.soar.module.pay.enums.ErrorCodeConstants.*;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PayChannelServiceImpl implements PayChannelService {
+
+    PayProperties payProperties;
 
     PayChannelRepository channelRepository;
     PayAppService appService;
@@ -114,6 +117,11 @@ public class PayChannelServiceImpl implements PayChannelService {
         PayChannelPO channel = validChannel(channelId);
         PayChannelEnum channelEnum = PayChannelEnum.of(channel.getCode());
         Assert.notNull(channelEnum, "Payment channel ({}) is not supported", channel.getCode());
+
+        if (channelEnum == PayChannelEnum.MOCK && !payProperties.getMockEnable()) {
+            throw exception(CHANNEL_MOCK_DISABLED);
+        }
+
         PayClientConfig config = JsonUtils.parseObject(
                         channel.getConfig(), channelEnum.getConfigClass());
         payClientFactory.createOrUpdatePayClient(channelId, channel.getCode(), config);

@@ -49,4 +49,12 @@ public class PayProperties {
     /** Only WAITING refunds created within this window are reconciled by the refund sync job. */
     private Duration refundSyncCreateTimeWithin = Duration.ofMinutes(10);
 
+    /**
+     * Enables the MOCK payment rail and the {@code /pay/test/*} controller. A dev/test switch:
+     * the MOCK rail settles orders without a real gateway, so it must never be reachable in
+     * production. Default {@code false}; set {@code true} only in local/dev profiles. Mirrors
+     * {@code soar.security.mock-enable}.
+     */
+    private Boolean mockEnable = false;
+
 }
