@@ -35,6 +35,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -87,13 +88,23 @@ public class PayOrderServiceImpl implements PayOrderService {
             return existing.get().getId();
         }
 
-        // 3. Insert a WAITING order
+        // 3. Insert a WAITING order. The unique index on (app_id, merchant_order_id) is the atomic
+        //    backstop for the TOCTOU window in step 2: if a concurrent request inserted first, the
+        //    insert violates the constraint and we return that now-existing order (idempotent create).
         PayOrderPO order = PayOrderMapper.INSTANCE.toPO(reqDTO);
         order.setAppId(app.getId());
         order.setNotifyUrl(app.getOrderNotifyUrl());
         order.setStatus(PayOrderStatusEnum.WAITING);
         order.setRefundPrice(BigDecimal.ZERO);
-        orderRepository.save(order);
+        try {
+            orderRepository.saveAndFlush(order);
+        } catch (DataIntegrityViolationException ex) {
+            log.warn("[createOrder] concurrent insert for appId({}) merchantOrderId({}); returning existing",
+                    app.getId(), reqDTO.getMerchantOrderId());
+            return orderRepository.findByAppIdAndMerchantOrderId(app.getId(), reqDTO.getMerchantOrderId())
+                    .map(PayOrderPO::getId)
+                    .orElseThrow(() -> ex); // not the unique violation we expected -> rethrow original
+        }
         return order.getId();
     }
 
@@ -263,6 +274,16 @@ public class PayOrderServiceImpl implements PayOrderService {
     private boolean updateOrderSuccess(PayChannelPO channel, PayOrderExtensionPO extension, PayOrderChannelRespDTO notify) {
         PayOrderPO order = orderRepository.findById(extension.getOrderId())
                 .orElseThrow(() -> exception(ORDER_NOT_FOUND));
+
+        // Underpayment guard: if the channel reported a paid amount, it must equal the order price
+        // before we settle. compareTo (not equals) so scale differences (100 vs 100.00) don't
+        // false-trip. Null price = client can't report the amount (e.g. mock sync) -> skip.
+        if (notify.getPrice() != null && notify.getPrice().compareTo(order.getPrice()) != 0) {
+            log.error("[updateOrderSuccess] paid amount mismatch for order({}): expected {} but channel reported {}",
+                    order.getId(), order.getPrice(), notify.getPrice());
+            throw exception(ORDER_PAID_AMOUNT_MISMATCH);
+        }
+
         if (PayOrderStatusEnum.SUCCESS.equals(order.getStatus())
                 && Objects.equals(order.getExtensionId(), extension.getId())) {
             return true; // already paid by this extension

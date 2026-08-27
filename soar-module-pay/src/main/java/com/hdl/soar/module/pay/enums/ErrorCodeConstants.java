@@ -26,6 +26,8 @@ public interface ErrorCodeConstants {
     ErrorCode ORDER_STATUS_IS_SUCCESS = new ErrorCode(1_003_003_002, "Payment order is already paid");
     ErrorCode ORDER_IS_EXPIRED = new ErrorCode(1_003_003_003, "Payment order has expired");
     ErrorCode ORDER_CURRENCY_INVALID = new ErrorCode(1_003_003_004, "Unsupported currency");
+    ErrorCode ORDER_PAID_AMOUNT_MISMATCH = new ErrorCode(1_003_003_005, "Paid amount does not match the order amount");
+
     ErrorCode ORDER_EXTENSION_NOT_FOUND = new ErrorCode(1_003_003_010, "Payment order extension does not exist");
     ErrorCode ORDER_EXTENSION_STATUS_IS_NOT_WAITING = new ErrorCode(1_003_003_011, "Payment order extension status is not waiting");
     ErrorCode ORDER_EXTENSION_IS_PAID = new ErrorCode(1_003_003_012, "A payment attempt on this order is already paid");

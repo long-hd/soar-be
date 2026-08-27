@@ -22,15 +22,13 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * VNPay client (rail: VNPay redirect gateway).
@@ -113,7 +111,7 @@ public class VnpayPayClient extends AbstractPayClient<VnpayPayClientConfig> {
         signed.remove("vnp_SecureHash");
         signed.remove("vnp_SecureHashType");
         String expectedHash = hmacSHA512(config.getHashSecret(), buildHashData(signed));
-        if (receivedHash == null || !receivedHash.equalsIgnoreCase(expectedHash)) {
+        if (receivedHash == null || !secureEqualsHex(receivedHash, expectedHash)) {
             throw new PayClientException("VNPay callback signature mismatch");
         }
 
@@ -126,7 +124,8 @@ public class VnpayPayClient extends AbstractPayClient<VnpayPayClientConfig> {
 
         if (SUCCESS_CODE.equals(responseCode) && SUCCESS_CODE.equals(transactionStatus)) {
             Instant successTime = parsePayDate(params.get("vnp_PayDate"));
-            return PayOrderChannelRespDTO.successOf(channelOrderNo, null, successTime, outTradeNo, rawData);
+            return PayOrderChannelRespDTO.successOf(channelOrderNo, null, successTime, outTradeNo, rawData,
+                    parseVnpAmount(params.get("vnp_Amount")));
         }
         return PayOrderChannelRespDTO.closedOf(responseCode, "VNPay response code " + responseCode,
                 outTradeNo, rawData);
@@ -170,7 +169,7 @@ public class VnpayPayClient extends AbstractPayClient<VnpayPayClientConfig> {
 
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         String raw = response.body();
-        log.info("[doGetOrder][querydr response raw: {}]", raw);
+        log.debug("[doGetOrder][querydr response raw: {}]", raw);
 
         Map<String, String> result = JsonUtils.parseObject(raw, new TypeReference<Map<String, String>>() {});
         String responseCode = result != null ? result.get("vnp_ResponseCode") : null;
@@ -178,7 +177,8 @@ public class VnpayPayClient extends AbstractPayClient<VnpayPayClientConfig> {
         String channelOrderNo = result != null ? result.get("vnp_TransactionNo") : null;
 
         if (SUCCESS_CODE.equals(responseCode) && SUCCESS_CODE.equals(transactionStatus)) {
-            return PayOrderChannelRespDTO.successOf(channelOrderNo, null, Instant.now(), outTradeNo, raw);
+            return PayOrderChannelRespDTO.successOf(channelOrderNo, null, Instant.now(), outTradeNo, raw,
+                    parseVnpAmount(result.get("vnp_Amount")));
         }
 
         // Anything not clearly successful -> WAITING: reconcile must NOT close here (closing is the
@@ -228,7 +228,7 @@ public class VnpayPayClient extends AbstractPayClient<VnpayPayClientConfig> {
         body.put("vnp_SecureHash", secureHash);
 
         String raw = postJson(config.getQueryUrl(), body); // refund uses the same merchant API endpoint
-        log.info("[doRefund][refund({}) response raw: {}]", reqDTO.getOutRefundNo(), raw);
+        log.debug("[doRefund][refund({}) response raw: {}]", reqDTO.getOutRefundNo(), raw);
 
         Map<String, String> result = JsonUtils.parseObject(raw, new TypeReference<Map<String, String>>() {});
         String responseCode = result != null ? result.get("vnp_ResponseCode") : null;
@@ -282,7 +282,7 @@ public class VnpayPayClient extends AbstractPayClient<VnpayPayClientConfig> {
         body.put("vnp_SecureHash", secureHash);
 
         String raw = postJson(config.getQueryUrl(), body);
-        log.info("[doGetRefund][refund({}) querydr raw: {}]", reqDTO.getOutRefundNo(), raw);
+        log.debug("[doGetRefund][refund({}) querydr raw: {}]", reqDTO.getOutRefundNo(), raw);
 
         Map<String, String> result = JsonUtils.parseObject(raw, new TypeReference<Map<String, String>>() {});
         String responseCode = result != null ? result.get("vnp_ResponseCode") : null;
@@ -357,6 +357,16 @@ public class VnpayPayClient extends AbstractPayClient<VnpayPayClientConfig> {
         }
     }
 
+    /** Constant-time, case-insensitive comparison of two hex signatures (avoids a timing side-channel). */
+    private static boolean secureEqualsHex(String a, String b) {
+        if (a == null || b == null) {
+            return false;
+        }
+        return MessageDigest.isEqual(
+                a.toLowerCase(Locale.ROOT).getBytes(StandardCharsets.UTF_8),
+                b.toLowerCase(Locale.ROOT).getBytes(StandardCharsets.UTF_8));
+    }
+
     private Instant parsePayDate(String payDate) {
         if (payDate == null || payDate.isEmpty()) {
             return Instant.now();
@@ -395,6 +405,14 @@ public class VnpayPayClient extends AbstractPayClient<VnpayPayClientConfig> {
     private String scaleAmount(BigDecimal price) {
         // VERIFY this equals whatever doUnifiedOrder does for vnp_Amount (typically price * 100).
         return price.multiply(BigDecimal.valueOf(100)).toBigInteger().toString();
+    }
+
+    /** VNPay sends amount × 100 with no decimals; invert to the real amount. Null/blank -> null. */
+    private static BigDecimal parseVnpAmount(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return null;
+        }
+        return new BigDecimal(raw).movePointLeft(2); // ÷ 100
     }
 
 }

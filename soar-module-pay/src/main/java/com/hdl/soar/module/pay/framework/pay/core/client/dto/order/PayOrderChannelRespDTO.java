@@ -3,6 +3,7 @@ package com.hdl.soar.module.pay.framework.pay.core.client.dto.order;
 import com.hdl.soar.module.pay.enums.order.PayOrderStatusEnum;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 
 /**
@@ -30,6 +31,12 @@ public class PayOrderChannelRespDTO {
 
     /** Time the payment succeeded. */
     private Instant successTime;
+
+    /**
+     * Amount the channel reports as actually paid. Compared against the order price before
+     * settling (underpayment guard). Null when the client cannot report it (e.g. mock sync).
+     */
+    private BigDecimal price;
 
     /** How the caller should present the next step (e.g. {@code url}), for WAITING results. */
     private String displayMode;
@@ -60,7 +67,8 @@ public class PayOrderChannelRespDTO {
 
     /** Build a SUCCESS result. */
     public static PayOrderChannelRespDTO successOf(String channelOrderNo, String channelUserId,
-                                                   Instant successTime, String outTradeNo, String rawData) {
+                                                   Instant successTime, String outTradeNo, String rawData,
+                                                   BigDecimal price) {
         PayOrderChannelRespDTO resp = new PayOrderChannelRespDTO();
         resp.status = PayOrderStatusEnum.SUCCESS.getStatus();
         resp.channelOrderNo = channelOrderNo;
@@ -68,6 +76,7 @@ public class PayOrderChannelRespDTO {
         resp.successTime = successTime;
         resp.outTradeNo = outTradeNo;
         resp.rawData = rawData;
+        resp.price = price;
         return resp;
     }
 

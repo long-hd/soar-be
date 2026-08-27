@@ -10,6 +10,7 @@ import com.hdl.soar.module.pay.framework.pay.core.client.dto.refund.PayRefundUni
 import com.hdl.soar.module.pay.framework.pay.core.client.impl.AbstractPayClient;
 import com.hdl.soar.module.pay.framework.pay.core.client.impl.NonePayClientConfig;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Map;
 
@@ -38,7 +39,7 @@ public class MockPayClient extends AbstractPayClient<NonePayClientConfig> {
     @Override
     protected PayOrderChannelRespDTO doUnifiedOrder(PayOrderUnifiedReqDTO reqDTO) throws Throwable {
         return PayOrderChannelRespDTO.successOf("MOCK-" + reqDTO.getOutTradeNo(), "mock-user",
-                Instant.now(), reqDTO.getOutTradeNo(), MOCK_RAW_DATA);
+                Instant.now(), reqDTO.getOutTradeNo(), MOCK_RAW_DATA, reqDTO.getPrice());
     }
 
     @Override
@@ -46,11 +47,12 @@ public class MockPayClient extends AbstractPayClient<NonePayClientConfig> {
                                                         Map<String, String> headers) throws Throwable {
         String outTradeNo = params.get("outTradeNo");
         String status = params.get("status");
+        BigDecimal price = params.get("price") != null ? new BigDecimal(params.get("price")) : null;
         if (String.valueOf(PayOrderStatusEnum.CLOSED.getStatus()).equals(status)) {
             return PayOrderChannelRespDTO.closedOf("MOCK_CLOSED", "mock closed", outTradeNo, body);
         }
         return PayOrderChannelRespDTO.successOf("MOCK-" + outTradeNo, "mock-user",
-                Instant.now(), outTradeNo, body);
+                Instant.now(), outTradeNo, body, price);
     }
 
     @Override
@@ -58,7 +60,7 @@ public class MockPayClient extends AbstractPayClient<NonePayClientConfig> {
         // mock ignores createTime; always reports SUCCESS so the reconcile flow is testable offline
         String outTradeNo = reqDTO.getOutTradeNo();
         return PayOrderChannelRespDTO.successOf("MOCK-" + outTradeNo, "mock-user",
-                Instant.now(), outTradeNo, MOCK_RAW_DATA);
+                Instant.now(), outTradeNo, MOCK_RAW_DATA, null);
     }
 
     @Override
