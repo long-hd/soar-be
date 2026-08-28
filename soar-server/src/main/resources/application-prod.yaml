@@ -67,6 +67,6 @@ soar:
 
 soar:
   pay:
-    order-notify-url: https://soar.haduylong.com/app-api/pay/notify/order
+    order-notify-url: https://soar.haduylong.com/admin-api/pay/notify/order
     order-no-prefix: P
     mock-enable: false

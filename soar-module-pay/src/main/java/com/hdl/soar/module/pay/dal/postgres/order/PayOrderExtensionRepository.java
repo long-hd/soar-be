@@ -70,4 +70,15 @@ public interface PayOrderExtensionRepository extends JpaRepository<PayOrderExten
                              @Param("channelErrorCode") String channelErrorCode,
                              @Param("channelErrorMsg") String channelErrorMsg);
 
+    @Modifying(clearAutomatically = true)
+    @Query("""
+            UPDATE PayOrderExtensionPO e
+               SET e.status = :newStatus
+             WHERE e.id = :id
+               AND e.status = :expected
+            """)
+    int updateStatusToClosed(@Param("id") Long id,
+                             @Param("expected") PayOrderStatusEnum expected,
+                             @Param("newStatus") PayOrderStatusEnum newStatus);
+
 }

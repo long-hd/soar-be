@@ -471,7 +471,18 @@ public class PayOrderServiceImpl implements PayOrderService {
     public boolean closeExpiredOrder(Long orderId) {
         int updated = orderRepository.updateStatusToClosed(
                 orderId, PayOrderStatusEnum.WAITING, PayOrderStatusEnum.CLOSED);
-        return updated > 0;
+        if (updated == 0) {
+            return false; // concurrently paid/closed — do not touch its extensions
+        }
+
+        // The order just closed on expiry with no successful attempt: close its still-WAITING
+        // attempts too, so order and extension don't diverge.
+        // (expireOrder0 already re-queried each attempt for last-minute recovery before we got here.)
+        orderExtensionRepository.findByOrderId(orderId).stream()
+                .filter(ext -> PayOrderStatusEnum.WAITING.equals(ext.getStatus()))
+                .forEach(ext -> orderExtensionRepository.updateStatusToClosed(
+                        ext.getId(), PayOrderStatusEnum.WAITING, PayOrderStatusEnum.CLOSED));
+        return true;
     }
 
     // ================ helper ================

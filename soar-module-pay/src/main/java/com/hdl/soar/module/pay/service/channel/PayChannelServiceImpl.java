@@ -72,6 +72,7 @@ public class PayChannelServiceImpl implements PayChannelService {
         channelRepository.findById(id)
                 .orElseThrow(() -> exception(CHANNEL_NOT_FOUND));
         channelRepository.deleteById(id);
+        payClientFactory.removePayClient(id);
     }
 
     @Override

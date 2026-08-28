@@ -148,6 +148,6 @@ soar:
 
 soar:
   pay:
-    order-notify-url: http://localhost:48080/admin-api/pay/notify/order   # dev; prod = https://<domain>/app-api/pay/notify/order
+    order-notify-url: http://localhost:48080/admin-api/pay/notify/order   # dev; prod = https://<domain>/admin-api/pay/notify/order
     order-no-prefix: P
     mock-enable: false

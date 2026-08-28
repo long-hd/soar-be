@@ -22,4 +22,7 @@ public interface PayClientFactory {
      */
     <Config extends PayClientConfig> void createOrUpdatePayClient(Long channelId, String channelCode, Config config);
 
+    /** Evict a channel's cached client (call on channel delete so a stale client can't be reused). */
+    void removePayClient(Long channelId);
+
 }

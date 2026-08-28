@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Configuration;
 public class PayConfiguration {
 
     @Bean
-    public PayClientFactory payClientFactory(PayProperties payProperties) {
-        return new PayClientFactoryImpl(payProperties);
+    public PayClientFactory payClientFactory() {
+        return new PayClientFactoryImpl();
     }
 
 }

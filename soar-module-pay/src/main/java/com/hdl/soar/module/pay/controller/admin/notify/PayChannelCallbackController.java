@@ -37,7 +37,7 @@ import java.util.Map;
 @RequestMapping("/pay/notify")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class PayNotifyController {
+public class PayChannelCallbackController {
 
     PayChannelService channelService;
     PayOrderService orderService;
