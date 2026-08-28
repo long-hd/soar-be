@@ -229,7 +229,9 @@ public class PayOrderServiceImpl implements PayOrderService {
     }
 
     private void notifyOrderSuccess(PayChannelPO channel, PayOrderChannelRespDTO notify) {
+        // CAS the order_extension to SUCCESS
         PayOrderExtensionPO extension = updateOrderExtensionSuccess(notify);
+        // CAS the order to SUCCESS
         boolean alreadyPaid = updateOrderSuccess(channel, extension, notify);
         if (alreadyPaid) {
             return;
