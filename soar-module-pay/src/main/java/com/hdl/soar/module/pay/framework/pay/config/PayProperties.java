@@ -57,4 +57,19 @@ public class PayProperties {
      */
     private Boolean mockEnable = false;
 
+    /** Pay-notify relay (RabbitMQ) settings, bound from {@code soar.pay.notify.*}. */
+    private Notify notify = new Notify();
+
+    @Data
+    public static class Notify {
+        /** Direct exchange the afterCommit fast-path and the poll job publish to. */
+        private String exchange;
+        /** Durable work queue drained by the notify consumers. */
+        private String queue;
+        /** Fanout dead-letter exchange for parked (poison / infra-failed) messages. */
+        private String deadLetterExchange;
+        /** Dead-letter queue bound to {@link #deadLetterExchange}. */
+        private String deadLetterQueue;
+    }
+
 }

@@ -92,15 +92,16 @@ spring:
             class: org.quartz.simpl.SimpleThreadPool
             threadCount: 10
 
-#--- #################### MQ ####################
-#
-#spring:
-#  # khi sender-type = rabbitmq
-#  rabbitmq:
-#    host: localhost
-#    port: 5672
-#    username: guest
-#    password: guest
+--- #################### MQ ####################
+
+spring:
+  # khi sender-type = rabbitmq
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+
 #  # khi sender-type = kafka
 #  kafka:
 #    bootstrap-servers: localhost:9092
@@ -151,3 +152,8 @@ soar:
     order-notify-url: http://localhost:48080/admin-api/pay/notify/order   # dev; prod = https://<domain>/admin-api/pay/notify/order
     order-no-prefix: P
     mock-enable: false
+    notify:
+      exchange: ${spring.application.name}-pay-notify-exchange
+      queue: ${spring.application.name}-pay-notify-queue
+      dead-letter-exchange: ${spring.application.name}-pay-notify-dlx
+      dead-letter-queue: ${spring.application.name}-pay-notify-dlq

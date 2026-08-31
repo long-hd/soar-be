@@ -35,6 +35,16 @@ spring:
       database: 0
       # password: ${REDIS_PASSWORD}  # Uncomment when Redis auth is enabled
 
+--- #################### MQ ####################
+
+spring:
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+
+
 logging:
   level:
     root: INFO

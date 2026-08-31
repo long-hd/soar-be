@@ -20,13 +20,12 @@ import com.hdl.soar.module.pay.dal.postgres.notify.PayNotifyTaskRepository;
 import com.hdl.soar.module.pay.dal.redis.notify.PayNotifyLockRedisDAO;
 import com.hdl.soar.module.pay.enums.notify.PayNotifyStatusEnum;
 import com.hdl.soar.module.pay.enums.notify.PayNotifyTypeEnum;
-import com.hdl.soar.module.pay.framework.job.config.PayJobConfiguration;
+import com.hdl.soar.module.pay.framework.notify.core.producer.PayNotifyProducer;
 import jakarta.persistence.criteria.Predicate;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -39,9 +38,6 @@ import org.springframework.web.client.RestClient;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
 
 import static com.hdl.soar.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static com.hdl.soar.framework.jpa.core.util.SpecUtils.eqIfPresent;
@@ -60,16 +56,13 @@ public class PayNotifyServiceImpl implements PayNotifyService {
     private static final int[] NOTIFY_FREQUENCY = {15, 15, 30, 180, 1800, 1800, 1800, 3600};
     /** Initial attempt + {@link #NOTIFY_FREQUENCY}.length retries. */
     private static final int MAX_NOTIFY_TIMES = 9;
-    /** Max seconds the poll job waits for its dispatched attempts before returning. */
-    private static final long POLL_AWAIT_SECONDS = 30;
 
     PayNotifyTaskRepository taskRepository;
     PayNotifyLogRepository logRepository;
     PayNotifyLockRedisDAO lockRedisDAO;
     RestClient restClient;
 
-    @Qualifier(PayJobConfiguration.NOTIFY_EXECUTOR)
-    Executor executor;
+    PayNotifyProducer notifyProducer;
 
     // ================ enqueue (outbox) ================
 
@@ -95,7 +88,7 @@ public class PayNotifyServiceImpl implements PayNotifyService {
         // backstop for when the app dies between commit and this callback.
         Long taskId = task.getId();
         Long tenantId = task.getTenantId(); // populated by @TenantId on insert
-        registerAfterCommit(() -> executor.execute(() -> executeNotify0(taskId, tenantId)));
+        registerAfterCommit(() -> notifyProducer.publish(taskId, tenantId));
     }
 
     @Override
@@ -117,7 +110,7 @@ public class PayNotifyServiceImpl implements PayNotifyService {
 
         Long taskId = task.getId();
         Long tenantId = task.getTenantId();
-        registerAfterCommit(() -> executor.execute(() -> executeNotify0(taskId, tenantId)));
+        registerAfterCommit(() -> notifyProducer.publish(taskId, tenantId));
     }
 
     private void registerAfterCommit(Runnable runnable) {
@@ -144,24 +137,18 @@ public class PayNotifyServiceImpl implements PayNotifyService {
         if (tasks.isEmpty()) {
             return 0;
         }
+
+        // Runs once per tenant (@TenantJob); the query is tenant-filtered, so every row belongs to
+        // this tenant. Re-publish each due task onto the work queue — the consumer is the only place
+        // that delivers. This job is the backstop (publish gap) and the retry driver.
         Long tenantId = TenantContextHolder.getTenantId(); // set by @TenantJob
-        CountDownLatch latch = new CountDownLatch(tasks.size());
+        int published = 0;
         for (PayNotifyTaskPO task : tasks) {
-            Long taskId = task.getId();
-            executor.execute(() -> {
-                try {
-                    executeNotify0(taskId, tenantId);
-                } finally {
-                    latch.countDown();
-                }
-            });
+            if (notifyProducer.publish(task.getId(), tenantId)) {
+                published++;
+            }
         }
-        try {
-            latch.await(POLL_AWAIT_SECONDS, TimeUnit.SECONDS);
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
-        return tasks.size();
+        return published;
     }
 
     /**
@@ -276,6 +263,13 @@ public class PayNotifyServiceImpl implements PayNotifyService {
     @Override
     public List<PayNotifyLogPO> getNotifyLogList(Long taskId) {
         return logRepository.findAllByTaskIdOrderByNotifyTimesAsc(taskId);
+    }
+
+    // ================ Task ================
+
+    @Override
+    public void deliverNotifyTask(Long taskId, Long tenantId) {
+        executeNotify0(taskId, tenantId);
     }
 
 

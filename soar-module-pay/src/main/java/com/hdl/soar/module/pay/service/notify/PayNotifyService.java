@@ -43,4 +43,11 @@ public interface PayNotifyService {
 
     List<PayNotifyLogPO> getNotifyLogList(Long taskId);
 
+    /**
+     * Deliver one notify task now: restore its tenant, take the per-task lock, POST to the merchant,
+     * and record the result. The unit shared by the afterCommit fast-path, the poll job, and the MQ
+     * consumer. Idempotent — a task no longer {@code WAITING} is a no-op.
+     */
+    void deliverNotifyTask(Long taskId, Long tenantId);
+
 }

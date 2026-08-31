@@ -31,6 +31,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
         </dependency>
+        <!-- Outbound notify relay over RabbitMQ (pay-notify). -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
 
         <!-- Business components -->
         <dependency>
@@ -41,15 +46,28 @@
             <groupId>com.hdl.boot</groupId>
             <artifactId>soar-spring-boot-starter-biz-tenant</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.hdl.boot</groupId>
-            <artifactId>soar-spring-boot-starter-excel</artifactId>
-        </dependency>
 
         <!-- DB -->
         <dependency>
             <groupId>com.hdl.boot</groupId>
             <artifactId>soar-spring-boot-starter-jpa</artifactId>
+        </dependency>
+
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>rabbitmq</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

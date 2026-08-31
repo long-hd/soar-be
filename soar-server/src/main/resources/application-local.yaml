@@ -17,6 +17,15 @@ spring:
       port: 6379
       database: 0
 
+--- #################### MQ ####################
+
+spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
 # Logging
 
 logging:
